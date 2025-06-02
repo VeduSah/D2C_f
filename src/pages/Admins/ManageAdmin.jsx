@@ -101,12 +101,12 @@ const ManageAdmin = () => {
         updateUserData
           ? axios
               .put(
-                `http://localhost:8000/api/user/${updateUserData._id}`,
+                `https://d2-c-b.vercel.app//api/user/${updateUserData._id}`,
                 formData
               )
               .then((res) => {
                 axios.put(
-                  `http://localhost:8000/api/user/${updateUserData._id}`,
+                  `https://d2-c-b.vercel.app//api/user/${updateUserData._id}`,
                   data
                 );
                 console.log(res);
@@ -136,14 +136,14 @@ const ManageAdmin = () => {
               })
           : axios
               .post(
-                `http://localhost:8000/api/user/register`,
+                `https://d2-c-b.vercel.app//api/user/register`,
                 formData
               )
               .then((res) => {
                 console.log(res);
                 if (res.data.success) {
                   axios.put(
-                    `http://localhost:8000/api/user/${res.data.data._id}`,
+                    `https://d2-c-b.vercel.app//api/user/${res.data.data._id}`,
                     data
                   );
                   setBtnDisable(false);
@@ -177,13 +177,13 @@ const ManageAdmin = () => {
   };
 
   // LIST
-// `http://localhost:8000/api/user/all?page=${currentPage}`
+// `https://d2-c-b.vercel.app//api/user/all?page=${currentPage}`
   const fetchAllUser = () => {
     setLoading(true);
     try {
       axios
         .get(
-          `http://localhost:8000/api/user/all?page=${currentPage}`
+          `https://d2-c-b.vercel.app//api/user/all?page=${currentPage}`
         )
         .then((res) => {
           console.log(res);
@@ -301,7 +301,7 @@ const ManageAdmin = () => {
     setLoading(true);
     try {
       axios
-        .delete(`http://localhost:8000/api/user/${id}`)
+        .delete(`https://d2-c-b.vercel.app//api/user/${id}`)
         .then((res) => {
           console.log(res);
           if (res.data.success) {

@@ -44,7 +44,7 @@ const TakeFee = () => {
   const fetchSingleStudent = () => {
     try {
       axios
-        .get(`http://localhost:8000/api/student/${sid}`)
+        .get(`https://d2-c-b.vercel.app//api/student/${sid}`)
         .then((res) => {
           console.log(res);
           setStudentDetail(res.data.data);
@@ -133,7 +133,7 @@ const TakeFee = () => {
 
     try {
       axios
-        .post("http://localhost:8000/api/fee", {
+        .post("https://d2-c-b.vercel.app//api/fee", {
           studentId: sid,
           isFeeDue: isFeeDue,
           dueFee: feeDue.toString(),
@@ -156,7 +156,7 @@ const TakeFee = () => {
           console.log(res);
           if (res.data.success) {
             axios.put(
-              `http://localhost:8000/api/fee/${balanceFeeId}`,
+              `https://d2-c-b.vercel.app//api/fee/${balanceFeeId}`,
               {
                 isFeeDue: false,
               }
@@ -194,7 +194,7 @@ const TakeFee = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/fee-structure/filter?className=${studentDetail?.studentClass}&category=${studentDetail?.feeCategory}&route=${studentDetail?.route}`
+          `https://d2-c-b.vercel.app//api/fee-structure/filter?className=${studentDetail?.studentClass}&category=${studentDetail?.feeCategory}&route=${studentDetail?.route}`
         )
         .then((res) => {
           console.log(res);
@@ -231,7 +231,7 @@ const TakeFee = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/fee/fee-due?studentId=${studentDetail._id}&session=${session}`
+          `https://d2-c-b.vercel.app//api/fee/fee-due?studentId=${studentDetail._id}&session=${session}`
         )
         .then((res) => {
           console.log(res);
@@ -254,7 +254,7 @@ const TakeFee = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/fee/view?session=${session}&studentId=${studentDetail._id}&feeMonth=${feeMonth}`
+          `https://d2-c-b.vercel.app//api/fee/view?session=${session}&studentId=${studentDetail._id}&feeMonth=${feeMonth}`
         )
         .then(
           (res) => {

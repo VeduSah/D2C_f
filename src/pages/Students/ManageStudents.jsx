@@ -191,7 +191,7 @@ const ManageStudents = () => {
         updateUserData
           ? axios
               .put(
-                `${`http://localhost:8000/api/student/${updateUserData._id}`}`,
+                `${`https://d2-c-b.vercel.app//api/student/${updateUserData._id}`}`,
                 formData
               )
               .then((res) => {
@@ -252,7 +252,7 @@ const ManageStudents = () => {
               })
           : axios
               .post(
-                `${"http://localhost:8000/api/student/register"}`,
+                `${"https://d2-c-b.vercel.app//api/student/register"}`,
                 formData
               )
               .then((res) => {
@@ -335,7 +335,7 @@ const ManageStudents = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/student/filter?studentClass=${activeClass}&studentSection=${activeDivision}&page=${currentPage}`
+          `https://d2-c-b.vercel.app//api/student/filter?studentClass=${activeClass}&studentSection=${activeDivision}&page=${currentPage}`
         )
         .then((res) => {
           console.log(res);
@@ -368,7 +368,7 @@ const ManageStudents = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/student/last-roll?selectedClass=${studentClass}&section=${studentSection}`
+          `https://d2-c-b.vercel.app//api/student/last-roll?selectedClass=${studentClass}&section=${studentSection}`
         )
         .then((res) => {
           console.log(res);
@@ -393,7 +393,7 @@ const ManageStudents = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/student/last-admission`
+          `https://d2-c-b.vercel.app//api/student/last-admission`
         )
         .then((res) => {
           console.log(res);
@@ -554,7 +554,7 @@ const ManageStudents = () => {
     try {
       axios
         .delete(
-          `http://localhost:8000/api/student/${id}`
+          `https://d2-c-b.vercel.app//api/student/${id}`
         )
         .then((res) => {
           console.log(res);
@@ -688,7 +688,7 @@ const ManageStudents = () => {
       try {
         axios
           .get(
-            `http://localhost:8000/api/student/search?q=${searchQuery}`
+            `https://d2-c-b.vercel.app//api/student/search?q=${searchQuery}`
           )
           .then((res) => {
             console.log(res);

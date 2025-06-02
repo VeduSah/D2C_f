@@ -40,7 +40,7 @@ const Home = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/home?role=${role}`
+          `https://d2-c-b.vercel.app//api/home?role=${role}`
         )
         .then((res) => {
           console.log(res);
@@ -60,7 +60,7 @@ const Home = () => {
 const fetchStudents = () => {
     try {
       axios
-        .get("http://localhost:8000/api/student/all")
+        .get("https://d2-c-b.vercel.app//api/student/all")
         .then((res) => {
 
           if (res.data.success) {
@@ -87,7 +87,7 @@ const fetchStudents = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/remark?remarkToId=${uid}&remarkDate=${remarkDate}`
+          `https://d2-c-b.vercel.app//api/remark?remarkToId=${uid}&remarkDate=${remarkDate}`
         )
         .then((res) => {
           console.log(res);
@@ -111,7 +111,7 @@ const fetchStudents = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/remark/by?remarkById=${uid}&remarkDate=${remarkDate}`
+          `https://d2-c-b.vercel.app//api/remark/by?remarkById=${uid}&remarkDate=${remarkDate}`
         )
         .then((res) => {
           console.log(res);
@@ -136,7 +136,7 @@ const fetchStudents = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/remark?remarkToId=${uid}&remarkDate=${remarkDate}`
+          `https://d2-c-b.vercel.app//api/remark?remarkToId=${uid}&remarkDate=${remarkDate}`
         )
         .then((res) => {
           console.log(res);
@@ -159,7 +159,7 @@ const fetchStudents = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/remark/date?remarkDate=${remarkDate}`
+          `https://d2-c-b.vercel.app//api/remark/date?remarkDate=${remarkDate}`
         )
         .then((res) => {
           console.log(res);
@@ -184,7 +184,7 @@ const fetchStudents = () => {
   const fetchAllRemark = () => {
     try {
       axios
-        .get(`http://localhost:8000/api/remark/${uid}`)
+        .get(`https://d2-c-b.vercel.app//api/remark/${uid}`)
         .then((res) => {
           console.log(res);
           if (res.data.success) {
@@ -208,7 +208,7 @@ const fetchStudents = () => {
     try {
       axios
         .put(
-          `http://localhost:8000/api/remark/${data._id}`,
+          `https://d2-c-b.vercel.app//api/remark/${data._id}`,
           {
             ...data,
             isChecked: status == "approve" ? true : false,
@@ -262,7 +262,7 @@ const fetchStudents = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/user/list-role?role=${roleForRemark}`
+          `https://d2-c-b.vercel.app//api/user/list-role?role=${roleForRemark}`
         )
         .then((res) => {
           console.log(res);
@@ -309,7 +309,7 @@ const fetchStudents = () => {
 
     try {
       axios
-        .post(`http://localhost:8000/api/remark`, data)
+        .post(`https://d2-c-b.vercel.app//api/remark`, data)
         .then((res) => {
           console.log(res.data.data);
           if (res.data.success) {

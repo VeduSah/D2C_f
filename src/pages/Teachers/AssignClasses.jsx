@@ -75,7 +75,7 @@
 //     setLoading(true);
 //     try {
 //       axios
-//         .get(`http://localhost:8000/api/user/teacher`)
+//         .get(`https://d2-c-b.vercel.app//api/user/teacher`)
 //         .then((res) => {
 //           console.log(res);
 //           if (res.data.success) {
@@ -101,7 +101,7 @@
 // useEffect(() => {
 //   if (roleForRemark) {
 //     axios
-//       .get(`http://localhost:8000/api/user/list-role?role=${roleForRemark}`)
+//       .get(`https://d2-c-b.vercel.app//api/user/list-role?role=${roleForRemark}`)
 //       .then((res) => {
 //         if (res.data.success) {
 //           setFilteredUsers(res.data.data);
@@ -160,7 +160,7 @@
 //     try {
 //       axios
 //         .put(
-//           `http://localhost:8000/api/user/teacher/${selectedTeacherId}`,
+//           `https://d2-c-b.vercel.app//api/user/teacher/${selectedTeacherId}`,
 //           data
 //         )
 //         .then((res) => {
@@ -643,7 +643,7 @@ const AssignClasses = () => {
     setLoading(true);
     try {
       axios
-        .get(`http://localhost:8000/api/user/teacher`)
+        .get(`https://d2-c-b.vercel.app//api/user/teacher`)
         .then((res) => {
           if (res.data.success) {
             setTeachers(res.data.data);
@@ -665,7 +665,7 @@ const AssignClasses = () => {
   useEffect(() => {
     if (roleForRemark) {
       axios
-        .get(`http://localhost:8000/api/user/list-role?role=${roleForRemark}`)
+        .get(`https://d2-c-b.vercel.app//api/user/list-role?role=${roleForRemark}`)
         .then((res) => {
           if (res.data.success) {
             setFilteredUsers(res.data.data);
@@ -729,7 +729,7 @@ const AssignClasses = () => {
 
     setBtnDisable(true);
     axios
-      .put(`http://localhost:8000/api/user/teacher/${selectedTeacherId}`, data)
+      .put(`https://d2-c-b.vercel.app//api/user/teacher/${selectedTeacherId}`, data)
       .then((res) => {
         if (res.data.success) {
           toast.success("Teacher Updated Successfully !");

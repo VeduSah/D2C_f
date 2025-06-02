@@ -32,7 +32,7 @@ const ViewFees = () => {
   const fetchSingleStudent = () => {
     try {
       axios
-        .get(`http://localhost:8000/api/student/${sid}`)
+        .get(`https://d2-c-b.vercel.app//api/student/${sid}`)
         .then((res) => {
           console.log(res);
           setStudentDetail(res.data.data);
@@ -49,7 +49,7 @@ const ViewFees = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/fee/view?session=${session}&studentId=${sid}&feeMonth=${feeMonth}`
+          `https://d2-c-b.vercel.app//api/fee/view?session=${session}&studentId=${sid}&feeMonth=${feeMonth}`
         )
         .then(
           (res) => {
@@ -118,7 +118,7 @@ const ViewFees = () => {
     try {
       axios
         .get(
-          `http://localhost:8000/api/fee-structure/filter?className=${studentDetail?.studentClass}&category=${studentDetail?.feeCategory}&route=${studentDetail?.route}`
+          `https://d2-c-b.vercel.app//api/fee-structure/filter?className=${studentDetail?.studentClass}&category=${studentDetail?.feeCategory}&route=${studentDetail?.route}`
         )
         .then((res) => {
           console.log(res);
