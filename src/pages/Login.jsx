@@ -30,7 +30,7 @@ const Login = () => {
       };
       axios
         .post(
-          `https://d2-c-portal-backend-master.vercel.app/api/user/login`,
+          `https://d2-c-b.vercel.app/api/user/login`,
           data
         )
         .then((res) => {
