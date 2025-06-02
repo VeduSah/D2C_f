@@ -102,12 +102,12 @@ const ManageTeacher = () => {
         updateUserData
           ? axios
               .put(
-                `https://d2-c-b.vercel.app//api/user/${updateUserData._id}`,
+                `https://d2-c-b.vercel.app/api/user/${updateUserData._id}`,
                 formData
               )
               .then((res) => {
                 axios.put(
-                  `https://d2-c-b.vercel.app//api/user/${updateUserData._id}`,
+                  `https://d2-c-b.vercel.app/api/user/${updateUserData._id}`,
                   data
                 );
                 console.log(res);
@@ -137,14 +137,14 @@ const ManageTeacher = () => {
               })
           : axios
               .post(
-                `https://d2-c-b.vercel.app//api/user/register`,
+                `https://d2-c-b.vercel.app/api/user/register`,
                 formData
               )
               .then((res) => {
                 console.log(res);
                 if (res.data.success) {
                   axios.put(
-                    `https://d2-c-b.vercel.app//api/user/${res.data.data._id}`,
+                    `https://d2-c-b.vercel.app/api/user/${res.data.data._id}`,
                     data
                   );
                   setBtnDisable(false);
@@ -178,13 +178,13 @@ const ManageTeacher = () => {
   };
 
   // LIST
-// `https://d2-c-b.vercel.app//api/user/all?page=${currentPage}`
+// `https://d2-c-b.vercel.app/api/user/all?page=${currentPage}`
   const fetchAllUser = () => {
     setLoading(true);
     try {
       axios
         .get(
-          `https://d2-c-b.vercel.app//api/user/all?page=${currentPage}`
+          `https://d2-c-b.vercel.app/api/user/all?page=${currentPage}`
         )
         .then((res) => {
           console.log(res);
@@ -302,7 +302,7 @@ const ManageTeacher = () => {
     setLoading(true);
     try {
       axios
-        .delete(`https://d2-c-b.vercel.app//api/user/${id}`)
+        .delete(`https://d2-c-b.vercel.app/api/user/${id}`)
         .then((res) => {
           console.log(res);
           if (res.data.success) {

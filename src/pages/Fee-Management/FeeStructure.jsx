@@ -58,7 +58,7 @@ const FeeStructure = () => {
     try {
       axios
         .post(
-          `https://d2-c-b.vercel.app//api/fee-structure`,
+          `https://d2-c-b.vercel.app/api/fee-structure`,
           data
         )
         .then((res) => {
@@ -87,7 +87,7 @@ const FeeStructure = () => {
     try {
       axios
         .put(
-          `https://d2-c-b.vercel.app//api/fee-structure/${feeId}`,
+          `https://d2-c-b.vercel.app/api/fee-structure/${feeId}`,
           data
         )
         .then((res) => {
@@ -110,7 +110,7 @@ const FeeStructure = () => {
     try {
       axios
         .get(
-          `https://d2-c-b.vercel.app//api/fee-structure/filter?className=${selectedClass}&category=${selectedCategory}&route=${selectedRoute}`
+          `https://d2-c-b.vercel.app/api/fee-structure/filter?className=${selectedClass}&category=${selectedCategory}&route=${selectedRoute}`
         )
         .then((res) => {
           console.log(res);

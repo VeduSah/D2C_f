@@ -20,7 +20,7 @@ const ListFee = () => {
     try {
       axios
         .get(
-          `https://d2-c-b.vercel.app//api/student/filter?studentClass=${activeClass}&studentSection=${activeDivision}&page=${currentPage}`
+          `https://d2-c-b.vercel.app/api/student/filter?studentClass=${activeClass}&studentSection=${activeDivision}&page=${currentPage}`
         )
         .then((res) => {
           console.log(res);

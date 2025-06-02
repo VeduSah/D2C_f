@@ -68,14 +68,14 @@ const ManageExamCopies = () => {
     try {
       axios
         .get(
-          `https://d2-c-b.vercel.app//api/exam-record/all?date=${examDate}`
+          `https://d2-c-b.vercel.app/api/exam-record/all?date=${examDate}`
         )
         .then((resCopy) => {
           console.log(resCopy.data.data);
           try {
             axios
               .get(
-                `https://d2-c-b.vercel.app//api/student/filter?studentClass=${
+                `https://d2-c-b.vercel.app/api/student/filter?studentClass=${
                   role == "Teacher"
                     ? classOfTeacher
                     : role == "Coordinator"
@@ -246,7 +246,7 @@ const ManageExamCopies = () => {
     try {
       axios
         .post(
-          `https://d2-c-b.vercel.app//api/exam-record`,
+          `https://d2-c-b.vercel.app/api/exam-record`,
           dataObj
         )
         .then((res) => {

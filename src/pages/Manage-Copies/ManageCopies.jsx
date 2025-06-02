@@ -80,7 +80,7 @@ const ManageCopies = () => {
     try {
       axios
         .get(
-          `https://d2-c-b.vercel.app//api/copy-check/all?date=${date}`
+          `https://d2-c-b.vercel.app/api/copy-check/all?date=${date}`
         )
         .then((resCopy) => {
           console.log(resCopy.data.data);
@@ -88,7 +88,7 @@ const ManageCopies = () => {
           try {
             axios
               .get(
-                `https://d2-c-b.vercel.app//api/student/filter-by-class?studentClass=${role == "Teacher" ? classOfTeacher : activeClass
+                `https://d2-c-b.vercel.app/api/student/filter-by-class?studentClass=${role == "Teacher" ? classOfTeacher : activeClass
                 }&studentSection=${role == "Teacher" ? divisionOfTeacher : activeDivision
                 }&page=${currentPage}`
               )
@@ -149,7 +149,7 @@ const ManageCopies = () => {
       try {
         axios
           .get(
-            `https://d2-c-b.vercel.app//api/user/list-teacher?className=${activeClass}&subject=${subject}&section=${activeDivision}`
+            `https://d2-c-b.vercel.app/api/user/list-teacher?className=${activeClass}&subject=${subject}&section=${activeDivision}`
           )
           .then((res) => {
             console.log(res.data.data);
@@ -274,7 +274,7 @@ const handleCopySubmit = (data) => {
   console.log("Submitting with user data:", dataObj);
 
   setLoading(true);
-  axios.post(`https://d2-c-b.vercel.app//api/copy-check`, dataObj, {
+  axios.post(`https://d2-c-b.vercel.app/api/copy-check`, dataObj, {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`,
       'Content-Type': 'application/json'
@@ -410,7 +410,7 @@ const handleCopySubmit = (data) => {
     };
     try {
       axios
-        .post(`https://d2-c-b.vercel.app//api/remark`, data)
+        .post(`https://d2-c-b.vercel.app/api/remark`, data)
         .then((res) => {
           console.log(res.data.data);
           if (res.data.success) {

@@ -24,7 +24,7 @@ const TCertificate = () => {
     try {
       axios
         .get(
-          `https://d2-c-b.vercel.app//api/student/fetch?studentClass=${selectedClass}&studentSection=${selectedSection}`
+          `https://d2-c-b.vercel.app/api/student/fetch?studentClass=${selectedClass}&studentSection=${selectedSection}`
         )
         .then((res) => {
           console.log(res);
