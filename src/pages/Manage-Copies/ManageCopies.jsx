@@ -43,7 +43,7 @@ const ManageCopies = () => {
   const [divisionOfTeacher, setDivisionOfTeacher] = useState(
     localStorage.getItem("section")
   );
-
+ const [localChecks, setLocalChecks] = useState({});
   const assignedClasses = JSON.parse(localStorage.getItem("assignedClasses"));
   const assignedWings = JSON.parse(localStorage.getItem("assignedWings"));
   const assignedSubjects = JSON.parse(localStorage.getItem("assignedSubjects"));
@@ -171,7 +171,15 @@ const ManageCopies = () => {
     fetchAllCopies();
     fetchTeacherByClassSubjectSection();
   }, [subject, typeOf, activeClass, activeDivision, date]);
+  useEffect(() => {
+    if (Object.keys(localChecks).length === 0) return;
 
+    const timeoutId = setTimeout(() => {
+      fetchAllCopies();
+    }, 30000); // 30 seconds
+
+    return () => clearTimeout(timeoutId);
+  }, [localChecks]);
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -246,65 +254,78 @@ const ManageCopies = () => {
     );
   };
 
-const handleCopySubmit = (data) => {
-  if (!assignUser) {
-    toast.error("User not found. Please log in again.");
-    return;
-  }
+  const handleCopySubmit = async (data) => {
+    if (!assignUser) {
+      toast.error("User not found. Please log in again.");
+      return;
+    }
 
-  if (subject === "" || typeOf === "") {
-    toast.error("Please select Subject and Type first!");
-    return;
-  }
+    if (subject === "" || typeOf === "") {
+      toast.error("Please select Subject and Type first!");
+      return;
+    }
 
-  const dataObj = {
-    studentId: data._id,
-    date: date,
-    subject: subject,
-    submitType: typeOf,
-    user: {
-      _id: assignUser._id,
-      name: assignUser.name,
-      role: assignUser.role,
-      class: assignUser.class,
-      section: assignUser.section
+    // Optimistic UI update: toggle only the relevant field based on role
+    setLocalChecks((prev) => ({
+      ...prev,
+      [data._id]: {
+        ...prev[data._id],
+        [role === "Teacher" ? "teacher" : "coordinator"]:
+          !prev[data._id]?.[role === "Teacher" ? "teacher" : "coordinator"],
+      },
+    }));
+
+    const dataObj = {
+      studentId: data._id,
+      date: date,
+      subject: subject,
+      submitType: typeOf,
+      user: {
+        _id: assignUser._id,
+        name: assignUser.name,
+        role: assignUser.role,
+        class: assignUser.class,
+        section: assignUser.section,
+      },
+      // Explicitly set the field to update based on role
+      [role === "Teacher" ? "checkedByTeacher" : "checkedByCoordinator"]: assignUser.name,
+    };
+
+    console.log("Submitting with user data:", dataObj);
+
+    try {
+      const res = await axios.post(
+        `https://d2-c-b.vercel.app/api/copy-check`,
+        dataObj,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const { success, message } = res.data;
+      if (success) {
+        const action = assignUser.role === "Teacher" ? "checked" : "re-checked";
+        toast.success(`${typeOf} ${action} successfully for ${data.name}`);
+      } else if (message.includes("already checked")) {
+        toast.success(message);
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error(error?.message || "Something went wrong");
+      // Revert optimistic update for the specific role
+      setLocalChecks((prev) => ({
+        ...prev,
+        [data._id]: {
+          ...prev[data._id],
+          [role === "Teacher" ? "teacher" : "coordinator"]:
+            !prev[data._id]?.[role === "Teacher" ? "teacher" : "coordinator"],
+        },
+      }));
     }
   };
-
-  console.log("Submitting with user data:", dataObj);
-
-  setLoading(true);
-  axios.post(`https://d2-c-b.vercel.app/api/copy-check`, dataObj, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      'Content-Type': 'application/json'
-    }
-  })
-  .then((res) => {
-    const { success, message } = res.data;
-
-    if (success) {
-      const action = assignUser.role === "Teacher" ? "checked" : "re-checked";
-      toast.success(`${typeOf} ${action} successfully for ${data.name}`);
-      fetchAllCopies();
-    } else {
-      // For already checked cases
-      if (message.includes("already checked")) {
-        toast.success(message);  // or toast.warning(message)
-      } else {
-       
-      }
-    }
-  })
-  .catch((error) => {
-    console.error("Submission error:", error);
-    toast.error(error?.message || "Something went wrong");
-  })
-  .finally(() => {
-    setLoading(false);
-  });
-};
-
   useEffect(() => {
 
     // annyang.start();
@@ -984,94 +1005,82 @@ const handleCopySubmit = (data) => {
                     </tr>
                   </thead>
                   <tbody className="text-gray-600 divide-y">
-                    {userData?.map((item, idx) => (
-                      <tr key={item._id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-3">
-                            <div className="avatar">
-                              <div className="mask mask-squircle w-12 h-12">
-                                <img src={item?.studentAvatar?.secure_url} />
-                              </div>
-                            </div>
-                            <div>
-                              <div className="font-bold">{item?.name}</div>
+                     {userData?.map((item) => (
+                    <tr key={item._id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="avatar">
+                            <div className="mask mask-squircle w-12 h-12">
+                              <img src={item?.studentAvatar?.secure_url} />
                             </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {item?.fathersName}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {item?.rollNumber}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {item?.studentClass}-{item?.studentSection}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {subject || "Select a Subject"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {typeOf || "Select a Type"}
-                        </td>
-                        {/* Copy Check Status */}
-                       <td className="px-6 py-4 whitespace-nowrap">
-  {item?.copyRes[0]?.checkedByTeacher ? (
-    <span className="badge badge-success badge-md text-white">
-      {item.copyRes[0].checkedByTeacher}
-      <br />
+                          <div>
+                            <div className="font-bold">{item?.name}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">{item?.fathersName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{item?.rollNumber}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item?.studentClass}-{item?.studentSection}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {subject || "Select a Subject"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {typeOf || "Select a Type"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher ? (
+                          <span className="badge badge-success badge-md text-white">
+                            {localChecks[item._id]?.teacher ? assignUser.name : item.copyRes[0]?.checkedByTeacher}
+                          </span>
+                        ) : (
+                          <span className="badge badge-error text-white">Not-Checked</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator ? (
+                          <span className="badge badge-success badge-md text-white">
+                            {localChecks[item._id]?.coordinator
+                              ? assignUser.name
+                              : item.copyRes[0]?.checkedByCoordinator}
+                          </span>
+                        ) : (
+                          <span className="badge badge-error text-white">Not-ReChecked</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {role !== "Admin" && (
+                       <button
+  onClick={() => handleCopySubmit(item)}
+  disabled={
+    (role === "Teacher" &&
+      (localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher)) ||
+    (role !== "Teacher" &&
+      (localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator))
+  }
+  className={`btn btn-outline btn-xs ${
+    (role === "Teacher" &&
+      (localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher)) ||
+    (role !== "Teacher" &&
+      (localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator))
+      ? "btn-success"
+      : "btn-error"
+  }`}
+>
+  {(role === "Teacher" &&
+    (localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher)) ||
+  (role !== "Teacher" &&
+    (localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator))
+    ? "✓ Checked"
+    : "Check"}
+</button>
 
-    </span>
-  ) : (
-    <span className="badge badge-error text-white">
-      Not-Checked
-    </span>
-  )}
-</td>
-
-<td className="px-6 py-4 whitespace-nowrap">
-  {item?.copyRes[0]?.checkedByCoordinator ? (
-    <span className="badge badge-success badge-md text-white">
-      {item.copyRes[0].checkedByCoordinator}
-      <br />
-  
-    </span>
-  ) : (
-    <span className="badge badge-error text-white">
-      Not-ReChecked
-    </span>
-  )}
-</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                       {role !== "Admin" && (
-    <button
-      onClick={() => handleCopySubmit(item)}
-      className="btn btn-outline btn-xs"
-    >
-      {!item.isCopyChecked ? "Check" : "Un-Check"}
-    </button>
-  )}
-
-                          {/* <button
-                        onClick={() =>
-                          updateStatus(item._id, item.isActive)
-                        }
-                        className="btn btn-outline btn-xs ml-2"
-                        disabled={btnDisable}
-                      >
-                        {item.isActive !== true ? "Active" : "In-Active"}
-                      </button> */}
-
-                          {/* {role == "Super_Admin" && (
-                        <button
-                          onClick={() => handleDeleteModal(item)}
-                          className="btn btn-error  btn-xs text-white ml-2"
-                        >
-                          Delete
-                        </button>
-                      )} */}
-                        </td>
-                      </tr>
-                    ))}
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                   </tbody>
                 </table>
               </>
