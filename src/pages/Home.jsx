@@ -204,42 +204,42 @@ const fetchStudents = () => {
       setLoading(false);
     }
   };
-  const updateRemark = (data, status) => {
-    try {
-      axios
-        .put(
-          `https://d2-c-b.vercel.app/api/remark/${data._id}`,
-          {
-            ...data,
-            isChecked: status == "approve" ? true : false,
-          }
-        )
-        .then((res) => {
-          console.log(res);
-          if (res.data.success) {
-            toast.success("Remark Updated Successfully !");
-            if (role == "Admin") {
-              fetchAdminRemark();
+    const updateRemark = (data, status) => {
+      try {
+        axios
+          .put(
+            `https://d2-c-b.vercel.app/api/remark/${data._id}`,
+            {
+              ...data,
+              isChecked: status == "approve" ? true : false,
             }
-            if (role == "Teacher") {
-              fetchRemark();
-            }
-            if (role == "Coordinator") {
-              fetchCoRemark();
-              fetchCoRemarkByAdmin();
-            }
+          )
+          .then((res) => {
+            console.log(res);
+            if (res.data.success) {
+              toast.success("Remark Updated Successfully !");
+              if (role == "Admin") {
+                fetchAdminRemark();
+              }
+              if (role == "Teacher") {
+                fetchRemark();
+              }
+              if (role == "Coordinator") {
+                fetchCoRemark();
+                fetchCoRemarkByAdmin();
+              }
 
+              setLoading(false);
+            }
+          })
+          .finally(() => {
             setLoading(false);
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
+          });
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    };
   useEffect(() => {
     if (role == "Teacher") {
       fetchRemark();
@@ -436,8 +436,8 @@ const fetchStudents = () => {
               <>
                 <div>
                   <div
-                    className="hover:border shadow cursor-pointer w-fit  px-6 py-4"
-                    onClick={() => navigate("/manage-students")}
+                    className="hover:border shadow w-fit  px-6 py-4"
+                    // onClick={() => navigate("/manage-students")}
                   >
                     <div className="flex items-center gap-8 ">
                       <div>
@@ -523,6 +523,7 @@ const fetchStudents = () => {
                           <button
                             onClick={() => updateRemark(item, "reject")}
                             className="btn btn-warning ml-2 btn-xs text-white"
+                            disabled={item.isChecked}
                           >
                             Reject
                           </button>
@@ -534,7 +535,7 @@ const fetchStudents = () => {
             </div>
           )}
 
-          {(role === "Senior Coordinator" || role === "Junior Coordinator") && (
+        {(role === "Senior Coordinator" || role === "Junior Coordinator") && (
             <>
               <div>
                 <p className="text-2xl font-semibold">
@@ -596,6 +597,7 @@ const fetchStudents = () => {
                             <button
                               onClick={() => updateRemark(item, "reject")}
                               className="btn btn-warning ml-2 btn-xs text-white"
+                              disabled={item.isChecked}
                             >
                               Reject
                             </button>
@@ -666,6 +668,7 @@ const fetchStudents = () => {
                             <button
                               onClick={() => updateRemark(item, "reject")}
                               className="btn btn-warning ml-2 btn-xs text-white"
+                              disabled={item.isChecked}
                             >
                               Reject
                             </button>
@@ -674,6 +677,69 @@ const fetchStudents = () => {
                       ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* New Section: Send Remark for Coordinators */}
+              <div className="mt-12">
+                <p className="text-2xl font-semibold">Send Remark</p>
+                <div className="grid md:grid-cols-3 gap-3">
+                  <div className="form-control mt-5">
+                    <label htmlFor="">Select Role</label>
+                    <select
+                      onChange={(e) => setRoleForRemark(e.target.value)}
+                      className="select select-bordered border-gray-300"
+                    >
+                      <option value="" selected disabled>
+                        Select Role
+                      </option>
+                      <option value="Teacher">Teacher</option>
+                    </select>
+                  </div>
+
+                  {roleForRemark && (
+                    <div className="form-control mt-5">
+                      <label htmlFor="">Select Teacher</label>
+                      <select
+                        onChange={handleTeacherByClass}
+                        className="select select-bordered border-gray-300"
+                      >
+                        <option value="" selected disabled>
+                          Select Teacher
+                        </option>
+                        {userRoleData?.map((res) => (
+                          <option value={res._id} key={res._id}>
+                            {res.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {roleForRemark && (
+                    <>
+                      <div className="form-control mt-5">
+                        <label htmlFor="">Remark For {roleForRemark}</label>
+                        <textarea
+                          className="textarea textarea-bordered"
+                          cols="30"
+                          placeholder="Enter remark"
+                          rows="1"
+                          onChange={(e) => setRemarkComment(e.target.value)}
+                          value={remarkComment}
+                        ></textarea>
+                      </div>
+                      <div className="form-control relative top-5 mt-6">
+                        <button
+                          className="btn btn-outline"
+                          onClick={() => handleRemarkSend()}
+                          disabled={!teacherIdForRemark || !remarkComment}
+                        >
+                          Send Remark
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </>
           )}
@@ -882,6 +948,7 @@ const fetchStudents = () => {
                             <button
                               onClick={() => updateRemark(item, "reject")}
                               className="btn btn-warning ml-2 btn-xs text-white"
+                              disabled={item.isChecked}
                             >
                               Reject
                             </button>

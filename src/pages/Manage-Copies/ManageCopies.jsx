@@ -106,6 +106,7 @@ const ManageCopies = () => {
                   setUserData(studentsFilteredBySubjectAndDate);
                   setTotalPages(res.data.count);
                   setLoading(false);
+                  setLocalChecks({})
                 } else {
                   // Handle unsuccessful response from student filter API
                   console.error(
@@ -113,33 +114,34 @@ const ManageCopies = () => {
                     res.data.message
                   );
                   toast.error(res.data.message);
-                  setUserData(null);
+                  setUserData([]);
                   setLoading(false);
+            
                 }
               })
               .catch((error) => {
                 console.error("Error fetching student data:", error);
                 toast.error("Error fetching student data");
-                setUserData(null);
+                setUserData([]);
                 setLoading(false);
               });
           } catch (error) {
             console.error("Error fetching student data:", error);
             toast.error("Error fetching student data");
-            setUserData(null);
+            setUserData([]);
             setLoading(false);
           }
         })
         .catch((error) => {
           console.error("Error fetching copy check data:", error);
           toast.error("Error fetching copy check data");
-          setUserData(null);
+          setUserData([]);
           setLoading(false);
         });
     } catch (error) {
       console.error("Error fetching copy check data:", error);
       toast.error("Error fetching copy check data");
-      setUserData(null);
+      setUserData([]);
       setLoading(false);
     }
   };
