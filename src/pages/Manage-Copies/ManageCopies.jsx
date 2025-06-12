@@ -328,66 +328,67 @@ const ManageCopies = () => {
       }));
     }
   };
-  useEffect(() => {
+useEffect(() => {
+  // Initialize Fuse for fuzzy search
+  const fuse = new Fuse(userData, {
+    keys: ["name"],
+    threshold: 0.4,
+    includeScore: true,
+  });
 
-    // annyang.start();
+  // Define commands
+  const commands = {
+    // Command for direct match: "check [student name]"
+    'check *student': (studentName) => {
+      handleVoiceCommand(studentName, fuse);
+    },
+    // Command for fuzzy search: "search [student name]"
+    'search *student': (studentName) => {
+      handleVoiceCommand(studentName, fuse, true);
+    }
+  };
 
-    annyang.addCallback("result", (userSaidArray) => {
-      const userSaid = userSaidArray[0];
-      if (userSaid.toLowerCase().includes("dtc")) {
-        const studentName = userSaid.split("dtc")[1]?.trim(); // Use optional chaining to prevent error if split returns undefined
-        console.log(studentName);
-        const student = userData?.find(
-          (s) =>
-            s?.name?.toLowerCase()?.trim() == studentName?.toLowerCase()?.trim()
-        );
-        if (student) {
-          console.log("Student found:", student);
-          if (subject && typeOf) {
-            handleCopySubmit(student);
-          }
-          // Logic to handle student details
-        } else {
-          console.log("Student not found. Please try again.");
-          // Voice response: "Student not found. Please try again."
-        }
+  // Add commands to annyang
+  annyang.addCommands(commands);
 
-      }
-    });
-    const fuse = new Fuse(userData, {
-      keys: ["name"],
-      threshold: 0.4,
-      includeScore: true,
-    });
+  // Start annyang
+  annyang.start({ autoRestart: false, continuous: true });
 
-    annyang.addCallback("result", (userSaidArray) => {
-      const userSaid = userSaidArray[0];
-      if (userSaid?.toLowerCase()?.includes("check")) {
-        const studentName = userSaid?.split("check")[1]?.trim();
-        console.log(studentName);
+  // Cleanup
+  return () => {
+    annyang.removeCommands();
+    annyang.abort();
+  };
+}, [userData, subject, typeOf]); // Add dependencies
 
-        // Perform fuzzy search
-        const result = fuse.search(studentName);
+const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
+  if (!subject || !typeOf) {
+    toast.error("Please select Subject and Type first!");
+    return;
+  }
 
-        if (result?.length > 0) {
-          const student = result[0]; // Assuming you want the top match
-          console.log("Student found:", student);
-          if (subject && typeOf) {
-            handleCopySubmit(student.item);
-          }
-          // Logic to handle student details
-        } else {
-          console.log("Student not found. Please try again.");
-          // Voice response: "Student not found. Please try again."
-        }
-      }
-    });
-    // Clean up when the component unmounts
-    return () => {
-      annyang.removeCommands();
-      annyang.abort();
-    };
-  }, [subject, typeOf]);
+  let student;
+  
+  if (useFuzzy) {
+    // Fuzzy search
+    const result = fuse.search(studentName);
+    if (result?.length > 0) {
+      student = result[0].item;
+    }
+  } else {
+    // Exact match
+    student = userData.find(s => 
+      s?.name?.toLowerCase()?.trim() === studentName?.toLowerCase()?.trim()
+    );
+  }
+
+  if (student) {
+    handleCopySubmit(student);
+    toast.success(`Processing ${student.name}`);
+  } else {
+    toast.error("Student not found. Please try again.");
+  }
+};
   function generateWhatsAppMessage(userData) {
     const notSubmittedStudents = userData?.filter(
       (item) => !item?.copyRes[item?.copyRes?.length - 1]?.isCopyChecked
