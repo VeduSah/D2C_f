@@ -224,10 +224,11 @@ const fetchStudents = () => {
               if (role == "Teacher") {
                 fetchRemark();
               }
-              if (role == "Coordinator") {
-                fetchCoRemark();
-                fetchCoRemarkByAdmin();
-              }
+           if (role === "Senior Coordinator" || role === "Junior Coordinator") {
+  fetchCoRemark();
+  fetchCoRemarkByAdmin();
+}
+
 
               setLoading(false);
             }
@@ -539,7 +540,7 @@ const fetchStudents = () => {
             <>
               <div>
                 <p className="text-2xl font-semibold">
-                  Remarks Given To Teacher
+                 {role==="Senior Coordinator"?"Remarks Given To Teachers & Junior Coordinators":"Remarks Given To Teachers"}
                 </p>
               </div>
               <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
@@ -563,8 +564,10 @@ const fetchStudents = () => {
                     </tr>
                   </thead>
                   <tbody className="text-gray-600 divide-y">
-                    {remarkData &&
-                      remarkData?.map((item, idx) => (
+                 {remarkData &&
+  remarkData
+    .filter((item) => item.remarkBy === name) // or currentUser._id
+    .map((item, idx) => (
                         <tr key={item._id}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {item.remarkBy}
@@ -609,10 +612,13 @@ const fetchStudents = () => {
               </div>
 
               <div className="mt-12">
-                <p className="text-2xl font-semibold">
-                  Remarks Received By Admin
-                </p>
-              </div>
+  <p className="text-2xl font-semibold">
+    {role === "Junior Coordinator"
+      ? "Remarks Received By Admin and Senior Coordinator"
+      : "Remarks Received By Admin"}
+  </p>
+</div>
+
               <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
                 <div className="p-1 flex items-center gap-3">
                   <label htmlFor="">Select Date</label>
@@ -685,15 +691,19 @@ const fetchStudents = () => {
                 <div className="grid md:grid-cols-3 gap-3">
                   <div className="form-control mt-5">
                     <label htmlFor="">Select Role</label>
-                    <select
-                      onChange={(e) => setRoleForRemark(e.target.value)}
-                      className="select select-bordered border-gray-300"
-                    >
-                      <option value="" selected disabled>
-                        Select Role
-                      </option>
-                      <option value="Teacher">Teacher</option>
-                    </select>
+                 <select
+  onChange={(e) => setRoleForRemark(e.target.value)}
+  className="select select-bordered border-gray-300"
+>
+  <option value="" selected disabled>
+    Select Role
+  </option>
+  <option value="Teacher">Teacher</option>
+  {role === "Senior Coordinator" && (
+    <option value="Junior Coordinator">Junior Coordinator</option>
+  )}
+</select>
+
                   </div>
 
                   {roleForRemark && (
