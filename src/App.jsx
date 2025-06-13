@@ -18,6 +18,7 @@ import TCertificate from "./pages/Certificates/TCertificate";
 import ManageTeacher from "./pages/Admins/ManageTeacher"
 import ManageCoordinator from "./pages/Admins/ManageCoordinator"
 import ManageAdmin from "./pages/Admins/ManageAdmin";
+import Attendance from "./pages/Students/Attendence";
 const App = () => {
   const navigate = useNavigate();
   const [isListening, setIsListening] = useState(false);
@@ -278,7 +279,7 @@ const App = () => {
                         <span className="-mr-1 font-medium">Manage Users</span>
                       </a>
                     </li>
-                    <li
+                    {/* <li
                       onClick={() => {
                         setActiveLink("fees");
                         navigate("/manage-fees");
@@ -314,7 +315,7 @@ const App = () => {
                         </svg>
                         <span className="-mr-1 font-medium">Manage Fees</span>
                       </a>
-                    </li>
+                    </li> */}
                     <li
                       onClick={() => {
                         setActiveLink("assign classes");
@@ -430,7 +431,7 @@ const App = () => {
                         <span className="-mr-1 font-medium">Manage Copies</span>
                       </a>
                     </li>
-                    {/* <li
+                    <li
                       onClick={() => {
                         setActiveLink("exam copies");
                         navigate("/manage-exam-copies");
@@ -468,7 +469,7 @@ const App = () => {
                           Manage Exam Copies
                         </span>
                       </a>
-                    </li> */}
+                    </li>
                     <li
                       onClick={() => {
                         setActiveLink("tc certificate");
@@ -936,7 +937,7 @@ const App = () => {
                 <Route path="/manage-students" element={<ManageStudents />} />
                 <Route path="/manage-copies" element={<ManageCopies />} />
                 <Route path="/tc-certificate" element={<TCertificate />} />
-            
+            <Route path="/manage-attendence" element={<Attendance />} />
                 <Route
                   path="/manage-exam-copies"
                   element={<ManageExamCopies />}

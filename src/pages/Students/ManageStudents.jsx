@@ -10,7 +10,7 @@ import logo from "../../assets/dusk.jpg";
 import scbus from "../../assets/scbus.png";
 import { useReactToPrint } from "react-to-print";
 import Webcam from "react-webcam";
-
+import ToggleButton from "../toggle/ToggleButton";
 const debounce = (func, delay) => {
   let timeoutId;
   return function (...args) {
@@ -122,6 +122,7 @@ const ManageStudents = () => {
       setBtnDisable(false);
       return;
     }
+    
     const formData = new FormData();
     formData.append("name", name);
     formData.append("admissionNo", admissionNo);
@@ -672,7 +673,42 @@ const ManageStudents = () => {
       toast.error("Something Went Wrong !");
     }
   };
-
+  const handleToggleStatus = (id, currentStatus) => {
+        // Toggle the status from true to false or false to true
+        const updatedStatus = !currentStatus;
+    
+        // Optimistic UI update - update the status immediately in the UI
+        setUserData((prevData) =>
+          prevData.map((user) =>
+            user._id === id ? { ...user, isActive: updatedStatus } : user
+          )
+        );
+    
+        // Send API request to update status in backend
+        axios
+          .put(
+            `http://localhost:8000/api/student/status/${id}`,
+            {
+              isActive: updatedStatus, // Boolean status value
+            }
+          )
+          .then((res) => {
+            if (res.data) {
+              console.log("Status updated successfully:", res.data); // Log the successful response
+              toast.success("Status updated successfully");
+            }
+          })
+          .catch((error) => {
+            console.log("Error updating status:", error); // Log the error response
+            toast.error("Failed to update status");
+            // Revert the status change if the update failed
+            setUserData((prevData) =>
+              prevData.map((user) =>
+                user._id === id ? { ...user, isActive: currentStatus } : user
+              )
+            );
+          });
+      };
   const handleImageMother = (e) => {
     const file = e.target.files[0];
     console.log(file);
@@ -2550,18 +2586,15 @@ const ManageStudents = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             {item.registrationNumber}
                           </td>
+<td className="px-6 py-4 whitespace-nowrap">
+   <ToggleButton
+                          isOn={item.isActive}
+                          onToggle={() =>handleToggleStatus(item._id, item.isActive)
+                          }
+                        />
+</td>
 
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item.isActive ? (
-                              <span className="badge badge-success badge-md text-white">
-                                Active
-                              </span>
-                            ) : (
-                              <span className="badge badge-error text-white">
-                                In-Active
-                              </span>
-                            )}
-                          </td>
+
                           <td className="px-6 py-4 whitespace-nowrap">
                             <button
                               onClick={() => {

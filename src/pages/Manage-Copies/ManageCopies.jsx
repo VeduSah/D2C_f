@@ -310,7 +310,7 @@ const ManageCopies = () => {
       const { success, message } = res.data;
       if (success) {
         const action = assignUser.role === "Teacher" ? "checked" : "re-checked";
-        toast.success(`${typeOf} ${action} successfully for ${data.name}`);
+        toast.success(`${typeOf} ${action} successfully for Roll Number ${data.rollNumber}`);
       } else if (message.includes("already checked")) {
         toast.success(message);
       }
@@ -331,7 +331,7 @@ const ManageCopies = () => {
 useEffect(() => {
   // Initialize Fuse for fuzzy search
   const fuse = new Fuse(userData, {
-    keys: ["name"],
+    keys: ["rollNumber"],
     threshold: 0.4,
     includeScore: true,
   });
@@ -339,7 +339,7 @@ useEffect(() => {
   // Define commands
   const commands = {
     // Command for direct match: "check [student name]"
-    'check *student': (studentName) => {
+    'roll number *student': (studentName) => {
       handleVoiceCommand(studentName, fuse);
     },
     // Command for fuzzy search: "search [student name]"
@@ -384,7 +384,7 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
 
   if (student) {
     handleCopySubmit(student);
-    toast.success(`Processing ${student.name}`);
+    toast.success(`Processing ${student.rollNumber}`);
   } else {
     toast.error("Student not found. Please try again.");
   }
@@ -452,6 +452,11 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
       toast.error(error.response.data.message, { id: "Errorr" });
     }
   };
+  const visibleUserData =
+  role === "Admin"
+    ? userData
+    : userData?.filter((student) => student.isActive);
+
   return (
     <>
       <Toaster />
@@ -1008,7 +1013,7 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
                     </tr>
                   </thead>
                   <tbody className="text-gray-600 divide-y">
-                     {userData?.map((item) => (
+                     {visibleUserData?.map((item) => (
                     <tr key={item._id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
