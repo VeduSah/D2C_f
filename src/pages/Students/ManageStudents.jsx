@@ -687,7 +687,7 @@ const ManageStudents = () => {
         // Send API request to update status in backend
         axios
           .put(
-            `http://localhost:8000/api/student/status/${id}`,
+            `https://d2-c-b.vercel.app/api/student/status/${id}`,
             {
               isActive: updatedStatus, // Boolean status value
             }
