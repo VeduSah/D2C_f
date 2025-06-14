@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const Attendance = () => {
-  const [students, setStudents] = useState([]);
+const TeacherAttendance = () => {
+  const [teachers, setTeachers] = useState([]);
   const [attendanceStatus, setAttendanceStatus] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -12,25 +12,26 @@ const Attendance = () => {
   const [showExistingModal, setShowExistingModal] = useState(false);
 
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchTeachers = async () => {
       try {
-        const response = await axios.get('https://d2-c-b.vercel.app/api/student/all');
-        setStudents(response.data.data);
+        const response = await axios.get('http://localhost:8000/api/user/all'); // Update with your teacher API endpoint
+       const filteredTeachers = response.data.data.filter(teacher => teacher.role === 'Teacher');
+        setTeachers(filteredTeachers);
       } catch (error) {
-        console.error('Error fetching students:', error);
+        console.error('Error fetching teachers:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchStudents();
+    fetchTeachers();
   }, []);
 
   useEffect(() => {
     const checkExistingAttendance = async () => {
       try {
         const dateStr = selectedDate.toISOString().split('T')[0];
-        const response = await axios.get(`http://localhost:8000/api/attendance/check?date=${dateStr}`);
+        const response = await axios.get(`http://localhost:8000/api/teacher-attendance/check/date?date=${dateStr}`);
         setExistingAttendance(response.data);
       } catch (error) {
         console.error('Error checking existing attendance:', error);
@@ -40,10 +41,10 @@ const Attendance = () => {
     checkExistingAttendance();
   }, [selectedDate]);
 
-  const handleStatusChange = (studentId, status) => {
+  const handleStatusChange = (teacherId, status) => {
     setAttendanceStatus(prev => ({
       ...prev,
-      [studentId]: status
+      [teacherId]: status
     }));
   };
 
@@ -57,7 +58,6 @@ const Attendance = () => {
   };
 
   const handleSubmit = async () => {
-    // Check if any attendance exists for the selected date
     if (existingAttendance.length > 0) {
       setShowExistingModal(true);
       return;
@@ -67,21 +67,18 @@ const Attendance = () => {
     setSubmitMessage('');
 
     try {
-      const submissionPromises = students.map(student => {
-        const status = attendanceStatus[student._id] || 'absent';
+      const submissionPromises = teachers.map(teacher => {
+        const status = attendanceStatus[teacher._id] || 'Absent';
 
         const attendanceRecord = {
-          student: student._id,
-          rollNumber: student.rollNumber,
-          name: student.name,
-          studentClass: student.studentClass,
-          studentSection: student.studentSection,
-          present: status === 'present',
-          absent: status === 'absent',
+          teacher: teacher._id,
+          name: teacher.name,
+          email: teacher.email,
+          status: status,
           date: selectedDate,
         };
 
-        return axios.post('http://localhost:8000/api/attendance/create', attendanceRecord, {
+        return axios.post('http://localhost:8000/api/teacher-attendance', attendanceRecord, {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -89,12 +86,11 @@ const Attendance = () => {
       });
 
       await Promise.all(submissionPromises);
-
       setSubmitMessage('Attendance submitted successfully!');
       setAttendanceStatus({});
     } catch (error) {
       console.error('Error submitting attendance:', error);
-      if (error.response && error.response.data && error.response.data.message.includes("already exists")) {
+      if (error.response?.data?.message?.includes("already exists")) {
         setShowExistingModal(true);
       } else {
         setSubmitMessage('Failed to submit attendance. Please try again.');
@@ -110,22 +106,18 @@ const Attendance = () => {
     setSubmitMessage('');
 
     try {
-      const submissionPromises = students.map(student => {
-        const status = attendanceStatus[student._id] || 'absent';
+      const submissionPromises = teachers.map(teacher => {
+        const status = attendanceStatus[teacher._id] || 'Absent';
 
         const attendanceRecord = {
-          student: student._id,
-          rollNumber: student.rollNumber,
-          name: student.name,
-          studentClass: student.studentClass,
-          studentSection: student.studentSection,
-          present: status === 'present',
-          absent: status === 'absent',
+          teacher: teacher._id,
+          name: teacher.name,
+          email: teacher.email,
+          status: status,
           date: selectedDate,
         };
 
-        // For existing records, we should use update instead of create
-        return axios.put(`http://localhost:8000/api/attendance/update`, attendanceRecord, {
+        return axios.put('http://localhost:8000/api/teacher-attendance/update', attendanceRecord, {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -133,7 +125,6 @@ const Attendance = () => {
       });
 
       await Promise.all(submissionPromises);
-
       setSubmitMessage('Attendance updated successfully!');
       setAttendanceStatus({});
     } catch (error) {
@@ -158,7 +149,7 @@ const Attendance = () => {
     return (
       <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="flex justify-center items-center h-64">
-          <p className="text-gray-600">Loading students data...</p>
+          <p className="text-gray-600">Loading teachers data...</p>
         </div>
       </div>
     );
@@ -193,13 +184,10 @@ const Attendance = () => {
       )}
 
       <header className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Attendance</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Teacher Attendance</h1>
       </header>
 
       <div className="py-4 border-y border-gray-200 my-4 flex flex-wrap justify-around gap-4 items-center">
-        <span className="font-semibold text-gray-700">Class: Nursery</span>
-        <span className="font-semibold text-gray-700">Section: A</span>
-
         <div className="relative">
           <input
             type="date"
@@ -220,38 +208,36 @@ const Attendance = () => {
       )}
 
       <div className="my-6 overflow-x-auto">
-        <div className="grid grid-cols-6 gap-4 items-center bg-gray-50 p-3 rounded-t-lg">
-          <span className="font-semibold text-gray-700">Roll Number</span>
-          <span className="font-semibold text-gray-700">Student Name</span>
-          <span className="font-semibold text-gray-700">Class</span>
+        <div className="grid grid-cols-5 gap-4 items-center bg-gray-50 p-3 rounded-t-lg">
+          <span className="font-semibold text-gray-700">Teacher Name</span>
+          <span className="font-semibold text-gray-700">Email</span>
           <span className="font-semibold text-gray-700 text-center">Present</span>
           <span className="font-semibold text-gray-700 text-center">Absent</span>
         </div>
 
         <div className="divide-y divide-gray-200">
-          {students.map((student) => {
-            const selectedStatus = attendanceStatus[student._id] || '';
-            const existingRecord = existingAttendance.find(a => a.student === student._id);
+          {teachers.map((teacher) => {
+            const selectedStatus = attendanceStatus[teacher._id] || '';
+            const existingRecord = existingAttendance.find(a => a.teacher === teacher._id);
             
             return (
               <div
-                key={student._id}
-                className="grid grid-cols-6 gap-4 items-center p-3 hover:bg-gray-50"
+                key={teacher._id}
+                className="grid grid-cols-5 gap-4 items-center p-3 hover:bg-gray-50"
               >
-                <span className="text-gray-600">{student.rollNumber}</span>
-                <span className="text-gray-600">{student.name}</span>
-                <span className="text-gray-800">{student.studentClass}</span>
+                <span className="text-gray-600">{teacher.name}</span>
+                <span className="text-gray-600">{teacher.email}</span>
 
                 <label className="flex items-center justify-center gap-2 cursor-pointer">
                   <input
                     type="radio"
-                    name={`attendance-${student._id}`}
-                    value="present"
-                    checked={selectedStatus === 'present' || (existingRecord && existingRecord.present && !selectedStatus)}
-                    onChange={() => handleStatusChange(student._id, 'present')}
+                    name={`attendance-${teacher._id}`}
+                    value="Present"
+                    checked={selectedStatus === 'Present' || (existingRecord && existingRecord.status === 'Present' && !selectedStatus)}
+                    onChange={() => handleStatusChange(teacher._id, 'Present')}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className={`text-xl ${(selectedStatus === 'present' || (existingRecord && existingRecord.present && !selectedStatus)) ? 'text-green-600 font-bold' : 'text-gray-400'}`}>
+                  <span className={`text-xl ${(selectedStatus === 'Present' || (existingRecord && existingRecord.status === 'Present' && !selectedStatus)) ? 'text-green-600 font-bold' : 'text-gray-400'}`}>
                     P
                   </span>
                 </label>
@@ -259,13 +245,13 @@ const Attendance = () => {
                 <label className="flex items-center justify-center gap-2 cursor-pointer">
                   <input
                     type="radio"
-                    name={`attendance-${student._id}`}
-                    value="absent"
-                    checked={selectedStatus === 'absent' || (existingRecord && existingRecord.absent && !selectedStatus)}
-                    onChange={() => handleStatusChange(student._id, 'absent')}
+                    name={`attendance-${teacher._id}`}
+                    value="Absent"
+                    checked={selectedStatus === 'Absent' || (existingRecord && existingRecord.status === 'Absent' && !selectedStatus)}
+                    onChange={() => handleStatusChange(teacher._id, 'Absent')}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className={`text-xl ${(selectedStatus === 'absent' || (existingRecord && existingRecord.absent && !selectedStatus)) ? 'text-red-600 font-bold' : 'text-gray-400'}`}>
+                  <span className={`text-xl ${(selectedStatus === 'Absent' || (existingRecord && existingRecord.status === 'Absent' && !selectedStatus)) ? 'text-red-600 font-bold' : 'text-gray-400'}`}>
                     A
                   </span>
                 </label>
@@ -274,6 +260,9 @@ const Attendance = () => {
           })}
         </div>
       </div>
+<div className="mt-4 text-sm text-gray-600">
+  <p><strong>Note:</strong> If neither <span className="text-green-600 font-semibold">P</span> nor <span className="text-red-600 font-semibold">A</span> is selected, the teacher will be treated as <span className="text-red-600 font-semibold">Absent</span> by default.</p>
+</div>
 
       <div className="mt-6 flex justify-between items-center">
         <div>
@@ -295,4 +284,4 @@ const Attendance = () => {
   );
 };
 
-export default Attendance;
+export default TeacherAttendance;

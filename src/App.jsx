@@ -19,6 +19,7 @@ import ManageTeacher from "./pages/Admins/ManageTeacher"
 import ManageCoordinator from "./pages/Admins/ManageCoordinator"
 import ManageAdmin from "./pages/Admins/ManageAdmin";
 import Attendance from "./pages/Students/Attendence";
+import TeacherAttendance from "./pages/Teachers/TeacherAttendance";
 const App = () => {
   const navigate = useNavigate();
   const [isListening, setIsListening] = useState(false);
@@ -938,6 +939,7 @@ const App = () => {
                 <Route path="/manage-copies" element={<ManageCopies />} />
                 <Route path="/tc-certificate" element={<TCertificate />} />
             <Route path="/manage-attendence" element={<Attendance />} />
+             <Route path="/manage-attendence-teacher" element={<TeacherAttendance />} />
                 <Route
                   path="/manage-exam-copies"
                   element={<ManageExamCopies />}
