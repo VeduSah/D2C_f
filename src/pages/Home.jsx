@@ -435,7 +435,7 @@ const fetchStudents = () => {
                  {" "}
                 <div
                   className="hover:border shadow cursor-pointer w-fit  px-6 py-4"
-                  onClick={() => navigate("/manage-attendence-teacher")}
+                  onClick={() => navigate("/display-attendence")}
                 >
                   <div className="flex items-center gap-8 ">
                     <div>
