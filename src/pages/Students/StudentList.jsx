@@ -322,7 +322,7 @@ const StudentList = () => {
         params.date = dateFilter;
       }
 
-      const res = await axios.get('http://localhost:8000/api/teacher-attendance/pg', {
+      const res = await axios.get('http://localhost:8000/api/student-attendance/pg', {
         params,
       });
 
@@ -350,7 +350,7 @@ const StudentList = () => {
       <Toaster position="top-right" />
       <div className="max-w-6xl mx-auto bg-white shadow p-6 rounded-lg">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Teacher Attendance Records</h2>
+          <h2 className="text-2xl font-bold">Student Attendance Records</h2>
           <button
             onClick={() => navigate('/manage-attendence-student')}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
