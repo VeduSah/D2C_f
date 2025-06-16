@@ -55,7 +55,7 @@ const StudentAttendance = () => {
     const checkExistingAttendance = async (students) => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/student-attendance?date=${selectedDate}&class=${activeClass}&section=${activeSection}`
+          `https://d2-c-b.vercel.app/api/student-attendance?date=${selectedDate}&class=${activeClass}&section=${activeSection}`
         );
         
         const existingAttendance = response.data.data || [];
@@ -101,7 +101,7 @@ const StudentAttendance = () => {
       const student = students.find(s => s._id === studentId);
       // First try to update existing attendance
       const updateResponse = await axios.put(
-        'http://localhost:8000/api/student-attendance/update',
+        'https://d2-c-b.vercel.app/api/student-attendance/update',
         {
           student: studentId,
           status,
@@ -117,7 +117,7 @@ const StudentAttendance = () => {
       try {
            const student = students.find(s => s._id === studentId);
         const createResponse = await axios.post(
-          'http://localhost:8000/api/student-attendance/create',
+          'https://d2-c-b.vercel.app/api/student-attendance/create',
           {
             student: studentId,
             name: student.name,
@@ -199,7 +199,7 @@ const StudentAttendance = () => {
     
     // Refresh the attendance data
     const response = await axios.get(
-      `http://localhost:8000/api/student-attendance?date=${selectedDate}&class=${activeClass}&section=${activeSection}`
+      `https://d2-c-b.vercel.app/api/student-attendance?date=${selectedDate}&class=${activeClass}&section=${activeSection}`
     );
     
     const existingAttendance = response.data.data || [];
@@ -469,7 +469,7 @@ export default StudentAttendance;
 //         const status = attendanceStatus[student._id] || 'Absent';
         
 //         const response = await axios.post(
-//           'http://localhost:8000/api/student-attendance/create',
+//           'https://d2-c-b.vercel.app/api/student-attendance/create',
 //           {
 //             student: student._id,
 //             status,
@@ -518,7 +518,7 @@ export default StudentAttendance;
 
 //   try {
 //     const response = await axios.put(
-//       'http://localhost:8000/api/student-attendance/update',
+//       'https://d2-c-b.vercel.app/api/student-attendance/update',
 //       {
 //         student: studentId,
 //         status: newStatus,

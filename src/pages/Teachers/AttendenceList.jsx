@@ -19,7 +19,7 @@
 //     setError(null);
     
 //     try {
-//       const response = await axios.get('http://localhost:8000/api/teacher-attendance/check/dates', {
+//       const response = await axios.get('https://d2-c-b.vercel.app/api/teacher-attendance/check/dates', {
 //         params: { date: selectedDate }
 //       });
 //       setAttendanceData(response.data.data);
@@ -153,7 +153,7 @@ const AttendanceList = () => {
         params.date = dateFilter;
       }
 
-      const res = await axios.get('http://localhost:8000/api/teacher-attendance/pg', {
+      const res = await axios.get('https://d2-c-b.vercel.app/api/teacher-attendance/pg', {
         params,
       });
 

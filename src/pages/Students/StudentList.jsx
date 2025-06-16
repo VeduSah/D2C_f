@@ -30,7 +30,7 @@
 //     const checkExistingAttendance = async () => {
 //       try {
 //         const dateStr = selectedDate.toISOString().split('T')[0];
-//         const response = await axios.get(`http://localhost:8000/api/attendance/check?date=${dateStr}`);
+//         const response = await axios.get(`https://d2-c-b.vercel.app/api/attendance/check?date=${dateStr}`);
 //         setExistingAttendance(response.data);
 //       } catch (error) {
 //         console.error('Error checking existing attendance:', error);
@@ -81,7 +81,7 @@
 //           date: selectedDate,
 //         };
 
-//         return axios.post('http://localhost:8000/api/attendance/create', attendanceRecord, {
+//         return axios.post('https://d2-c-b.vercel.app/api/attendance/create', attendanceRecord, {
 //           headers: {
 //             'Content-Type': 'application/json'
 //           }
@@ -125,7 +125,7 @@
 //         };
 
 //         // For existing records, we should use update instead of create
-//         return axios.put(`http://localhost:8000/api/attendance/update`, attendanceRecord, {
+//         return axios.put(`https://d2-c-b.vercel.app/api/attendance/update`, attendanceRecord, {
 //           headers: {
 //             'Content-Type': 'application/json'
 //           }
@@ -322,7 +322,7 @@ const StudentList = () => {
         params.date = dateFilter;
       }
 
-      const res = await axios.get('http://localhost:8000/api/student-attendance/pg', {
+      const res = await axios.get('https://d2-c-b.vercel.app/api/student-attendance/pg', {
         params,
       });
 

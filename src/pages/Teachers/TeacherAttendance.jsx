@@ -14,7 +14,7 @@
 //   useEffect(() => {
 //     const fetchTeachers = async () => {
 //       try {
-//         const response = await axios.get('http://localhost:8000/api/user/all'); // Update with your teacher API endpoint
+//         const response = await axios.get('https://d2-c-b.vercel.app/api/user/all'); // Update with your teacher API endpoint
 //        const filteredTeachers = response.data.data.filter(teacher => teacher.role === 'Teacher');
 //         setTeachers(filteredTeachers);
 //       } catch (error) {
@@ -31,7 +31,7 @@
 //     const checkExistingAttendance = async () => {
 //       try {
 //         const dateStr = selectedDate.toISOString().split('T')[0];
-//         const response = await axios.get(`http://localhost:8000/api/teacher-attendance/check/date?date=${dateStr}`);
+//         const response = await axios.get(`https://d2-c-b.vercel.app/api/teacher-attendance/check/date?date=${dateStr}`);
 //         setExistingAttendance(response.data);
 //       } catch (error) {
 //         console.error('Error checking existing attendance:', error);
@@ -78,7 +78,7 @@
 //           date: selectedDate,
 //         };
 
-//         return axios.post('http://localhost:8000/api/teacher-attendance', attendanceRecord, {
+//         return axios.post('https://d2-c-b.vercel.app/api/teacher-attendance', attendanceRecord, {
 //           headers: {
 //             'Content-Type': 'application/json'
 //           }
@@ -115,7 +115,7 @@
 //         date: selectedDate,
 //       };
 
-//       return axios.put('http://localhost:8000/api/teacher-attendance/update', attendanceRecord, {
+//       return axios.put('https://d2-c-b.vercel.app/api/teacher-attendance/update', attendanceRecord, {
 //         headers: {
 //           'Content-Type': 'application/json'
 //         }
@@ -302,7 +302,7 @@ const navigate = useNavigate();
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/api/user/all');
+        const res = await axios.get('https://d2-c-b.vercel.app/api/user/all');
         // Filter teachers if needed, assuming the API returns all users
         const filteredTeachers = res.data.data.filter(teacher => teacher.role === 'Teacher');
         setTeachers(filteredTeachers);
@@ -337,7 +337,7 @@ const navigate = useNavigate();
 
       try {
         // Try updating
-        await axios.put('http://localhost:8000/api/teacher-attendance/update', {
+        await axios.put('https://d2-c-b.vercel.app/api/teacher-attendance/update', {
           teacher: teacher._id,
           date: selectedDate,
           status
@@ -347,7 +347,7 @@ const navigate = useNavigate();
       } catch (error) {
         if (error.response?.status === 404) {
           // Create if not found
-          await axios.post('http://localhost:8000/api/teacher-attendance', {
+          await axios.post('https://d2-c-b.vercel.app/api/teacher-attendance', {
             teacher: teacher._id,
             name: teacher.name,
             email: teacher.email,
