@@ -1,348 +1,142 @@
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-
-// const Attendance = () => {
-//   const [students, setStudents] = useState([]);
-//   const [attendanceStatus, setAttendanceStatus] = useState({});
-//   const [selectedDate, setSelectedDate] = useState(new Date());
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [submitMessage, setSubmitMessage] = useState('');
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [existingAttendance, setExistingAttendance] = useState([]);
-//   const [showExistingModal, setShowExistingModal] = useState(false);
-
-//   useEffect(() => {
-//     const fetchStudents = async () => {
-//       try {
-//         const response = await axios.get('https://d2-c-b.vercel.app/api/student/all');
-//         setStudents(response.data.data);
-//       } catch (error) {
-//         console.error('Error fetching students:', error);
-//       } finally {
-//         setIsLoading(false);
-//       }
-//     };
-
-//     fetchStudents();
-//   }, []);
-
-//   useEffect(() => {
-//     const checkExistingAttendance = async () => {
-//       try {
-//         const dateStr = selectedDate.toISOString().split('T')[0];
-//         const response = await axios.get(`https://d2-c-b.vercel.app/api/attendance/check?date=${dateStr}`);
-//         setExistingAttendance(response.data);
-//       } catch (error) {
-//         console.error('Error checking existing attendance:', error);
-//       }
-//     };
-
-//     checkExistingAttendance();
-//   }, [selectedDate]);
-
-//   const handleStatusChange = (studentId, status) => {
-//     setAttendanceStatus(prev => ({
-//       ...prev,
-//       [studentId]: status
-//     }));
-//   };
-
-//   const formatDate = (date) => {
-//     return date.toLocaleDateString('en-US', {
-//       weekday: 'short',
-//       month: 'short',
-//       day: 'numeric',
-//       year: 'numeric'
-//     });
-//   };
-
-//   const handleSubmit = async () => {
-//     // Check if any attendance exists for the selected date
-//     if (existingAttendance.length > 0) {
-//       setShowExistingModal(true);
-//       return;
-//     }
-
-//     setIsSubmitting(true);
-//     setSubmitMessage('');
-
-//     try {
-//       const submissionPromises = students.map(student => {
-//         const status = attendanceStatus[student._id] || 'absent';
-
-//         const attendanceRecord = {
-//           student: student._id,
-//           rollNumber: student.rollNumber,
-//           name: student.name,
-//           studentClass: student.studentClass,
-//           studentSection: student.studentSection,
-//           present: status === 'present',
-//           absent: status === 'absent',
-//           date: selectedDate,
-//         };
-
-//         return axios.post('https://d2-c-b.vercel.app/api/attendance/create', attendanceRecord, {
-//           headers: {
-//             'Content-Type': 'application/json'
-//           }
-//         });
-//       });
-
-//       await Promise.all(submissionPromises);
-
-//       setSubmitMessage('Attendance submitted successfully!');
-//       setAttendanceStatus({});
-//     } catch (error) {
-//       console.error('Error submitting attendance:', error);
-//       if (error.response && error.response.data && error.response.data.message.includes("already exists")) {
-//         setShowExistingModal(true);
-//       } else {
-//         setSubmitMessage('Failed to submit attendance. Please try again.');
-//       }
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   const handleConfirmSubmit = async () => {
-//     setShowExistingModal(false);
-//     setIsSubmitting(true);
-//     setSubmitMessage('');
-
-//     try {
-//       const submissionPromises = students.map(student => {
-//         const status = attendanceStatus[student._id] || 'absent';
-
-//         const attendanceRecord = {
-//           student: student._id,
-//           rollNumber: student.rollNumber,
-//           name: student.name,
-//           studentClass: student.studentClass,
-//           studentSection: student.studentSection,
-//           present: status === 'present',
-//           absent: status === 'absent',
-//           date: selectedDate,
-//         };
-
-//         // For existing records, we should use update instead of create
-//         return axios.put(`https://d2-c-b.vercel.app/api/attendance/update`, attendanceRecord, {
-//           headers: {
-//             'Content-Type': 'application/json'
-//           }
-//         });
-//       });
-
-//       await Promise.all(submissionPromises);
-
-//       setSubmitMessage('Attendance updated successfully!');
-//       setAttendanceStatus({});
-//     } catch (error) {
-//       console.error('Error updating attendance:', error);
-//       setSubmitMessage('Failed to update attendance. Please try again.');
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     let timer;
-//     if (submitMessage.includes('success')) {
-//       timer = setTimeout(() => {
-//         setSubmitMessage('');
-//       }, 3000);
-//     }
-//     return () => clearTimeout(timer);
-//   }, [submitMessage]);
-
-//   if (isLoading) {
-//     return (
-//       <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-//         <div className="flex justify-center items-center h-64">
-//           <p className="text-gray-600">Loading students data...</p>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-//       {/* Existing Attendance Modal */}
-//       {showExistingModal && (
-//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-//           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-//             <h3 className="text-lg font-semibold text-gray-800 mb-4">Attendance Already Exists</h3>
-//             <p className="text-gray-600 mb-4">
-//               Attendance records already exist for {formatDate(selectedDate)}. Do you want to update them?
-//             </p>
-//             <div className="flex justify-end space-x-3">
-//               <button
-//                 onClick={() => setShowExistingModal(false)}
-//                 className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-//               >
-//                 Cancel
-//               </button>
-//               <button
-//                 onClick={handleConfirmSubmit}
-//                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-//               >
-//                 Update Attendance
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-
-//       <header className="mb-6">
-//         <h1 className="text-3xl font-bold text-gray-800">Attendance</h1>
-//       </header>
-
-//       <div className="py-4 border-y border-gray-200 my-4 flex flex-wrap justify-around gap-4 items-center">
-//         <span className="font-semibold text-gray-700">Class: Nursery</span>
-//         <span className="font-semibold text-gray-700">Section: A</span>
-
-//         <div className="relative">
-//           <input
-//             type="date"
-//             value={selectedDate.toISOString().split('T')[0]}
-//             onChange={(e) => setSelectedDate(new Date(e.target.value))}
-//             className="appearance-none border border-gray-300 rounded-md py-1 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
-//           />
-//           <span className="ml-2 font-semibold text-gray-700">
-//             {formatDate(selectedDate)}
-//           </span>
-//         </div>
-//       </div>
-
-//       {existingAttendance.length > 0 && (
-//         <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700">
-//           <p>Note: Attendance records already exist for this date. Submitting will update existing records.</p>
-//         </div>
-//       )}
-
-//       <div className="my-6 overflow-x-auto">
-//         <div className="grid grid-cols-6 gap-4 items-center bg-gray-50 p-3 rounded-t-lg">
-//           <span className="font-semibold text-gray-700">Roll Number</span>
-//           <span className="font-semibold text-gray-700">Student Name</span>
-//           <span className="font-semibold text-gray-700">Class</span>
-//           <span className="font-semibold text-gray-700 text-center">Present</span>
-//           <span className="font-semibold text-gray-700 text-center">Absent</span>
-//         </div>
-
-//         <div className="divide-y divide-gray-200">
-//           {students.map((student) => {
-//             const selectedStatus = attendanceStatus[student._id] || '';
-//             const existingRecord = existingAttendance.find(a => a.student === student._id);
-            
-//             return (
-//               <div
-//                 key={student._id}
-//                 className="grid grid-cols-6 gap-4 items-center p-3 hover:bg-gray-50"
-//               >
-//                 <span className="text-gray-600">{student.rollNumber}</span>
-//                 <span className="text-gray-600">{student.name}</span>
-//                 <span className="text-gray-800">{student.studentClass}</span>
-
-//                 <label className="flex items-center justify-center gap-2 cursor-pointer">
-//                   <input
-//                     type="radio"
-//                     name={`attendance-${student._id}`}
-//                     value="present"
-//                     checked={selectedStatus === 'present' || (existingRecord && existingRecord.present && !selectedStatus)}
-//                     onChange={() => handleStatusChange(student._id, 'present')}
-//                     className="h-4 w-4 text-blue-600 focus:ring-blue-500"
-//                   />
-//                   <span className={`text-xl ${(selectedStatus === 'present' || (existingRecord && existingRecord.present && !selectedStatus)) ? 'text-green-600 font-bold' : 'text-gray-400'}`}>
-//                     P
-//                   </span>
-//                 </label>
-
-//                 <label className="flex items-center justify-center gap-2 cursor-pointer">
-//                   <input
-//                     type="radio"
-//                     name={`attendance-${student._id}`}
-//                     value="absent"
-//                     checked={selectedStatus === 'absent' || (existingRecord && existingRecord.absent && !selectedStatus)}
-//                     onChange={() => handleStatusChange(student._id, 'absent')}
-//                     className="h-4 w-4 text-blue-600 focus:ring-blue-500"
-//                   />
-//                   <span className={`text-xl ${(selectedStatus === 'absent' || (existingRecord && existingRecord.absent && !selectedStatus)) ? 'text-red-600 font-bold' : 'text-gray-400'}`}>
-//                     A
-//                   </span>
-//                 </label>
-//               </div>
-//             );
-//           })}
-//         </div>
-//       </div>
-
-//       <div className="mt-6 flex justify-between items-center">
-//         <div>
-//           {submitMessage && (
-//             <p className={`text-sm ${submitMessage.includes('success') ? 'text-green-600' : 'text-red-600'}`}>
-//               {submitMessage}
-//             </p>
-//           )}
-//         </div>
-//         <button
-//           onClick={handleSubmit}
-//           disabled={isSubmitting}
-//           className={`px-4 py-2 rounded-md text-white ${isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
-//         >
-//           {isSubmitting ? 'Submitting...' : 'Submit Attendance'}
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Attendance;
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Toaster, toast } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom'; // Optional: if you're using react-router
+import { useNavigate } from 'react-router-dom';
 
 const StudentList = () => {
   const [attendances, setAttendances] = useState([]);
   const [dateFilter, setDateFilter] = useState('');
+const [monthFilter, setMonthFilter] = useState(() => {
+  const currentMonth = new Date().getMonth() + 1; // 0-based, so add 1
+  return currentMonth.toString(); // Make sure it's a string if used in select inputs
+});
+  const [yearFilter, setYearFilter] = useState(new Date().getFullYear().toString());
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
-
-  const navigate = useNavigate(); // Optional, for navigation
+  const [error, setError] = useState(null);
+  const [viewMode, setViewMode] = useState('daily'); // 'daily' or 'monthly'
+const [classFilter, setClassFilter] = useState('');
+const [availableClasses, setAvailableClasses] = useState([]);
+  const navigate = useNavigate();
 
   const fetchAttendance = async () => {
     try {
       setLoading(true);
+      setError(null);
 
-      const params = {
-        page,
-      };
-      if (dateFilter) {
+      const params = { page };
+      
+      if (viewMode === 'daily' && dateFilter) {
         params.date = dateFilter;
+      } else if (viewMode === 'monthly' && monthFilter && yearFilter) {
+        params.month = monthFilter;
+        params.year = yearFilter;
       }
 
-      const res = await axios.get('https://d2-c-b.vercel.app/api/student-attendance/pg', {
-        params,
-      });
+      const endpoint = viewMode === 'daily' 
+        ? 'https://d2-c-b.vercel.app/api/student-attendance/pg' 
+        : 'http://localhost:8000/api/student-attendance/summary';
 
-      setAttendances(res.data.data);
-      setTotalPages(res.data.totalPages);
+      const res = await axios.get(endpoint, { params });
+
+      setAttendances(res.data.data || []);
+      setTotalPages(res.data.totalPages || 1);
     } catch (error) {
       console.error('Error fetching attendance:', error);
+      setError('No records found');
       toast.error('Failed to load attendance records');
     } finally {
       setLoading(false);
     }
   };
 
+const exportToCSV = async (shareOnWhatsApp = false) => {
+  if (!monthFilter || !yearFilter) {
+    toast.error('Please select both month and year');
+    return;
+  }
+
+  try {
+    const response = await axios.get('http://localhost:8000/api/student-attendance/csv', {
+      params: { month: monthFilter, year: yearFilter },
+      responseType: 'blob'
+    });
+
+    if (shareOnWhatsApp) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const csvText = reader.result;
+
+        // Convert CSV lines
+        const lines = csvText.trim().split('\n');
+        const rows = lines.map(line =>
+          line
+            .replace(/"/g, '') // remove quotes
+            .split(',')
+        );
+
+        // Calculate column widths
+        const colWidths = rows[0].map((_, i) =>
+          Math.max(...rows.map(row => (row[i] || '').length))
+        );
+
+        // Format rows with padding
+        const formatRow = (row) =>
+          row.map((cell, i) => (cell || '').padEnd(colWidths[i])).join('  ');
+
+        const formattedTable = rows.map(formatRow).join('\n');
+
+        const message =
+          `Student Attendance Report for ${monthFilter}/${yearFilter}\n\n` +
+          '```' + // WhatsApp code block
+          `\n${formattedTable}\n` +
+          '```';
+
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+      };
+
+      reader.readAsText(response.data);
+    } else {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `student_attendance_${monthFilter}_${yearFilter}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+  } catch (error) {
+    console.error('Error exporting CSV:', error);
+    toast.error('Failed to export CSV');
+  }
+};
+
+
   useEffect(() => {
     fetchAttendance();
-  }, [page, dateFilter]);
+  }, [page, dateFilter, monthFilter, yearFilter, viewMode]);
 
   const handleDateChange = (e) => {
     setDateFilter(e.target.value);
-    setPage(1); // Reset to page 1 on new filter
+    setPage(1);
+  };
+
+  const handleMonthChange = (e) => {
+    setMonthFilter(e.target.value);
+    setPage(1);
+  };
+
+  const handleYearChange = (e) => {
+    setYearFilter(e.target.value);
+    setPage(1);
+  };
+
+  const toggleViewMode = () => {
+    setViewMode(viewMode === 'daily' ? 'monthly' : 'daily');
+    setPage(1);
   };
 
   return (
@@ -351,28 +145,123 @@ const StudentList = () => {
       <div className="max-w-6xl mx-auto bg-white shadow p-6 rounded-lg">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Student Attendance Records</h2>
-          <button
-            onClick={() => navigate('/manage-attendence-student')}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Go to Attendance Page
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => navigate('/manage-attendence-student')}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Take Attendance
+            </button>
+        {viewMode === 'monthly' && (
+  <div className="flex gap-2">
+    <button
+      onClick={exportToCSV}
+      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+    >
+      Export CSV
+    </button>
+    <button
+      onClick={() => exportToCSV(true)}
+      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center gap-2"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+      </svg>
+      Share on WhatsApp
+    </button>
+  </div>
+)}
+          </div>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-1">Search by Date:</label>
-          <input
-            type="date"
-            value={dateFilter}
-            onChange={handleDateChange}
-            className="border border-gray-300 p-2 rounded w-full max-w-xs"
-          />
+        <div className="mb-6">
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Toggle Button */}
+            <button
+              onClick={toggleViewMode}
+              className={`px-4 py-2 rounded-md transition-colors duration-200 ${
+                viewMode === 'daily' 
+                  ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+              } font-medium flex items-center gap-2`}
+            >
+              {viewMode === 'daily' ? (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                  </svg>
+                  Monthly View
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                  </svg>
+                  Daily View
+                </>
+              )}
+            </button>
+
+            {/* Date/Month Filters */}
+            <div className="flex-1 flex flex-wrap gap-4">
+              {viewMode === 'daily' ? (
+                <div className="flex-1 min-w-[200px]">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Date</label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      value={dateFilter}
+                      onChange={handleDateChange}
+                      className="block w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex-1 min-w-[150px]">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
+                    <select
+                      value={monthFilter}
+                      onChange={handleMonthChange}
+                      className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Select Month</option>
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>
+                          {new Date(0, i).toLocaleString('default', { month: 'long' })}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex-1 min-w-[120px]">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                    <select
+                      value={yearFilter}
+                      onChange={handleYearChange}
+                      className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      {Array.from({ length: 10 }, (_, i) => {
+                        const year = new Date().getFullYear() - 5 + i;
+                        return (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         {loading ? (
           <p className="text-center text-gray-500">Loading attendance...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
         ) : attendances.length === 0 ? (
-          <p className="text-center text-gray-500">No attendance records found.</p>
+          <p className="text-center text-gray-500">No attendance records available</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse mt-4">
@@ -380,21 +269,46 @@ const StudentList = () => {
                 <tr className="bg-gray-200">
                   <th className="p-2 text-left border">#</th>
                   <th className="p-2 text-left border">Name</th>
-                  <th className="p-2 text-left border">Email</th>
-                  <th className="p-2 text-left border">Status</th>
-                  <th className="p-2 text-left border">Date</th>
+                  <th className="p-2 text-left border">Roll Number</th>
+                  {viewMode === 'daily' ? (
+                    <>
+                      <th className="p-2 text-left border">Status</th>
+                      <th className="p-2 text-left border">Date</th>
+                    </>
+                  ) : (
+                    <>
+                      <th className="p-2 text-left border">Present</th>
+                      <th className="p-2 text-left border">Absent</th>
+                      <th className="p-2 text-left border">Total Days</th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
                 {attendances.map((record, index) => (
-                  <tr key={record._id} className="hover:bg-gray-50">
+                  <tr key={record._id || index} className="hover:bg-gray-50">
                     <td className="p-2 border">{(page - 1) * 10 + index + 1}</td>
-                    <td className="p-2 border">{record.name}</td>
-                    <td className="p-2 border">{record.email}</td>
-                    <td className={`p-2 border ${record.status === 'Present' ? 'text-green-600' : 'text-red-600'}`}>
-                      {record.status}
-                    </td>
-                    <td className="p-2 border">{new Date(record.date).toLocaleDateString()}</td>
+                    <td className="p-2 border">{record.name || record.student?.name}</td>
+                    <td className="p-2 border">{record.rollNumber || record.student?.rollNumber}</td>
+                    
+                    {viewMode === 'daily' ? (
+                      <>
+                        <td className={`p-2 border ${record.status === 'Present' ? 'text-green-600' : 'text-red-600'}`}>
+                          {record.status}
+                        </td>
+                        <td className="p-2 border">
+                          {record.date ? new Date(record.date).toLocaleDateString() : '-'}
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="p-2 border text-green-600">{record.presentCount || 0}</td>
+                        <td className="p-2 border text-red-600">{record.absentCount || 0}</td>
+                        <td className="p-2 border font-medium">
+                          {(record.presentCount || 0) + (record.absentCount || 0)}
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>
