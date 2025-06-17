@@ -297,6 +297,67 @@ const StudentList = () => {
     selectedSection,
   ]);
 
+  const generateWeeklyReport = async (studentId) => {
+    try {
+      // Calculate start date (beginning of current week - Monday)
+      const today = new Date();
+      const startDate = new Date(today);
+      startDate.setDate(today.getDate() - 7);
+      const formattedStartDate = startDate.toISOString().split("T")[0];
+
+      toast.loading("Generating report...");
+
+      const response = await axios.get(
+        `http://localhost:5000/api/student-attendance/student/weekly-report`,
+        {
+          params: {
+            studentId,
+            startDate: formattedStartDate,
+          },
+          responseType: "json",
+        }
+      );
+
+      toast.dismiss();
+
+      if (response.data && response.data.success) {
+        // Extract data from the response
+        const studentData = response.data.data.student;
+        const reportPeriod = response.data.data.reportPeriod;
+        const dailyReport = response.data.data.dailyReport;
+        const summary = response.data.data.summary;
+
+        // Format the report for WhatsApp
+        let message = `*Weekly Attendance Report*\n\n`;
+        message += `*Student:* ${studentData.name} (${studentData.rollNumber})\n`;
+        message += `*Class:* ${studentData.class}-${studentData.section}\n`;
+        message += `*Period:* ${reportPeriod.from} to ${reportPeriod.to}\n\n`;
+
+        message += `*Daily Attendance:*\n`;
+        dailyReport.forEach((day) => {
+          message += `${day.day} (${day.date}): ${day.status}\n`;
+        });
+
+        message += `\n*Summary:*\n`;
+        message += `Present: ${summary.present} days\n`;
+        message += `Absent: ${summary.absent} days\n`;
+        message += `Attendance Rate: ${summary.attendancePercentage}`;
+
+        // Share on WhatsApp
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/?text=${encodedMessage}`, "_blank");
+
+        toast.success("Report shared to WhatsApp");
+      } else {
+        toast.error("Failed to generate report");
+      }
+    } catch (error) {
+      toast.dismiss();
+      console.error("Error generating weekly report:", error);
+      toast.error("Failed to generate weekly report");
+    }
+  };
+
   const handleClassChange = (e) => {
     const newClass = e.target.value;
     setSelectedClass(newClass);
@@ -566,6 +627,9 @@ const StudentList = () => {
                       <th className="p-2 text-left border">Total Days</th>
                     </>
                   )}
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Report
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -612,6 +676,19 @@ const StudentList = () => {
                         </td>
                       </>
                     )}
+                    <td className="p-2 border">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Use the student field from the record
+                          const studentId = record._id;
+                          generateWeeklyReport(studentId);
+                        }}
+                        className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                      >
+                        Weekly Report
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
