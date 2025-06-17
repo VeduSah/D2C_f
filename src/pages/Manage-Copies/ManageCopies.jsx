@@ -866,7 +866,7 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
         {role === "Teacher" && (
           <>
             <div role="tablist" className="tabs tabs-boxed flex-wrap flex">
-              <a
+              {/* <a
                 onClick={() => {
                   setActiveClass("all");
                   setClassOfTeacher("all");
@@ -877,7 +877,7 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
                 className={`tab min-w-[7rem] ${activeClass === "all" ? "tab-active" : ""}`}
               >
                 All
-              </a>
+              </a> */}
               {assignedClasses?.map((cls) => (
                 <a
                   key={cls._id}

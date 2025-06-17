@@ -687,7 +687,7 @@ const ManageStudents = () => {
         // Send API request to update status in backend
         axios
           .put(
-            `http://localhost:8000/api/student/status/${id}`,
+            `https://d2-c-b.vercel.app/api/student/status/${id}`,
             {
               isActive: updatedStatus, // Boolean status value
             }
@@ -786,7 +786,7 @@ const ManageStudents = () => {
         <>
           {" "}
           <div className="grid md:grid-cols-3 gap-3">
-            <div className="form-control">
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Admission No</span>
               </label>
@@ -797,8 +797,8 @@ const ManageStudents = () => {
                 placeholder="Admission No"
                 value={admissionNo}
               />
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Admission Date</span>
               </label>
@@ -809,7 +809,7 @@ const ManageStudents = () => {
                 value={admissionDate}
                 placeholder="Admission Date"
               />
-            </div>
+            </div> */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Student Name</span>
@@ -919,7 +919,7 @@ const ManageStudents = () => {
                 value={rollNumber}
               />
             </div>
-            <div className="form-control">
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">House</span>
               </label>
@@ -935,7 +935,7 @@ const ManageStudents = () => {
                 <option value="Green">Green</option>
                 <option value="Yellow">Yellow</option>
               </select>
-            </div>
+            </div> */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Address</span>
@@ -948,7 +948,7 @@ const ManageStudents = () => {
                 placeholder="Address"
               />
             </div>
-            <div className="form-control">
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Address 2</span>
               </label>
@@ -959,8 +959,8 @@ const ManageStudents = () => {
                 value={address2}
                 placeholder="Address 2"
               />
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">City/Village</span>
               </label>
@@ -971,8 +971,8 @@ const ManageStudents = () => {
                 value={cityVillage}
                 placeholder="City/Village"
               />
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Route</span>
               </label>
@@ -983,7 +983,7 @@ const ManageStudents = () => {
                 value={route}
                 placeholder="Route"
               />
-            </div>
+            </div> */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Phone Number</span>
@@ -996,7 +996,7 @@ const ManageStudents = () => {
                 value={contactNumber}
               />
             </div>
-            <div className="form-control">
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Father's Number</span>
               </label>
@@ -1007,8 +1007,8 @@ const ManageStudents = () => {
                 placeholder="Father's Number"
                 value={fathersNo}
               />
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Mother's Number</span>
               </label>
@@ -1019,7 +1019,7 @@ const ManageStudents = () => {
                 placeholder="Mother's Number"
                 value={mothersNo}
               />
-            </div>
+            </div> */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Gender</span>
@@ -1036,7 +1036,7 @@ const ManageStudents = () => {
                 <option value="Female">Female</option>
               </select>
             </div>
-            <div className="form-control">
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Aadhaar Number</span>
               </label>
@@ -1047,8 +1047,8 @@ const ManageStudents = () => {
                 value={aadhaar}
                 placeholder="Aadhaar Number"
               />
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Date Of Birth</span>
               </label>
@@ -1059,8 +1059,8 @@ const ManageStudents = () => {
                 value={dob}
                 placeholder="DOB"
               />
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Blood Group</span>
               </label>
@@ -1071,8 +1071,8 @@ const ManageStudents = () => {
                 value={bloodGroup}
                 placeholder="Blood Group"
               />
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Religion</span>
               </label>
@@ -1083,8 +1083,8 @@ const ManageStudents = () => {
                 value={religion}
                 placeholder="Religion"
               />
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Caste</span>
               </label>
@@ -1101,8 +1101,8 @@ const ManageStudents = () => {
                 <option value="SC">SC</option>
                 <option value="General">General</option>
               </select>
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Category</span>
               </label>
@@ -1119,8 +1119,8 @@ const ManageStudents = () => {
                 <option value="Old">Old</option>
                 <option value="RTE">RTE</option>
               </select>
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Father's Occupation</span>
               </label>
@@ -1231,8 +1231,8 @@ const ManageStudents = () => {
                 value={lastExamGiven}
                 placeholder="Last Exam Given"
               />
-            </div>
-            <div className="form-control">
+            </div> */}
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Last Exam Year</span>
               </label>
@@ -1365,7 +1365,7 @@ const ManageStudents = () => {
                 onChange={setSelectedDocumentation}
                 labelledBy="Select Documentation at the time of Admission"
               />
-            </div>
+            </div> */}
 
             <div className="form-control">
               <label className="label">
@@ -1409,7 +1409,7 @@ const ManageStudents = () => {
               )}
             </div>
 
-            <div className="form-control">
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Father Photo</span>
               </label>
@@ -1491,7 +1491,7 @@ const ManageStudents = () => {
                   <img src={URL.createObjectURL(motherPhoto)} alt="Avatar" />
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
           <div className="mt-4 flex justify-center">
             <button
@@ -1502,11 +1502,11 @@ const ManageStudents = () => {
               {updateUserData ? `Update ${updateUserData.name}` : "Add User"}
             </button>
           </div>
-          <button onClick={handlePrint} className="btn text-white btn-warning">
+          {/* <button onClick={handlePrint} className="btn text-white btn-warning">
             Print
-          </button>
+          </button> */}
           {/* FORM UI */}
-          <div
+          {/* <div
             ref={componentRef}
             className="w-full max-w-6xl flex flex-col m-auto justify-center px-4"
           >
@@ -1600,7 +1600,7 @@ const ManageStudents = () => {
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                    </div>
+                    {/* </div>
                   </div>
                   <div className="grid grid-cols-2 gap-10 mt-8">
                     <div className="grid grid-cols-2 gap-2">
@@ -1610,12 +1610,12 @@ const ManageStudents = () => {
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-2"> */}
                       {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                    </div>
+                    {/* </div>
                   </div>
                   <div className="grid grid-cols-2 gap-10 mt-8">
                     <div className="grid grid-cols-2 gap-2">
@@ -1625,12 +1625,12 @@ const ManageStudents = () => {
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-2"> */}
                       {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                    </div>
+                    {/* </div>
                   </div>
                   <div className="grid grid-cols-3 gap-10 mt-8">
                     <div className="grid grid-cols-2 gap-2">
@@ -1652,8 +1652,8 @@ const ManageStudents = () => {
                       </p>
                     </div>
                   </div>
-                </div>
-                <div>
+                </div> */}
+                {/* <div>
                   <img
                     src={
                       studentAvatar
@@ -1677,14 +1677,14 @@ const ManageStudents = () => {
                   <p className="border-solid border-b-2 border-black  w-[330%]">
                     {address}
                   </p>
-                </div>
+                </div> */}
 
-                <div className="grid grid-cols-2 gap-2">
+                {/* <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
 
               <div className="grid grid-cols-70/30 gap-10 mt-8">
@@ -1771,12 +1771,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
               <div className="grid grid-cols-35/65 gap-10 mt-8">
                 <div className="grid grid-cols-2 gap-8">
@@ -1788,12 +1788,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
               <div className="grid grid-cols-35/65 gap-10 mt-8">
                 <div className="grid grid-cols-2 gap-8">
@@ -1805,12 +1805,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
               <div className="grid grid-cols-35/65 gap-10 mt-8">
                 <div className="grid grid-cols-2 gap-8">
@@ -1822,18 +1822,18 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
 
               <div className="flex items-center gap-16 mt-8">
-                <p className="flex items-center gap-4 font-semibold">
+                <p className="flex items-center gap-4 font-semibold"> */}
                   {/* <MdArrowRightAlt /> Gender */}
-                </p>
+                {/* </p>
                 <div className="flex items-center gap-16">
                   <div className="form-control gap-4">
                     <label className="cursor-pointer label">
@@ -1976,12 +1976,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
               <div className="grid grid-cols-35/65 gap-10 mt-8">
                 <div className="grid grid-cols-2 gap-8">
@@ -1993,12 +1993,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
 
               <div className="mt-16">
@@ -2047,12 +2047,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
               <div className="grid grid-cols-70/30 gap-10 mt-8">
                 <div className="grid grid-cols-2 ">
@@ -2064,12 +2064,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
               <div className="grid grid-cols-70/30 gap-10 mt-8">
                 <div className="grid grid-cols-2 ">
@@ -2081,12 +2081,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
             </section>
 
@@ -2106,12 +2106,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
 
               <div className="grid grid-cols-70/30 gap-10 mt-8">
@@ -2146,12 +2146,12 @@ const ManageStudents = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
 
               <div className="grid grid-cols-65/35 gap-10 mt-8 ">
@@ -2162,12 +2162,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
               <div className="grid grid-cols-65/35 gap-10 mt-4 pl-16">
                 <div className="grid grid-cols-2 gap-8">
@@ -2197,12 +2197,12 @@ const ManageStudents = () => {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2"> */}
                   {/* <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
                       </p> */}
-                </div>
+                {/* </div>
               </div>
             </section>
 
@@ -2310,7 +2310,7 @@ const ManageStudents = () => {
                 </div>
               </div>
             </section>
-          </div>
+          </div> */} 
           {/* FORM UI */}
         </>
       )}
