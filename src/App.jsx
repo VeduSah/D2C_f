@@ -18,7 +18,6 @@ import TCertificate from "./pages/Certificates/TCertificate";
 import ManageTeacher from "./pages/Admins/ManageTeacher";
 import ManageCoordinator from "./pages/Admins/ManageCoordinator";
 import ManageAdmin from "./pages/Admins/ManageAdmin";
-
 import TeacherAttendance from "./pages/Teachers/TeacherAttendance";
 import AttendanceList from "./pages/Teachers/AttendenceList";
 import StudentList from "./pages/Students/StudentList";
@@ -1022,7 +1021,22 @@ const App = () => {
                 <Route path="/manage-students" element={<ManageStudents />} />
                 <Route path="/manage-copies" element={<ManageCopies />} />
                 <Route path="/tc-certificate" element={<TCertificate />} />
-                <Route path="/manage-attendence" element={<Attendance />} />
+                <Route
+                  path="/manage-attendence-student"
+                  element={<StudentAttendance />}
+                />
+                <Route
+                  path="/display-attendence-stu"
+                  element={<StudentList />}
+                />
+                <Route
+                  path="/manage-attendence-teacher"
+                  element={<TeacherAttendance />}
+                />
+                <Route
+                  path="/display-attendence"
+                  element={<AttendanceList />}
+                />{" "}
                 <Route
                   path="/manage-exam-copies"
                   element={<ManageExamCopies />}
