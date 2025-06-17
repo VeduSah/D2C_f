@@ -435,7 +435,7 @@ const App = () => {
                         <span className="-mr-1 font-medium">Manage Copies</span>
                       </a>
                     </li>
-                    <li
+                    {/* <li
                       onClick={() => {
                         setActiveLink("exam copies");
                         navigate("/manage-exam-copies");
@@ -473,8 +473,8 @@ const App = () => {
                           Manage Exam Copies
                         </span>
                       </a>
-                    </li>
-                    <li
+                    </li> */}
+                    {/* <li
                       onClick={() => {
                         setActiveLink("tc certificate");
                         navigate("/tc-certificate");
@@ -512,7 +512,7 @@ const App = () => {
                           T.C Certificate
                         </span>
                       </a>
-                    </li>
+                    </li> */}
                   </>
                 ) : role == "Teacher" ? (
                   <>

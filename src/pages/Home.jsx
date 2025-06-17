@@ -439,7 +439,7 @@ const fetchStudents = () => {
                 >
                   <div className="flex items-center gap-8 ">
                     <div>
-                      <img width={150} src="/coordinator.gif" alt="adminGif" />
+                      <img width={150} src="/Teacher.gif" alt="adminGif" />
                     </div>
                     <div>
                       <button className="flex items-center gap-4 font-semibold">
@@ -455,13 +455,36 @@ const fetchStudents = () => {
                     <button className="btn">Go to Coordinator&apos;s panel</button>
                   </div>
                 </div>
+                  {" "}
+                <div
+                  className="hover:border shadow cursor-pointer w-fit  px-6 py-4"
+                  onClick={() => navigate("/display-attendence-stu")}
+                >
+                  <div className="flex items-center gap-8 ">
+                    <div>
+                      <img width={150} src="/Student.gif" alt="adminGif" />
+                    </div>
+                    <div>
+                      <button className="flex items-center gap-4 font-semibold">
+                        Student Attendance
+                        <div className="badge badge-secondary">
+                          {count?.students}
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center mt-4">
+                    <button className="btn">Go to Coordinator&apos;s panel</button>
+                  </div>
+                </div>
               </>
             ) : role == "Teacher" ? (
               <>
                 <div>
-                  <div
+                  {/* <div
                     className="hover:border shadow w-fit  px-6 py-4"
-                    // onClick={() => navigate("/manage-students")}
+                    onClick={() => navigate("/manage-students")}
                   >
                     <div className="flex items-center gap-8 ">
                       <div>
@@ -476,10 +499,10 @@ const fetchStudents = () => {
                       </button>
                       </div>
                     </div>
-                    {/* <div className="flex justify-center mt-4">
+                    <div className="flex justify-center mt-4">
                 <button className="btn">Go to Student&apos;s panel</button>
-              </div> */}
-                  </div>
+              </div>
+                  </div> */}
                 </div>
               </>
             ) : (

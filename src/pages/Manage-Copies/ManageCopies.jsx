@@ -339,12 +339,12 @@ useEffect(() => {
   // Define commands
   const commands = {
     // Command for direct match: "check [student name]"
-    'roll number *student': (studentName) => {
-      handleVoiceCommand(studentName, fuse);
+    'check *student': (studentInput) => {
+      handleVoiceCommand(studentInput, fuse);
     },
     // Command for fuzzy search: "search [student name]"
-    'search *student': (studentName) => {
-      handleVoiceCommand(studentName, fuse, true);
+    'search *student': (studentInput) => {
+      handleVoiceCommand(studentInput, fuse, true);
     }
   };
 
@@ -361,24 +361,27 @@ useEffect(() => {
   };
 }, [userData, subject, typeOf]); // Add dependencies
 
-const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
+const handleVoiceCommand = (studentInput, fuse, useFuzzy = false) => {
   if (!subject || !typeOf) {
     toast.error("Please select Subject and Type first!");
     return;
   }
 
   let student;
-  
-  if (useFuzzy) {
-    // Fuzzy search
-    const result = fuse.search(studentName);
+
+  // If the input is a number, search by rollNumber
+  if (/^\d+$/.test(studentInput.trim())) {
+    student = userData.find(s => String(s.rollNumber) === studentInput.trim());
+  } else if (useFuzzy) {
+    // Fuzzy search by name
+    const result = fuse.search(studentInput);
     if (result?.length > 0) {
       student = result[0].item;
     }
   } else {
-    // Exact match
+    // Exact match by name
     student = userData.find(s => 
-      s?.name?.toLowerCase()?.trim() === studentName?.toLowerCase()?.trim()
+      s?.name?.toLowerCase()?.trim() === studentInput?.toLowerCase()?.trim()
     );
   }
 
