@@ -15,10 +15,12 @@ import TakeFee from "./pages/Fee-Management/TakeFee";
 import ViewFees from "./pages/Fee-Management/ViewFees";
 import FeeStructure from "./pages/Fee-Management/FeeStructure";
 import TCertificate from "./pages/Certificates/TCertificate";
-import ManageTeacher from "./pages/Admins/ManageTeacher"
-import ManageCoordinator from "./pages/Admins/ManageCoordinator"
+import ManageTeacher from "./pages/Admins/ManageTeacher";
+import ManageCoordinator from "./pages/Admins/ManageCoordinator";
 import ManageAdmin from "./pages/Admins/ManageAdmin";
 import Attendance from "./pages/Students/Attendence";
+import Homework from "./pages/Homework/Homework";
+
 const App = () => {
   const navigate = useNavigate();
   const [isListening, setIsListening] = useState(false);
@@ -66,18 +68,18 @@ const App = () => {
   useEffect(() => {
     if (!annyang) return;
 
- const commands = {
-  "home": () => navigate("/"),
-  "user panel": () => navigate("/manage-admins"),
-  "student panel": () => navigate("/manage-students"),
-  "copy panel": () => navigate("/manage-copies"),
-  "hello": () => alert("Hello, welcome back!"),
-  "stop listening": () => {
-    annyang.abort();
-    setIsListening(false);
-  },
-  "clear speech": () => setRecognizedSpeech("Listening..."),
-};
+    const commands = {
+      home: () => navigate("/"),
+      "user panel": () => navigate("/manage-admins"),
+      "student panel": () => navigate("/manage-students"),
+      "copy panel": () => navigate("/manage-copies"),
+      hello: () => alert("Hello, welcome back!"),
+      "stop listening": () => {
+        annyang.abort();
+        setIsListening(false);
+      },
+      "clear speech": () => setRecognizedSpeech("Listening..."),
+    };
 
     annyang.addCommands(commands);
 
@@ -98,8 +100,6 @@ const App = () => {
     annyang.addCallback("start", () => setIsListening(true));
     annyang.addCallback("end", () => setIsListening(false));
 
-
-
     return () => {
       annyang.removeCommands();
       annyang.abort();
@@ -114,11 +114,11 @@ const App = () => {
       setIsListening(false);
       setRecognizedSpeech("");
     } else {
-      annyang.start({ 
-  autoRestart: true, 
-  continuous: true, 
-  interimResults: false // Set this to `true` if you want real-time feedback
-});
+      annyang.start({
+        autoRestart: true,
+        continuous: true,
+        interimResults: false, // Set this to `true` if you want real-time feedback
+      });
     }
   };
   // useEffect(() => {
@@ -625,6 +625,44 @@ const App = () => {
                         </span>
                       </a>
                     </li> */}
+
+                    <li
+                      onClick={() => {
+                        setActiveLink("homework");
+                        navigate("/homework");
+                        setMl();
+                      }}
+                    >
+                      <a
+                        href="#"
+                        aria-label="homework"
+                        className={
+                          activeLink == "homework"
+                            ? "relative flex items-center space-x-4 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-400 px-1 py-2 text-white "
+                            : "relative flex items-center space-x-4 rounded-xl px-1 py-2  text-gray-600"
+                        }
+                      >
+                        <svg
+                          className="-ml-1 h-6 w-6"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M6 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8ZM6 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1Z"
+                            className="dark:fill-slate-600 fill-current text-cyan-400"
+                          ></path>
+                          <path
+                            d="M13 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8Z"
+                            className="fill-current text-cyan-200 group-hover:text-cyan-300"
+                          ></path>
+                          <path
+                            d="M13 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1Z"
+                            className="fill-current group-hover:text-sky-300"
+                          ></path>
+                        </svg>
+                        <span className="-mr-1 font-medium">Homework</span>
+                      </a>
+                    </li>
                   </>
                 ) : role == "Senior Coordinator" ? (
                   <>
@@ -742,7 +780,7 @@ const App = () => {
                       </a>
                     </li> */}
                   </>
-                )  : role == "Junior Coordinator" ? (
+                ) : role == "Junior Coordinator" ? (
                   <>
                     <li
                       onClick={() => {
@@ -858,7 +896,7 @@ const App = () => {
                       </a>
                     </li> */}
                   </>
-                ): (
+                ) : (
                   ""
                 )}
               </ul>
@@ -927,9 +965,12 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/manage-admins" element={<ManageAdmins />} />
-                <Route path="/manage-teacher" element={<ManageTeacher/>}/>
-                <Route path="/manage-coordinator" element={<ManageCoordinator/>}/>
-                <Route path="/manage-admin" element={<ManageAdmin/>}/>
+                <Route path="/manage-teacher" element={<ManageTeacher />} />
+                <Route
+                  path="/manage-coordinator"
+                  element={<ManageCoordinator />}
+                />
+                <Route path="/manage-admin" element={<ManageAdmin />} />
                 <Route path="/manage-fees" element={<ListFee />} />
                 <Route path="/fee-structure" element={<FeeStructure />} />
                 <Route path="/take-fees/:id" element={<TakeFee />} />
@@ -937,12 +978,13 @@ const App = () => {
                 <Route path="/manage-students" element={<ManageStudents />} />
                 <Route path="/manage-copies" element={<ManageCopies />} />
                 <Route path="/tc-certificate" element={<TCertificate />} />
-            <Route path="/manage-attendence" element={<Attendance />} />
+                <Route path="/manage-attendence" element={<Attendance />} />
                 <Route
                   path="/manage-exam-copies"
                   element={<ManageExamCopies />}
                 />
                 <Route path="/assign-classes" element={<AssignClasses />} />
+                <Route path="/homework" element={<Homework />} />
               </Routes>
             </div>
           </div>
