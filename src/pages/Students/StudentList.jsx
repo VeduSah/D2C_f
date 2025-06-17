@@ -681,7 +681,7 @@ const StudentList = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           // Use the student field from the record
-                          const studentId = record._id;
+                          const studentId = record.student;
                           generateWeeklyReport(studentId);
                         }}
                         className="text-blue-600 hover:text-blue-900 text-sm font-medium"
