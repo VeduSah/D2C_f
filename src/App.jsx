@@ -18,7 +18,11 @@ import TCertificate from "./pages/Certificates/TCertificate";
 import ManageTeacher from "./pages/Admins/ManageTeacher";
 import ManageCoordinator from "./pages/Admins/ManageCoordinator";
 import ManageAdmin from "./pages/Admins/ManageAdmin";
-import Attendance from "./pages/Students/Attendence";
+
+import TeacherAttendance from "./pages/Teachers/TeacherAttendance";
+import AttendanceList from "./pages/Teachers/AttendenceList";
+import StudentList from "./pages/Students/StudentList";
+import StudentAttendance from "./pages/Students/StudentAttendece";
 import Homework from "./pages/Homework/Homework";
 import AddHomework from "./pages/Homework/AddHomework";
 
@@ -585,6 +589,45 @@ const App = () => {
                           ></path>
                         </svg>
                         <span className="-mr-1 font-medium">Manage Copies</span>
+                      </a>
+                    </li>
+                    <li
+                      onClick={() => {
+                        setActiveLink("student attendence");
+                        navigate("/display-attendence-stu");
+                        setMl();
+                      }}
+                    >
+                      <a
+                        href="#"
+                        aria-label="student attendence"
+                        className={
+                          activeLink == "student attendence"
+                            ? "relative flex items-center space-x-4 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-400 px-1 py-2 text-white "
+                            : "relative flex items-center space-x-4 rounded-xl px-1 py-2  text-gray-600"
+                        }
+                      >
+                        <svg
+                          className="-ml-1 h-6 w-6"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M6 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8ZM6 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1Z"
+                            className="dark:fill-slate-600 fill-current text-cyan-400"
+                          ></path>
+                          <path
+                            d="M13 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8Z"
+                            className="fill-current text-cyan-200 group-hover:text-cyan-300"
+                          ></path>
+                          <path
+                            d="M13 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1Z"
+                            className="fill-current group-hover:text-sky-300"
+                          ></path>
+                        </svg>
+                        <span className="-mr-1 font-medium">
+                          Manage Student Attendence
+                        </span>
                       </a>
                     </li>
                     {/* <li

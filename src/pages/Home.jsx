@@ -432,6 +432,29 @@ const fetchStudents = () => {
                     <button className="btn">Go to Coordinator&apos;s panel</button>
                   </div>
                 </div>
+                 {" "}
+                <div
+                  className="hover:border shadow cursor-pointer w-fit  px-6 py-4"
+                  onClick={() => navigate("/display-attendence")}
+                >
+                  <div className="flex items-center gap-8 ">
+                    <div>
+                      <img width={150} src="/coordinator.gif" alt="adminGif" />
+                    </div>
+                    <div>
+                      <button className="flex items-center gap-4 font-semibold">
+                        Teacher Attendance
+                        <div className="badge badge-secondary">
+                          {count?.coordinators}
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center mt-4">
+                    <button className="btn">Go to Coordinator&apos;s panel</button>
+                  </div>
+                </div>
               </>
             ) : role == "Teacher" ? (
               <>

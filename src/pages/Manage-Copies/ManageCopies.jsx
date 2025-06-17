@@ -891,7 +891,7 @@ const ManageCopies = () => {
         {role === "Teacher" && (
           <>
             <div role="tablist" className="tabs tabs-boxed flex-wrap flex">
-              <a
+              {/* <a
                 onClick={() => {
                   setActiveClass("all");
                   setClassOfTeacher("all");
@@ -904,7 +904,7 @@ const ManageCopies = () => {
                 }`}
               >
                 All
-              </a>
+              </a> */}
               {assignedClasses?.map((cls) => (
                 <a
                   key={cls._id}
