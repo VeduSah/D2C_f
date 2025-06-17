@@ -25,7 +25,31 @@ const StudentAttendance = () => {
     );
     setAssignedClasses(storedClasses);
 
-    if (storedClasses.length > 0) {
+    // Get stored selections from previous page
+    const storedClass = localStorage.getItem("selectedAttendanceClass");
+    const storedSection = localStorage.getItem("selectedAttendanceSection");
+
+    // If we have stored class/section from previous page, use those
+    if (storedClass) {
+      setActiveClass(storedClass);
+
+      if (storedSection) {
+        setActiveSection(storedSection);
+      } else if (storedClasses.length > 0) {
+        // Find the selected class and get its first section
+        const selectedClassObj = storedClasses.find(
+          (cls) => cls.value === storedClass
+        );
+        if (selectedClassObj?.sections?.length > 0) {
+          setActiveSection(selectedClassObj.sections[0].value);
+        }
+      }
+      // Clear the stored values after using them
+      localStorage.removeItem("selectedAttendanceClass");
+      localStorage.removeItem("selectedAttendanceSection");
+    }
+    // Otherwise use defaults
+    else if (storedClasses.length > 0) {
       setActiveClass(storedClasses[0].value);
       if (storedClasses[0].sections && storedClasses[0].sections.length > 0) {
         setActiveSection(storedClasses[0].sections[0].value);

@@ -346,7 +346,16 @@ const StudentList = () => {
           <h2 className="text-2xl font-bold">Student Attendance Records</h2>
           <div className="flex gap-2">
             <button
-              onClick={() => navigate("/manage-attendence-student")}
+              onClick={() => {
+                // Store current selections in localStorage
+                localStorage.setItem("selectedAttendanceClass", selectedClass);
+                localStorage.setItem(
+                  "selectedAttendanceSection",
+                  selectedSection
+                );
+
+                navigate("/manage-attendence-student");
+              }}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               Take Attendance
