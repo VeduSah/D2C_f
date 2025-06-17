@@ -20,6 +20,7 @@ import ManageCoordinator from "./pages/Admins/ManageCoordinator";
 import ManageAdmin from "./pages/Admins/ManageAdmin";
 import Attendance from "./pages/Students/Attendence";
 import Homework from "./pages/Homework/Homework";
+import AddHomework from "./pages/Homework/AddHomework";
 
 const App = () => {
   const navigate = useNavigate();
@@ -985,6 +986,7 @@ const App = () => {
                 />
                 <Route path="/assign-classes" element={<AssignClasses />} />
                 <Route path="/homework" element={<Homework />} />
+                <Route path="/add-homework" element={<AddHomework />} />
               </Routes>
             </div>
           </div>
