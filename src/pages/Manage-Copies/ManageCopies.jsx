@@ -43,15 +43,15 @@ const ManageCopies = () => {
   const [divisionOfTeacher, setDivisionOfTeacher] = useState(
     localStorage.getItem("section")
   );
- const [localChecks, setLocalChecks] = useState({});
+  const [localChecks, setLocalChecks] = useState({});
   const assignedClasses = JSON.parse(localStorage.getItem("assignedClasses"));
   const assignedWings = JSON.parse(localStorage.getItem("assignedWings"));
   const assignedSubjects = JSON.parse(localStorage.getItem("assignedSubjects"));
   const assignedDivisions = JSON.parse(
     localStorage.getItem("assignedSections")
   );
-  const assignUser = JSON.parse(localStorage.getItem('User'));
-  console.log('Current user:', assignUser); // Verify user data structure
+  const assignUser = JSON.parse(localStorage.getItem("User"));
+  console.log("Current user:", assignUser); // Verify user data structure
   // LIST
   // Define a function to merge copyRes with today's date for each student
   const mergeCopyResWithToday = (students) => {
@@ -79,17 +79,17 @@ const ManageCopies = () => {
     setLoading(true);
     try {
       axios
-        .get(
-          `https://d2-c-b.vercel.app/api/copy-check/all?date=${date}`
-        )
+        .get(`https://d2-c-b.vercel.app/api/copy-check/all?date=${date}`)
         .then((resCopy) => {
           console.log(resCopy.data.data);
-          setCopyCheckData(resCopy.data.data)
+          setCopyCheckData(resCopy.data.data);
           try {
             axios
               .get(
-                `https://d2-c-b.vercel.app/api/student/filter-by-class?studentClass=${role == "Teacher" ? classOfTeacher : activeClass
-                }&studentSection=${role == "Teacher" ? divisionOfTeacher : activeDivision
+                `https://d2-c-b.vercel.app/api/student/filter-by-class?studentClass=${
+                  role == "Teacher" ? classOfTeacher : activeClass
+                }&studentSection=${
+                  role == "Teacher" ? divisionOfTeacher : activeDivision
                 }&page=${currentPage}`
               )
               .then((res) => {
@@ -106,7 +106,7 @@ const ManageCopies = () => {
                   setUserData(studentsFilteredBySubjectAndDate);
                   setTotalPages(res.data.count);
                   setLoading(false);
-                  setLocalChecks({})
+                  setLocalChecks({});
                 } else {
                   // Handle unsuccessful response from student filter API
                   console.error(
@@ -116,7 +116,6 @@ const ManageCopies = () => {
                   toast.error(res.data.message);
                   setUserData([]);
                   setLoading(false);
-            
                 }
               })
               .catch((error) => {
@@ -158,7 +157,7 @@ const ManageCopies = () => {
 
             setTeacherForClassSubjectDiv(res.data.data);
           })
-          .finally(() => { })
+          .finally(() => {})
           .catch((error) => {
             console.log(error);
             setTeacherForClassSubjectDiv(null);
@@ -223,8 +222,9 @@ const ManageCopies = () => {
           <li className="page-item">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
-              className={`px-4 py-2 cursor-pointer rounded-md  mx-1 ${isFirstPage ? "disabled" : ""
-                }`}
+              className={`px-4 py-2 cursor-pointer rounded-md  mx-1 ${
+                isFirstPage ? "disabled" : ""
+              }`}
               disabled={isFirstPage}
             >
               Previous
@@ -234,8 +234,9 @@ const ManageCopies = () => {
             <li key={number} className="page-item">
               <button
                 onClick={() => handlePageChange(number)}
-                className={`${currentPage === number ? "bg-gray-400 text-white" : ""
-                  } px-4 py-2 mx-1 rounded-md`}
+                className={`${
+                  currentPage === number ? "bg-gray-400 text-white" : ""
+                } px-4 py-2 mx-1 rounded-md`}
               >
                 {number}
               </button>
@@ -244,8 +245,9 @@ const ManageCopies = () => {
           <li className="page-item">
             <button
               onClick={() => handlePageChange(currentPage + 1)}
-              className={`px-4 py-2 cursor-pointer mx-1 bg-black rounded-md text-white ${isLastPage ? "disabled" : ""
-                }`}
+              className={`px-4 py-2 cursor-pointer mx-1 bg-black rounded-md text-white ${
+                isLastPage ? "disabled" : ""
+              }`}
               disabled={isLastPage}
             >
               Next
@@ -290,7 +292,8 @@ const ManageCopies = () => {
         section: assignUser.section,
       },
       // Explicitly set the field to update based on role
-      [role === "Teacher" ? "checkedByTeacher" : "checkedByCoordinator"]: assignUser.name,
+      [role === "Teacher" ? "checkedByTeacher" : "checkedByCoordinator"]:
+        assignUser.name,
     };
 
     console.log("Submitting with user data:", dataObj);
@@ -310,7 +313,9 @@ const ManageCopies = () => {
       const { success, message } = res.data;
       if (success) {
         const action = assignUser.role === "Teacher" ? "checked" : "re-checked";
-        toast.success(`${typeOf} ${action} successfully for Roll Number ${data.rollNumber}`);
+        toast.success(
+          `${typeOf} ${action} successfully for Roll Number ${data.rollNumber}`
+        );
       } else if (message.includes("already checked")) {
         toast.success(message);
       }
@@ -328,67 +333,68 @@ const ManageCopies = () => {
       }));
     }
   };
-useEffect(() => {
-  // Initialize Fuse for fuzzy search
-  const fuse = new Fuse(userData, {
-    keys: ["rollNumber"],
-    threshold: 0.4,
-    includeScore: true,
-  });
+  useEffect(() => {
+    // Initialize Fuse for fuzzy search
+    const fuse = new Fuse(userData, {
+      keys: ["rollNumber"],
+      threshold: 0.4,
+      includeScore: true,
+    });
 
-  // Define commands
-  const commands = {
-    // Command for direct match: "check [student name]"
-    'roll number *student': (studentName) => {
-      handleVoiceCommand(studentName, fuse);
-    },
-    // Command for fuzzy search: "search [student name]"
-    'search *student': (studentName) => {
-      handleVoiceCommand(studentName, fuse, true);
+    // Define commands
+    const commands = {
+      // Command for direct match: "check [student name]"
+      "roll number *student": (studentName) => {
+        handleVoiceCommand(studentName, fuse);
+      },
+      // Command for fuzzy search: "search [student name]"
+      "search *student": (studentName) => {
+        handleVoiceCommand(studentName, fuse, true);
+      },
+    };
+
+    // Add commands to annyang
+    annyang.addCommands(commands);
+
+    // Start annyang
+    annyang.start({ autoRestart: false, continuous: true });
+
+    // Cleanup
+    return () => {
+      annyang.removeCommands();
+      annyang.abort();
+    };
+  }, [userData, subject, typeOf]); // Add dependencies
+
+  const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
+    if (!subject || !typeOf) {
+      toast.error("Please select Subject and Type first!");
+      return;
+    }
+
+    let student;
+
+    if (useFuzzy) {
+      // Fuzzy search
+      const result = fuse.search(studentName);
+      if (result?.length > 0) {
+        student = result[0].item;
+      }
+    } else {
+      // Exact match
+      student = userData.find(
+        (s) =>
+          s?.name?.toLowerCase()?.trim() === studentName?.toLowerCase()?.trim()
+      );
+    }
+
+    if (student) {
+      handleCopySubmit(student);
+      toast.success(`Processing ${student.rollNumber}`);
+    } else {
+      toast.error("Student not found. Please try again.");
     }
   };
-
-  // Add commands to annyang
-  annyang.addCommands(commands);
-
-  // Start annyang
-  annyang.start({ autoRestart: false, continuous: true });
-
-  // Cleanup
-  return () => {
-    annyang.removeCommands();
-    annyang.abort();
-  };
-}, [userData, subject, typeOf]); // Add dependencies
-
-const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
-  if (!subject || !typeOf) {
-    toast.error("Please select Subject and Type first!");
-    return;
-  }
-
-  let student;
-  
-  if (useFuzzy) {
-    // Fuzzy search
-    const result = fuse.search(studentName);
-    if (result?.length > 0) {
-      student = result[0].item;
-    }
-  } else {
-    // Exact match
-    student = userData.find(s => 
-      s?.name?.toLowerCase()?.trim() === studentName?.toLowerCase()?.trim()
-    );
-  }
-
-  if (student) {
-    handleCopySubmit(student);
-    toast.success(`Processing ${student.rollNumber}`);
-  } else {
-    toast.error("Student not found. Please try again.");
-  }
-};
   function generateWhatsAppMessage(userData) {
     const notSubmittedStudents = userData?.filter(
       (item) => !item?.copyRes[item?.copyRes?.length - 1]?.isCopyChecked
@@ -423,10 +429,10 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
         role === "Senior Coordinator" || role === "Junior Coordinator"
           ? "Teacher"
           : role === "Teacher"
-            ? "Junior Coordinator"
-            : role === "Admin"
-              ? "Senior Coordinator"
-              : "",
+          ? "Junior Coordinator"
+          : role === "Admin"
+          ? "Senior Coordinator"
+          : "",
       remarkToId: teacherIdForRemark,
       isChecked: false,
       remarkComment: remarkComment,
@@ -442,7 +448,7 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
             setRemarkComment("");
           }
         })
-        .finally(() => { })
+        .finally(() => {})
         .catch((error) => {
           console.log(error);
           toast.error(error.response.data.message, { id: "Errorr" });
@@ -453,9 +459,9 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
     }
   };
   const visibleUserData =
-  role === "Admin"
-    ? userData
-    : userData?.filter((student) => student.isActive);
+    role === "Admin"
+      ? userData
+      : userData?.filter((student) => student.isActive);
 
   return (
     <>
@@ -691,128 +697,144 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
               <a
                 onClick={() => setActiveClass("all")}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "all" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "all" ? " tab-active" : ""
+                }`}
               >
                 All
               </a>
               <a
                 onClick={() => setActiveClass("L.K.G")}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "L.K.G" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "L.K.G" ? " tab-active" : ""
+                }`}
               >
                 L.K.G
               </a>
               <a
                 onClick={() => setActiveClass("U.K.G")}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "U.K.G" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "U.K.G" ? " tab-active" : ""
+                }`}
               >
                 U.K.G
               </a>
               <a
                 onClick={() => setActiveClass("Nursery")}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "Nursery" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "Nursery" ? " tab-active" : ""
+                }`}
               >
                 Nursery
               </a>
               <a
                 onClick={() => setActiveClass(1)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "1" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "1" ? " tab-active" : ""
+                }`}
               >
                 Class 1
               </a>
               <a
                 onClick={() => setActiveClass(2)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "2" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "2" ? " tab-active" : ""
+                }`}
               >
                 Class 2
               </a>
               <a
                 onClick={() => setActiveClass(3)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "3" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "3" ? " tab-active" : ""
+                }`}
               >
                 Class 3
               </a>
               <a
                 onClick={() => setActiveClass(4)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "4" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "4" ? " tab-active" : ""
+                }`}
               >
                 Class 4
               </a>
               <a
                 onClick={() => setActiveClass(5)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "5" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "5" ? " tab-active" : ""
+                }`}
               >
                 Class 5
               </a>
               <a
                 onClick={() => setActiveClass(6)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "6" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "6" ? " tab-active" : ""
+                }`}
               >
                 Class 6
               </a>
               <a
                 onClick={() => setActiveClass(7)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "7" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "7" ? " tab-active" : ""
+                }`}
               >
                 Class 7
               </a>
               <a
                 onClick={() => setActiveClass(8)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "8" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "8" ? " tab-active" : ""
+                }`}
               >
                 Class 8
               </a>
               <a
                 onClick={() => setActiveClass(9)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "9" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "9" ? " tab-active" : ""
+                }`}
               >
                 Class 9
               </a>
               <a
                 onClick={() => setActiveClass(10)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "10" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "10" ? " tab-active" : ""
+                }`}
               >
                 Class 10
               </a>
               <a
                 onClick={() => setActiveClass(11)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "11" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "11" ? " tab-active" : ""
+                }`}
               >
                 Class 11
               </a>
               <a
                 onClick={() => setActiveClass(12)}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "12" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeClass == "12" ? " tab-active" : ""
+                }`}
               >
                 Class 12
               </a>
@@ -821,24 +843,27 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
               <a
                 onClick={() => setActiveDivision("all")}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeDivision == "all" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeDivision == "all" ? " tab-active" : ""
+                }`}
               >
                 All
               </a>
               <a
                 onClick={() => setActiveDivision("A")}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeDivision == "A" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeDivision == "A" ? " tab-active" : ""
+                }`}
               >
                 A
               </a>
               <a
                 onClick={() => setActiveDivision("B")}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeDivision == "B" ? " tab-active" : ""
-                  }`}
+                className={`tab min-w-[7rem] ${
+                  activeDivision == "B" ? " tab-active" : ""
+                }`}
               >
                 B
               </a>
@@ -874,7 +899,9 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
                   setDivisionOfTeacher("all");
                 }}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass === "all" ? "tab-active" : ""}`}
+                className={`tab min-w-[7rem] ${
+                  activeClass === "all" ? "tab-active" : ""
+                }`}
               >
                 All
               </a> */}
@@ -886,8 +913,9 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
                     setActiveClass(cls.value);
                   }}
                   role="tab"
-                  className={`tab min-w-[7rem] ${activeClass === cls.value ? "tab-active" : ""
-                    }`}
+                  className={`tab min-w-[7rem] ${
+                    activeClass === cls.value ? "tab-active" : ""
+                  }`}
                 >
                   {cls.label}
                 </a>
@@ -897,8 +925,7 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
             <div role="tablist" className="tabs tabs-boxed">
               {assignedClasses
                 ?.find((cls) => cls.value === activeClass) // find selected class
-                ?.sections
-                ?.map((section) => (
+                ?.sections?.map((section) => (
                   <a
                     key={section._id}
                     onClick={() => {
@@ -906,7 +933,9 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
                       setActiveDivision(section.value);
                     }}
                     role="tab"
-                    className={`tab min-w-[7rem] ${activeDivision === section.value ? "tab-active" : ""}`}
+                    className={`tab min-w-[7rem] ${
+                      activeDivision === section.value ? "tab-active" : ""
+                    }`}
                   >
                     {section.label}
                   </a>
@@ -928,7 +957,9 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
                   setActiveDivision("all");
                 }}
                 role="tab"
-                className={`tab min-w-[7rem] ${activeClass === "all" ? "tab-active" : ""}`}
+                className={`tab min-w-[7rem] ${
+                  activeClass === "all" ? "tab-active" : ""
+                }`}
               >
                 All Students
               </a>
@@ -944,8 +975,9 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
                       setActiveDivision("all"); // reset division when class changes
                     }}
                     role="tab"
-                    className={`tab min-w-[7rem] ${activeClass === classValue ? "tab-active" : ""
-                      }`}
+                    className={`tab min-w-[7rem] ${
+                      activeClass === classValue ? "tab-active" : ""
+                    }`}
                   >
                     {classValue}
                   </a>
@@ -963,7 +995,9 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
                     setActiveDivision("all");
                   }}
                   role="tab"
-                  className={`tab min-w-[7rem] ${activeDivision === "all" ? "tab-active" : ""}`}
+                  className={`tab min-w-[7rem] ${
+                    activeDivision === "all" ? "tab-active" : ""
+                  }`}
                 >
                   All Divisions
                 </a>
@@ -979,8 +1013,9 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
                         setActiveDivision(section.value);
                       }}
                       role="tab"
-                      className={`tab min-w-[7rem] ${activeDivision === section.value ? "tab-active" : ""
-                        }`}
+                      className={`tab min-w-[7rem] ${
+                        activeDivision === section.value ? "tab-active" : ""
+                      }`}
                     >
                       {section.label}
                     </a>
@@ -989,7 +1024,6 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
             )}
           </>
         )}
-
 
         {!loading ? (
           <>
@@ -1009,86 +1043,105 @@ const handleVoiceCommand = (studentName, fuse, useFuzzy = false) => {
                       <th className="py-3 px-6">Type</th>
                       <th className="py-3 px-6">Checked By</th>
                       <th className="py-3 px-6">Rechecked By</th>
-                    {role !== "Admin" && <th className="py-3 px-6">Action</th>}
+                      {role !== "Admin" && (
+                        <th className="py-3 px-6">Action</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="text-gray-600 divide-y">
-                     {visibleUserData?.map((item) => (
-                    <tr key={item._id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div className="avatar">
-                            <div className="mask mask-squircle w-12 h-12">
-                              <img src={item?.studentAvatar?.secure_url} />
+                    {visibleUserData?.map((item) => (
+                      <tr key={item._id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
+                            <div className="avatar">
+                              <div className="mask mask-squircle w-12 h-12">
+                                <img src={item?.studentAvatar?.secure_url} />
+                              </div>
+                            </div>
+                            <div>
+                              <div className="font-bold">{item?.name}</div>
                             </div>
                           </div>
-                          <div>
-                            <div className="font-bold">{item?.name}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item?.fathersName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item?.rollNumber}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {item?.studentClass}-{item?.studentSection}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {subject || "Select a Subject"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {typeOf || "Select a Type"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher ? (
-                          <span className="badge badge-success badge-md text-white">
-                            {localChecks[item._id]?.teacher ? assignUser.name : item.copyRes[0]?.checkedByTeacher}
-                          </span>
-                        ) : (
-                          <span className="badge badge-error text-white">Not-Checked</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator ? (
-                          <span className="badge badge-success badge-md text-white">
-                            {localChecks[item._id]?.coordinator
-                              ? assignUser.name
-                              : item.copyRes[0]?.checkedByCoordinator}
-                          </span>
-                        ) : (
-                          <span className="badge badge-error text-white">Not-ReChecked</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {role !== "Admin" && (
-                       <button
-  onClick={() => handleCopySubmit(item)}
-  disabled={
-    (role === "Teacher" &&
-      (localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher)) ||
-    (role !== "Teacher" &&
-      (localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator))
-  }
-  className={`btn btn-outline btn-xs ${
-    (role === "Teacher" &&
-      (localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher)) ||
-    (role !== "Teacher" &&
-      (localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator))
-      ? "btn-success"
-      : "btn-error"
-  }`}
->
-  {(role === "Teacher" &&
-    (localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher)) ||
-  (role !== "Teacher" &&
-    (localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator))
-    ? "✓ Checked"
-    : "Check"}
-</button>
-
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item?.fathersName}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item?.rollNumber}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {item?.studentClass}-{item?.studentSection}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {subject || "Select a Subject"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {typeOf || "Select a Type"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {localChecks[item._id]?.teacher ||
+                          item?.copyRes[0]?.checkedByTeacher ? (
+                            <span className="badge badge-success badge-md text-white">
+                              {localChecks[item._id]?.teacher
+                                ? assignUser.name
+                                : item.copyRes[0]?.checkedByTeacher}
+                            </span>
+                          ) : (
+                            <span className="badge badge-error text-white">
+                              Not-Checked
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {localChecks[item._id]?.coordinator ||
+                          item?.copyRes[0]?.checkedByCoordinator ? (
+                            <span className="badge badge-success badge-md text-white">
+                              {localChecks[item._id]?.coordinator
+                                ? assignUser.name
+                                : item.copyRes[0]?.checkedByCoordinator}
+                            </span>
+                          ) : (
+                            <span className="badge badge-error text-white">
+                              Not-ReChecked
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {role !== "Admin" && (
+                            <button
+                              onClick={() => handleCopySubmit(item)}
+                              disabled={
+                                (role === "Teacher" &&
+                                  (localChecks[item._id]?.teacher ||
+                                    item?.copyRes[0]?.checkedByTeacher)) ||
+                                (role !== "Teacher" &&
+                                  (localChecks[item._id]?.coordinator ||
+                                    item?.copyRes[0]?.checkedByCoordinator))
+                              }
+                              className={`btn btn-outline btn-xs ${
+                                (role === "Teacher" &&
+                                  (localChecks[item._id]?.teacher ||
+                                    item?.copyRes[0]?.checkedByTeacher)) ||
+                                (role !== "Teacher" &&
+                                  (localChecks[item._id]?.coordinator ||
+                                    item?.copyRes[0]?.checkedByCoordinator))
+                                  ? "btn-success"
+                                  : "btn-error"
+                              }`}
+                            >
+                              {(role === "Teacher" &&
+                                (localChecks[item._id]?.teacher ||
+                                  item?.copyRes[0]?.checkedByTeacher)) ||
+                              (role !== "Teacher" &&
+                                (localChecks[item._id]?.coordinator ||
+                                  item?.copyRes[0]?.checkedByCoordinator))
+                                ? "✓ Checked"
+                                : "Check"}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </>
