@@ -533,147 +533,130 @@ const ManageAdmin = () => {
       </div>
 
       <>
-        <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto">
-          {!loading ? (
-            <>
-              {userData ? (
-                <>
-                  {" "}
-                  <table className="w-full table-auto text-sm text-left">
-                    <thead className="bg-gray-50 text-gray-600 font-medium border-b">
-                      <tr>
-                        <th className="py-3 px-6">Name</th>
-                        <th className="py-3 px-6">Email</th>
-                        <th className="py-3 px-6">Role</th>
-                        <th className="py-3 px-6">Number</th>
-                        <th className="py-3 px-6">Password</th>
-
-                        <th className="py-3 px-6">Status</th>
-                        <th className="py-3 px-6">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-gray-600 divide-y">
-                      {userData?.map((item, idx) => (
-                        <tr key={item._id}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-3">
-                              <div className="avatar">
-                                <div className="mask mask-squircle w-12 h-12">
-                                  <img src={item?.avatar?.secure_url} />
-                                </div>
-                              </div>
-                              <div>
-                                <div className="font-bold">{item.name}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item.email}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item.role == "Admin" ? (
-                              <span className="badge badge-info badge-md text-white">
-                                Admin
-                              </span>
-                            ) : item.role == "Teacher" ? (
-                              <span className="badge badge-secondary badge-md text-white">
-                                Teacher
-                              </span>
-                            ) : item.role == "Senior Coordinator" ? (
-                              <span className="badge badge-warning badge-md text-white">
-                                 Senior Coordinator
-                              </span>
-                            )  : item.role == "Junior Coordinator" ? (
-                              <span className="badge badge-warning badge-md text-white">
-                                 Junior Coordinator
-                              </span>
-                            ) :(
-                              ""
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item.number}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item?.password}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item.isActive ? (
-                              <span className="badge badge-success badge-md text-white">
-                                Active
-                              </span>
-                            ) : (
-                              <span className="badge badge-error text-white">
-                                In-Active
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <button
-                              onClick={() => setUpdateUserData(item)}
-                              className="btn btn-outline btn-xs"
-                            >
-                              Update
-                            </button>
-                            <button
-                              onClick={() => handleDeleteModal(item)}
-                              className="btn btn-error text-white ml-2 btn-xs"
-                            >
-                              Delete
-                            </button>
-                            {/* <button
-                              onClick={() =>
-                                updateStatus(item._id, item.isActive)
-                              }
-                              className="btn btn-outline btn-xs ml-2"
-                              disabled={btnDisable}
-                            >
-                              {item.isActive !== true ? "Active" : "In-Active"}
-                            </button> */}
-
-                            {/* {role == "Super_Admin" && (
-                              <button
-                                onClick={() => handleDeleteModal(item)}
-                                className="btn btn-error  btn-xs text-white ml-2"
-                              >
-                                Delete
-                              </button>
-                            )} */}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </>
-              ) : (
-                <div className="flex justify-center py-4 font-semibold">
-                  No User Data !
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              {" "}
-              <div className="flex items-center justify-center m-auto mt-12">
-                <ColorRing
-                  visible={true}
-                  height="80"
-                  width="80"
-                  ariaLabel="color-ring-loading"
-                  wrapperStyle={{}}
-                  wrapperClass="color-ring-wrapper"
-                  colors={[
-                    "#e15b64",
-                    "#f47e60",
-                    "#f8b26a",
-                    "#abbd81",
-                    "#849b87",
-                  ]}
-                />
-              </div>
-            </>
-          )}
+     <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto">
+  {!loading ? (
+    <>
+      {userData ? (
+        <>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px] md:min-w-0 text-sm text-left">
+              <thead className="bg-gray-50 text-gray-600 font-medium border-b">
+                <tr>
+                  <th className="py-3 px-3 md:px-6">Name</th>
+                  <th className="py-3 px-3 md:px-6">Email</th>
+                  <th className="py-3 px-3 md:px-6">Role</th>
+                  <th className="py-3 px-3 md:px-6">Number</th>
+                  <th className="py-3 px-3 md:px-6">Password</th>
+                  <th className="py-3 px-3 md:px-6">Status</th>
+                  <th className="py-3 px-3 md:px-6">Action</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-600 divide-y">
+                {userData?.map((item, idx) => (
+                  <tr key={item._id}>
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 md:gap-3">
+                        <div className="avatar">
+                          <div className="mask mask-squircle w-8 h-8 md:w-12 md:h-12">
+                            <img 
+                              src={item?.avatar?.secure_url} 
+                              alt={item.name} 
+                              className="object-cover"
+                            />
+                          </div>
+                        </div>
+                        <div className="text-sm md:text-base">
+                          <div className="font-semibold md:font-bold truncate max-w-[100px] md:max-w-none">
+                            {item.name}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm md:text-base truncate max-w-[120px] md:max-w-none">
+                        {item.email}
+                      </div>
+                    </td>
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap">
+                      {item.role == "Admin" ? (
+                        <span className="badge badge-info badge-sm md:badge-md text-white">
+                          Admin
+                        </span>
+                      ) : item.role == "Teacher" ? (
+                        <span className="badge badge-secondary badge-sm md:badge-md text-white">
+                          Teacher
+                        </span>
+                      ) : item.role == "Senior Coordinator" ? (
+                        <span className="badge badge-warning badge-sm md:badge-md text-white">
+                          Senior
+                        </span>
+                      ) : item.role == "Junior Coordinator" ? (
+                        <span className="badge badge-warning badge-sm md:badge-md text-white">
+                          Junior
+                        </span>
+                      ) : (
+                        ""
+                      )}
+                    </td>
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm md:text-base">
+                      {item.number}
+                    </td>
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm md:text-base">
+                      {item?.password ? '••••••' : 'N/A'}
+                    </td>
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap">
+                      {item.isActive ? (
+                        <span className="badge badge-success badge-sm md:badge-md text-white">
+                          Active
+                        </span>
+                      ) : (
+                        <span className="badge badge-error badge-sm md:badge-md text-white">
+                          Inactive
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap space-x-1 md:space-x-2">
+                      <button
+                        onClick={() => setUpdateUserData(item)}
+                        className="btn btn-outline btn-xs"
+                      >
+                        <span className="md:inline hidden">Update</span>
+                        <span className="md:hidden">✏️</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteModal(item)}
+                        className="btn btn-error text-white btn-xs"
+                      >
+                        <span className="md:inline hidden">Delete</span>
+                        <span className="md:hidden">🗑️</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        <div className="flex justify-center py-4 font-semibold">
+          No User Data !
         </div>
+      )}
+    </>
+  ) : (
+    <div className="flex items-center justify-center m-auto mt-12">
+      <ColorRing
+        visible={true}
+        height="80"
+        width="80"
+        ariaLabel="color-ring-loading"
+        wrapperStyle={{}}
+        wrapperClass="color-ring-wrapper"
+        colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+      />
+    </div>
+  )}
+</div>
         {renderPagination()}
       </>
       {isDeleteModalOpen && productToDelete && (

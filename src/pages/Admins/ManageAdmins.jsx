@@ -101,75 +101,75 @@ const ManageAdmins = () => {
       {
         updateUserData
           ? axios
-              .put(
+            .put(
+              `https://d2-c-b.vercel.app/api/user/${updateUserData._id}`,
+              formData
+            )
+            .then((res) => {
+              axios.put(
                 `https://d2-c-b.vercel.app/api/user/${updateUserData._id}`,
-                formData
-              )
-              .then((res) => {
+                data
+              );
+              console.log(res);
+              if (res.data.success) {
+                setBtnDisable(false);
+                toast.success("User Updated Successfully !");
+                setRole("");
+                setName("");
+                setEmail("");
+                setClass("");
+                setDivision("");
+                setNumber("");
+                setPassword("");
+                setAvatar("");
+                setTimeout(() => {
+                  fetchAllUser();
+                }, 400);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              toast.error(error.response.data.message);
+              setBtnDisable(false);
+            })
+            .finally(() => {
+              setBtnDisable(false);
+            })
+          : axios
+            .post(
+              `https://d2-c-b.vercel.app/api/user/register`,
+              formData
+            )
+            .then((res) => {
+              console.log(res);
+              if (res.data.success) {
                 axios.put(
-                  `https://d2-c-b.vercel.app/api/user/${updateUserData._id}`,
+                  `https://d2-c-b.vercel.app/api/user/${res.data.data._id}`,
                   data
                 );
-                console.log(res);
-                if (res.data.success) {
-                  setBtnDisable(false);
-                  toast.success("User Updated Successfully !");
-                  setRole("");
-                  setName("");
-                  setEmail("");
-                  setClass("");
-                  setDivision("");
-                  setNumber("");
-                  setPassword("");
-                  setAvatar("");
-                  setTimeout(() => {
-                    fetchAllUser();
-                  }, 400);
-                }
-              })
-              .catch((error) => {
-                console.log(error);
-                toast.error(error.response.data.message);
                 setBtnDisable(false);
-              })
-              .finally(() => {
-                setBtnDisable(false);
-              })
-          : axios
-              .post(
-                `https://d2-c-b.vercel.app/api/user/register`,
-                formData
-              )
-              .then((res) => {
-                console.log(res);
-                if (res.data.success) {
-                  axios.put(
-                    `https://d2-c-b.vercel.app/api/user/${res.data.data._id}`,
-                    data
-                  );
-                  setBtnDisable(false);
-                  toast.success("Admin Added Successfully !");
-                  setRole("");
-                  setName("");
-                  setEmail("");
-                  setClass("");
-                  setDivision("");
-                  setNumber("");
-                  setPassword("");
-                  setAvatar("");
-                  setTimeout(() => {
-                    fetchAllUser();
-                  }, 400);
-                }
-              })
-              .catch((error) => {
-                console.log(error);
-                toast.error(error.response.data.message);
-                setBtnDisable(false);
-              })
-              .finally(() => {
-                setBtnDisable(false);
-              });
+                toast.success("Admin Added Successfully !");
+                setRole("");
+                setName("");
+                setEmail("");
+                setClass("");
+                setDivision("");
+                setNumber("");
+                setPassword("");
+                setAvatar("");
+                setTimeout(() => {
+                  fetchAllUser();
+                }, 400);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              toast.error(error.response.data.message);
+              setBtnDisable(false);
+            })
+            .finally(() => {
+              setBtnDisable(false);
+            });
       }
     } catch (error) {
       console.log(error);
@@ -178,7 +178,7 @@ const ManageAdmins = () => {
   };
 
   // LIST
-// `https://d2-c-b.vercel.app/api/user/all?page=${currentPage}`
+  // `https://d2-c-b.vercel.app/api/user/all?page=${currentPage}`
   const fetchAllUser = () => {
     setLoading(true);
     try {
@@ -263,9 +263,8 @@ const ManageAdmins = () => {
           <li className="page-item">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
-              className={`px-4 py-2 cursor-pointer rounded-md  mx-1 ${
-                isFirstPage ? "disabled" : ""
-              }`}
+              className={`px-4 py-2 cursor-pointer rounded-md  mx-1 ${isFirstPage ? "disabled" : ""
+                }`}
               disabled={isFirstPage}
             >
               Previous
@@ -275,9 +274,8 @@ const ManageAdmins = () => {
             <li key={number} className="page-item">
               <button
                 onClick={() => handlePageChange(number)}
-                className={`${
-                  currentPage === number ? "bg-gray-400 text-white" : ""
-                } px-4 py-2 mx-1 rounded-md`}
+                className={`${currentPage === number ? "bg-gray-400 text-white" : ""
+                  } px-4 py-2 mx-1 rounded-md`}
               >
                 {number}
               </button>
@@ -286,9 +284,8 @@ const ManageAdmins = () => {
           <li className="page-item">
             <button
               onClick={() => handlePageChange(currentPage + 1)}
-              className={`px-4 py-2 cursor-pointer mx-1 bg-black rounded-md text-white ${
-                isLastPage ? "disabled" : ""
-              }`}
+              className={`px-4 py-2 cursor-pointer mx-1 bg-black rounded-md text-white ${isLastPage ? "disabled" : ""
+                }`}
               disabled={isLastPage}
             >
               Next
@@ -364,13 +361,13 @@ const ManageAdmins = () => {
     <>
       <Toaster />
       <div className="flex justify-end">
-              <Link to="/" className="btn btn-outline">
-  ← Back
-</Link></div>
+        <Link to="/" className="btn btn-outline">
+          ← Back
+        </Link></div>
       <div className="grid md:grid-cols-3 gap-3">
 
         <div className="form-control">
-   
+
           <label className="label">
             <span className="label-text">Name</span>
           </label>
@@ -560,53 +557,53 @@ const ManageAdmins = () => {
                       </tr>
                     </thead>
                     <tbody className="text-gray-600 divide-y">
-                    {userData
-  ?.filter((item) => item.role === "Admin")
-  .map((item, idx) => (
-    <tr key={item._id}>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="flex items-center gap-3">
-          <div className="avatar">
-            <div className="mask mask-squircle w-12 h-12">
-              <img src={item?.avatar?.secure_url} />
-            </div>
-          </div>
-          <div>
-            <div className="font-bold">{item.name}</div>
-          </div>
-        </div>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">{item.email}</td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span className="badge badge-info badge-md text-white">Admin</span>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">{item.number}</td>
-      <td className="px-6 py-4 whitespace-nowrap">{item?.password}</td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        {item.isActive ? (
-          <span className="badge badge-success badge-md text-white">
-            Active
-          </span>
-        ) : (
-          <span className="badge badge-error text-white">In-Active</span>
-        )}
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <button
-          onClick={() => setUpdateUserData(item)}
-          className="btn btn-outline btn-xs"
-        >
-          Update
-        </button>
-        <button
-          onClick={() => handleDeleteModal(item)}
-          className="btn btn-error text-white ml-2 btn-xs"
-        >
-          Delete
-        </button>
-      </td>
-    </tr>
-))}
+                      {userData
+                        ?.filter((item) => item.role === "Admin")
+                        .map((item, idx) => (
+                          <tr key={item._id}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center gap-3">
+                                <div className="avatar">
+                                  <div className="mask mask-squircle w-12 h-12">
+                                    <img src={item?.avatar?.secure_url} />
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="font-bold">{item.name}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item.email}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="badge badge-info badge-md text-white">Admin</span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item.number}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item?.password}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {item.isActive ? (
+                                <span className="badge badge-success badge-md text-white">
+                                  Active
+                                </span>
+                              ) : (
+                                <span className="badge badge-error text-white">In-Active</span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <button
+                                onClick={() => setUpdateUserData(item)}
+                                className="btn btn-outline btn-xs"
+                              >
+                                Update
+                              </button>
+                              <button
+                                onClick={() => handleDeleteModal(item)}
+                                className="btn btn-error text-white ml-2 btn-xs"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
 
                     </tbody>
                   </table>

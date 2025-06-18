@@ -8,6 +8,23 @@ import { RiFileExcel2Fill } from "react-icons/ri";
 import Fuse from "fuse.js";
 
 const ManageCopies = () => {
+   const numberWords = {
+    'one': '1',
+    'won': '1',
+    'to': '2',
+    'too': '2',
+    'two': '2',
+    'three': '3',
+    'tree': '3',
+    'for': '4',
+    'four': '4',
+    'five': '5',
+    'six': '6',
+    'seven': '7',
+    'eight': '8',
+    'nine': '9',
+    'zero': '0'
+  };
   const tableRef = useRef(null);
   const currentDate = new Date();
   const year = currentDate.getFullYear();
@@ -328,70 +345,91 @@ const ManageCopies = () => {
       }));
     }
   };
-useEffect(() => {
-  // Initialize Fuse for fuzzy search
-  const fuse = new Fuse(userData, {
-    keys: ["rollNumber"],
-    threshold: 0.4,
-    includeScore: true,
-  });
+ useEffect(() => {
+    if (!annyang) return;
 
-  // Define commands
-  const commands = {
-    // Command for direct match: "check [student name]"
-    'check *student': (studentInput) => {
-      handleVoiceCommand(studentInput, fuse);
-    },
-    // Command for fuzzy search: "search [student name]"
-    'search *student': (studentInput) => {
-      handleVoiceCommand(studentInput, fuse, true);
+    // Initialize Fuse for fuzzy search
+    const fuse = new Fuse(userData, {
+      keys: ["rollNumber", "name"],
+      threshold: 0.4,
+      includeScore: true,
+    });
+
+    // Define commands
+    const commands = {
+      // Command for direct match: "check [student name or number]"
+      'check *student': (studentInput) => {
+        handleVoiceCommand(studentInput, fuse);
+      },
+      // Command for fuzzy search: "search [student name or number]"
+      'search *student': (studentInput) => {
+        handleVoiceCommand(studentInput, fuse, true);
+      },
+      // Direct number commands: "check one", "check two", etc.
+      'check :number': (number) => {
+        const digit = numberWords[number.toLowerCase()] || number;
+        handleVoiceCommand(digit, fuse);
+      }
+    };
+
+    // Add commands to annyang
+    annyang.addCommands(commands);
+
+    // Start annyang
+    annyang.start({ autoRestart: false, continuous: true });
+
+    // Add a debug listener to help with troubleshooting
+    annyang.addCallback('result', (userSaid) => {
+      console.log("User said:", userSaid);
+    });
+
+    // Cleanup
+    return () => {
+      if (annyang) {
+        annyang.removeCommands();
+        annyang.abort();
+      }
+    };
+  }, [userData, subject, typeOf]);
+
+ const handleVoiceCommand = (studentInput, fuse, useFuzzy = false) => {
+    if (!subject || !typeOf) {
+      toast.error("Please select Subject and Type first!");
+      return;
+    }
+
+    // Convert number words to digits
+    let processedInput = studentInput.toLowerCase().trim();
+    Object.keys(numberWords).forEach(word => {
+      processedInput = processedInput.replace(new RegExp(`\\b${word}\\b`, 'g'), numberWords[word]);
+    });
+
+    let student;
+
+    // If the processed input is a number, search by rollNumber
+    if (/^\d+$/.test(processedInput)) {
+      student = userData.find(s => String(s.rollNumber) === processedInput);
+    } else if (useFuzzy) {
+      // Fuzzy search by name
+      const result = fuse.search(processedInput);
+      if (result?.length > 0) {
+        student = result[0].item;
+      }
+    } else {
+      // Exact match by name
+      student = userData.find(s => 
+        s?.name?.toLowerCase()?.trim() === processedInput
+      );
+    }
+
+    if (student) {
+      handleCopySubmit(student);
+      toast.success(`Processing ${student.rollNumber}`);
+    } else {
+      toast.error("Student not found. Please try again.");
     }
   };
 
-  // Add commands to annyang
-  annyang.addCommands(commands);
-
-  // Start annyang
-  annyang.start({ autoRestart: false, continuous: true });
-
-  // Cleanup
-  return () => {
-    annyang.removeCommands();
-    annyang.abort();
-  };
-}, [userData, subject, typeOf]); // Add dependencies
-
-const handleVoiceCommand = (studentInput, fuse, useFuzzy = false) => {
-  if (!subject || !typeOf) {
-    toast.error("Please select Subject and Type first!");
-    return;
-  }
-
-  let student;
-
-  // If the input is a number, search by rollNumber
-  if (/^\d+$/.test(studentInput.trim())) {
-    student = userData.find(s => String(s.rollNumber) === studentInput.trim());
-  } else if (useFuzzy) {
-    // Fuzzy search by name
-    const result = fuse.search(studentInput);
-    if (result?.length > 0) {
-      student = result[0].item;
-    }
-  } else {
-    // Exact match by name
-    student = userData.find(s => 
-      s?.name?.toLowerCase()?.trim() === studentInput?.toLowerCase()?.trim()
-    );
-  }
-
-  if (student) {
-    handleCopySubmit(student);
-    toast.success(`Processing ${student.rollNumber}`);
-  } else {
-    toast.error("Student not found. Please try again.");
-  }
-};
   function generateWhatsAppMessage(userData) {
     const notSubmittedStudents = userData?.filter(
       (item) => !item?.copyRes[item?.copyRes?.length - 1]?.isCopyChecked
