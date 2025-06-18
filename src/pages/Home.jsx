@@ -445,20 +445,20 @@ const fetchStudents = () => {
                       <button className="flex items-center gap-4 font-semibold">
                         Teacher Attendance
                         <div className="badge badge-secondary">
-                          {count?.coordinators}
+                          {count?.teachers}
                         </div>
                       </button>
                     </div>
                   </div>
 
                   <div className="flex justify-center mt-4">
-                    <button className="btn">Go to Coordinator&apos;s panel</button>
+                    <button className="btn">Go to Teacher&apos;s panel</button>
                   </div>
                 </div>
-                  {" "}
+                 {" "}
                 <div
                   className="hover:border shadow cursor-pointer w-fit  px-6 py-4"
-                  onClick={() => navigate("/display-attendence-stu")}
+                  onClick={() => navigate("/stu-attendence-view")}
                 >
                   <div className="flex items-center gap-8 ">
                     <div>
@@ -475,14 +475,14 @@ const fetchStudents = () => {
                   </div>
 
                   <div className="flex justify-center mt-4">
-                    <button className="btn">Go to Coordinator&apos;s panel</button>
+                    <button className="btn">Go to Student's&apos;s Attendence</button>
                   </div>
                 </div>
               </>
             ) : role == "Teacher" ? (
               <>
-                <div>
-                  {/* <div
+                {/* <div>
+                  <div
                     className="hover:border shadow w-fit  px-6 py-4"
                     onClick={() => navigate("/manage-students")}
                   >
@@ -502,8 +502,8 @@ const fetchStudents = () => {
                     <div className="flex justify-center mt-4">
                 <button className="btn">Go to Student&apos;s panel</button>
               </div>
-                  </div> */}
-                </div>
+                  </div>
+                </div> */}
               </>
             ) : (
               ""
