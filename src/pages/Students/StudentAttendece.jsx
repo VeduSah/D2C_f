@@ -109,7 +109,7 @@ const StudentAttendance = () => {
           const existing = existingAttendance.find(
             (a) => a.student === student._id
           );
-          initialStatus[student._id] = existing ? existing.status : "Absent";
+          initialStatus[student._id] = existing ? existing.status : "Present";
         });
 
         setAttendanceStatus(initialStatus);
@@ -119,7 +119,7 @@ const StudentAttendance = () => {
         // Initialize all as absent if check fails
         const initialStatus = {};
         students.forEach((student) => {
-          initialStatus[student._id] = "Absent";
+          initialStatus[student._id] = "Present";
         });
         setAttendanceStatus(initialStatus);
         setPendingChanges(false);
@@ -264,7 +264,7 @@ const StudentAttendance = () => {
       const existing = filteredAttendance.find(
         (a) => a.student === student._id
       );
-      updatedStatus[student._id] = existing ? existing.status : "Absent";
+      updatedStatus[student._id] = existing ? existing.status : "Present";
     });
 
     setAttendanceStatus(updatedStatus);
