@@ -17,6 +17,12 @@ const StudentAttendance = () => {
   const [activeSection, setActiveSection] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingChanges, setPendingChanges] = useState(false);
+  const [attendanceData, setAttendanceData] = useState([]);
+
+  const isSunday = (dateString) => {
+    const date = new Date(dateString);
+    return date.getDay() === 0; // 0 represents Sunday in JavaScript's getDay()
+  };
 
   useEffect(() => {
     // Load assigned classes from localStorage
@@ -83,11 +89,21 @@ const StudentAttendance = () => {
     const checkExistingAttendance = async (students) => {
       try {
         const response = await axios.get(
-          `https://d2-c-b.vercel.app/api/student-attendance?date=${selectedDate}&class=${activeClass}&section=${activeSection}`
+          `https://d2-c-b.vercel.app/api/student-attendance/pg?page=1&date=${selectedDate}`
         );
 
         const existingAttendance = response.data.data || [];
         const initialStatus = {};
+
+        // Store the attendance data for display
+        setAttendanceData(existingAttendance);
+
+        // Filter attendance data for current class and section
+        const filteredAttendance = existingAttendance.filter(
+          (record) =>
+            record.studentClass === activeClass &&
+            record.studentSection === activeSection
+        );
 
         students.forEach((student) => {
           const existing = existingAttendance.find(
@@ -107,6 +123,7 @@ const StudentAttendance = () => {
         });
         setAttendanceStatus(initialStatus);
         setPendingChanges(false);
+        setAttendanceData([]);
       }
     };
 
@@ -230,20 +247,45 @@ const StudentAttendance = () => {
 
     // Refresh the attendance data
     const response = await axios.get(
-      `https://d2-c-b.vercel.app/api/student-attendance?date=${selectedDate}&class=${activeClass}&section=${activeSection}`
+      `https://d2-c-b.vercel.app/api/student-attendance/pg?page=1&date=${selectedDate}`
     );
 
     const existingAttendance = response.data.data || [];
-    const updatedStatus = {};
+    setAttendanceData(existingAttendance);
 
+    const filteredAttendance = existingAttendance.filter(
+      (record) =>
+        record.studentClass === activeClass &&
+        record.studentSection === activeSection
+    );
+
+    const updatedStatus = {};
     students.forEach((student) => {
-      const existing = existingAttendance.find(
+      const existing = filteredAttendance.find(
         (a) => a.student === student._id
       );
       updatedStatus[student._id] = existing ? existing.status : "Absent";
     });
 
     setAttendanceStatus(updatedStatus);
+
+    //   students.forEach((student) => {
+    //     const existing = existingAttendance.find(
+    //       (a) => a.student === student._id
+    //     );
+    //     updatedStatus[student._id] = existing ? existing.status : "Absent";
+    //   });
+
+    //   setAttendanceStatus(updatedStatus);
+  };
+
+  const handleDateChange = (e) => {
+    const newDate = e.target.value;
+    if (isSunday(newDate)) {
+      toast.error("Sunday is a holiday");
+      return;
+    }
+    setSelectedDate(newDate);
   };
 
   return (
@@ -352,9 +394,58 @@ const StudentAttendance = () => {
             type="date"
             className="border border-gray-300 p-2 rounded w-full"
             value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
+            onChange={handleDateChange}
           />
         </div>
+
+        {/* Attendance Summary */}
+        {attendanceData.length > 0 && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h3 className="text-lg font-semibold mb-2">
+              Attendance Summary for {selectedDate}
+            </h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold">
+                  {
+                    attendanceData.filter(
+                      (record) =>
+                        record.studentClass === activeClass &&
+                        record.studentSection === activeSection
+                    ).length
+                  }
+                </div>
+                <div className="text-sm text-gray-600">Total Records</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {
+                    attendanceData.filter(
+                      (record) =>
+                        record.status === "Present" &&
+                        record.studentClass === activeClass &&
+                        record.studentSection === activeSection
+                    ).length
+                  }
+                </div>
+                <div className="text-sm text-gray-600">Present</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-600">
+                  {
+                    attendanceData.filter(
+                      (record) =>
+                        record.status === "Absent" &&
+                        record.studentClass === activeClass &&
+                        record.studentSection === activeSection
+                    ).length
+                  }
+                </div>
+                <div className="text-sm text-gray-600">Absent</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {students.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
