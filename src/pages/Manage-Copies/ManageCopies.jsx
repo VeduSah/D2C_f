@@ -14,6 +14,8 @@ const numberWords = {
   'oh': '0',
   'owe': '0',
   'one': '1',
+  "on":'1',
+  "van": '1',
   'won': '1',
   'wan': '1',
   'wun': '1',
@@ -43,6 +45,7 @@ const numberWords = {
   'eight': '8',
   'ate': '8',
   'ait': '8',
+  "it":'8',
   'nine': '9',
   'nain': '9',
   'niner': '9',
@@ -448,90 +451,72 @@ const numberWords = {
       }));
     }
   };
- useEffect(() => {
-    if (!annyang) return;
+useEffect(() => {
+  if (!annyang) return;
 
-    // Initialize Fuse for fuzzy search
-    const fuse = new Fuse(userData, {
-      keys: ["rollNumber", "name"],
-      threshold: 0.4,
-      includeScore: true,
-    });
+  // Reset command buffer on new speech
+  let commandBuffer = [];
 
-    // Define commands
-    const commands = {
-      // Command for direct match: "check [student name or number]"
-      'check *student': (studentInput) => {
-        handleVoiceCommand(studentInput, fuse);
-      },
-      // Command for fuzzy search: "search [student name or number]"
-      'search *student': (studentInput) => {
-        handleVoiceCommand(studentInput, fuse, true);
-      },
-      // Direct number commands: "check one", "check two", etc.
-      'check :number': (number) => {
-        const digit = numberWords[number.toLowerCase()] || number;
-        handleVoiceCommand(digit, fuse);
+  // Define commands
+  const commands = {
+    // 1. Exact 2-word commands ("check 1", "check two")
+    'check :number': (number) => {
+      const digit = numberWords[number.toLowerCase()] || number;
+      handleVoiceCommand(digit);
+    },
+
+    // 2. Fallback for capturing words to enforce 2-word limit
+    '*words': (...words) => {
+      if (words.length === 2) {
+        if (words[0].toLowerCase() === 'check') {
+          const numberInput = words[1].toLowerCase();
+          const digit = numberWords[numberInput] || numberInput;
+          handleVoiceCommand(digit);
+        }
       }
-    };
-
-    // Add commands to annyang
-    annyang.addCommands(commands);
-
-    // Start annyang
-    annyang.start({ autoRestart: false, continuous: true });
-
-    // Add a debug listener to help with troubleshooting
-    annyang.addCallback('result', (userSaid) => {
-      console.log("User said:", userSaid);
-    });
-
-    // Cleanup
-    return () => {
-      if (annyang) {
-        annyang.removeCommands();
-        annyang.abort();
-      }
-    };
-  }, [userData, subject, typeOf]);
-
- const handleVoiceCommand = (studentInput, fuse, useFuzzy = false) => {
-    if (!subject || !typeOf) {
-      toast.error("Please select Subject and Type first!");
-      return;
-    }
-
-    // Convert number words to digits
-    let processedInput = studentInput.toLowerCase().trim();
-    Object.keys(numberWords).forEach(word => {
-      processedInput = processedInput.replace(new RegExp(`\\b${word}\\b`, 'g'), numberWords[word]);
-    });
-
-    let student;
-
-    // If the processed input is a number, search by rollNumber
-    if (/^\d+$/.test(processedInput)) {
-      student = userData.find(s => String(s.rollNumber) === processedInput);
-    } else if (useFuzzy) {
-      // Fuzzy search by name
-      const result = fuse.search(processedInput);
-      if (result?.length > 0) {
-        student = result[0].item;
-      }
-    } else {
-      // Exact match by name
-      student = userData.find(s => 
-        s?.name?.toLowerCase()?.trim() === processedInput
-      );
-    }
-
-    if (student) {
-      handleCopySubmit(student);
-      toast.success(`Processing ${student.rollNumber}`);
-    } else {
-      toast.error("Student not found. Please try again.");
+      commandBuffer = []; // Reset after processing
     }
   };
+
+  // Add commands with higher priority for exact matches
+  annyang.addCommands(commands);
+
+  // Start with conservative settings
+  annyang.start({
+    autoRestart: true,
+    continuous: false, // Stops listening after each command
+  });
+
+  // Debugging
+  annyang.addCallback('result', (userSaid) => {
+    console.log("Voice input:", userSaid);
+  });
+
+  return () => {
+    if (annyang) {
+      annyang.removeCommands();
+      annyang.abort();
+    }
+  };
+}, [userData, subject, typeOf]);
+
+const handleVoiceCommand = (rollNumber) => {
+  if (!subject || !typeOf) {
+    toast.error("Please select Subject and Type first!");
+    return;
+  }
+
+  // Find student by roll number
+  const student = userData.find(s => String(s.rollNumber) === String(rollNumber));
+  
+  if (student) {
+    handleCopySubmit(student);
+    toast.success(`Processing roll number ${rollNumber}`);
+  } else {
+    toast.error(`Student with roll number ${rollNumber} not found`);
+  }
+};
+
 
   function generateWhatsAppMessage(userData) {
     const notSubmittedStudents = userData?.filter(
