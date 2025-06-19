@@ -456,36 +456,30 @@ const numberWords = {
 useEffect(() => {
   if (!annyang) return;
 
-  // Define commands with more strict processing
-  const commands = {
-    // 1. Exact 2-word commands ("check 1", "check two")
-    'check :number': (number) => {
-      const digit = numberWords[number.toLowerCase()] || number;
-      handleVoiceCommand(digit);
-    },
+  const processVoiceCommand = async (numberInput) => {
+    const digit = numberWords[numberInput.toLowerCase()] || numberInput;
+    await handleVoiceCommand(digit);
+  };
 
-    // 2. Wildcard command that processes first two words only
-    '*phrase': (phrase) => {
-      // Split into words and take first two only
+  const commands = {
+    'check :number': async (number) => {
+      await processVoiceCommand(number);
+    },
+    '*phrase': async (phrase) => {
       const words = phrase.trim().split(/\s+/);
       if (words.length >= 2 && words[0].toLowerCase() === 'check') {
-        const numberInput = words[1].toLowerCase();
-        const digit = numberWords[numberInput] || numberInput;
-        handleVoiceCommand(digit);
+        await processVoiceCommand(words[1]);
       }
     }
   };
 
-  // Add commands
   annyang.addCommands(commands);
 
-  // Start with settings that help with phrase separation
   annyang.start({
     autoRestart: true,
     continuous: false,
   });
 
-  // Add debugging for input processing
   annyang.addCallback('result', (userSaid) => {
     console.log("Raw voice input:", userSaid);
     const words = userSaid[0].trim().split(/\s+/);
@@ -493,29 +487,28 @@ useEffect(() => {
   });
 
   return () => {
-    if (annyang) {
-      annyang.removeCommands();
-      annyang.abort();
-    }
+    annyang.removeCommands();
+    annyang.abort();
   };
 }, [userData, subject, typeOf]);
 
-const handleVoiceCommand = (rollNumber) => {
+
+const handleVoiceCommand = async (rollNumber) => {
   if (!subject || !typeOf) {
     toast.error("Please select Subject and Type first!");
     return;
   }
 
-  // Find student by roll number
   const student = userData.find(s => String(s.rollNumber) === String(rollNumber));
-  
+
   if (student) {
-    handleCopySubmit(student);
+    await handleCopySubmit(student);  // Ensure this is async if it's doing async work
     toast.success(`Processing roll number ${rollNumber}`);
   } else {
     toast.error(`Student with roll number ${rollNumber} not found`);
   }
 };
+
 
 
   function generateWhatsAppMessage(userData) {
