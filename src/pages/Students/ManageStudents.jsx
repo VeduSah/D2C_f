@@ -2546,7 +2546,7 @@ const ManageStudents = () => {
 
                         <th className="py-3 px-6">Contact</th>
                         <th className="py-3 px-6">Gender</th>
-                        <th className="py-3 px-6">Registration No</th>
+                        
 
                         <th className="py-3 px-6">Status</th>
                         <th className="py-3 px-6">Action</th>
@@ -2583,9 +2583,9 @@ const ManageStudents = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             {item.gender}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          {/* <td className="px-6 py-4 whitespace-nowrap">
                             {item.registrationNumber}
-                          </td>
+                          </td> */}
 <td className="px-6 py-4 whitespace-nowrap">
    <ToggleButton
                           isOn={item.isActive}

@@ -87,18 +87,25 @@ const App = () => {
 
     annyang.addCommands(commands);
 
-    const onResult = (phrases) => {
-      const phrase = phrases[0] || "";
-      console.log("Recognized:", phrase);
-      setRecognizedSpeech(phrase);
+const onResult = (phrases) => {
+  const phrase = phrases[0] || "";
+  console.log("Recognized (raw):", phrase);
 
-      if (phrase.includes("clear")) {
-        setRecognizedSpeech("Listening...");
-      } else if (phrase.includes("stop")) {
-        annyang.abort();
-        setIsListening(false);
-      }
-    };
+  // Display only the first two words
+  const cleanedPhrase = phrase.trim().replace(/\s+/g, " ");
+  const firstTwoWords = cleanedPhrase.split(" ").slice(0, 2).join(" ");
+  setRecognizedSpeech(firstTwoWords || "Listening...");
+
+  // Process the FULL phrase (not just the first two words)
+  if (phrase.includes("clear")) {
+    setRecognizedSpeech("Listening...");
+  } else if (phrase.includes("stop")) {
+    annyang.abort();
+    setIsListening(false);
+  }
+};
+
+
 
     annyang.addCallback("result", onResult);
     annyang.addCallback("start", () => setIsListening(true));

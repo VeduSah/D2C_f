@@ -34,6 +34,8 @@ const numberWords = {
   'faur': '4',
   'foor': '4',
   'five': '5',
+  'by':'5',
+  'bye': '5',
   'fife': '5',
   'fiv': '5',
   'six': '6',
@@ -454,10 +456,7 @@ const numberWords = {
 useEffect(() => {
   if (!annyang) return;
 
-  // Reset command buffer on new speech
-  let commandBuffer = [];
-
-  // Define commands
+  // Define commands with more strict processing
   const commands = {
     // 1. Exact 2-word commands ("check 1", "check two")
     'check :number': (number) => {
@@ -465,31 +464,32 @@ useEffect(() => {
       handleVoiceCommand(digit);
     },
 
-    // 2. Fallback for capturing words to enforce 2-word limit
-    '*words': (...words) => {
-      if (words.length === 2) {
-        if (words[0].toLowerCase() === 'check') {
-          const numberInput = words[1].toLowerCase();
-          const digit = numberWords[numberInput] || numberInput;
-          handleVoiceCommand(digit);
-        }
+    // 2. Wildcard command that processes first two words only
+    '*phrase': (phrase) => {
+      // Split into words and take first two only
+      const words = phrase.trim().split(/\s+/);
+      if (words.length >= 2 && words[0].toLowerCase() === 'check') {
+        const numberInput = words[1].toLowerCase();
+        const digit = numberWords[numberInput] || numberInput;
+        handleVoiceCommand(digit);
       }
-      commandBuffer = []; // Reset after processing
     }
   };
 
-  // Add commands with higher priority for exact matches
+  // Add commands
   annyang.addCommands(commands);
 
-  // Start with conservative settings
+  // Start with settings that help with phrase separation
   annyang.start({
     autoRestart: true,
-    continuous: false, // Stops listening after each command
+    continuous: false,
   });
 
-  // Debugging
+  // Add debugging for input processing
   annyang.addCallback('result', (userSaid) => {
-    console.log("Voice input:", userSaid);
+    console.log("Raw voice input:", userSaid);
+    const words = userSaid[0].trim().split(/\s+/);
+    console.log("Processed words:", words.slice(0, 2), "Ignored:", words.slice(2));
   });
 
   return () => {
