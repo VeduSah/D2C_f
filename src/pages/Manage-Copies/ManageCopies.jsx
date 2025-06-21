@@ -814,8 +814,8 @@ const numberWords = {
                   >
                     <span className="mr-2">
                       {['L.K.G', 'U.K.G', 'Nursery'].includes(cls)
-                        ? <span role="img" aria-label="book">📚</span>
-                        : <span role="img" aria-label="class">🎓</span>}
+                        ? <span role="img" aria-label="book"></span>
+                        : <span role="img" aria-label="class"></span>}
                     </span>
                     {['L.K.G', 'U.K.G', 'Nursery'].includes(cls)
                       ? cls
@@ -879,8 +879,8 @@ const numberWords = {
                   >
                     <span className="mr-2">
                       {['L.K.G', 'U.K.G', 'Nursery', 'Class L.K.G', 'Class U.K.G', 'Class Nursery'].includes(cls.label)
-                        ? <span role="img" aria-label="book">📚</span>
-                        : <span role="img" aria-label="class">🎓</span>}
+                        ? <span role="img" aria-label="book"></span>
+                        : <span role="img" aria-label="class"></span>}
                     </span>
                     {['L.K.G', 'U.K.G', 'Nursery', 'Class L.K.G', 'Class U.K.G', 'Class Nursery'].includes(cls.label)
                       ? cls.label.replace('Class ', '')
@@ -934,8 +934,8 @@ const numberWords = {
                 >
                   <span className="mr-2">
                     {["L.K.G", "U.K.G", "Nursery", "Class L.K.G", "Class U.K.G", "Class Nursery"].includes(cls.label)
-                      ? <span role="img" aria-label="book">📚</span>
-                      : <span role="img" aria-label="class">🎓</span>}
+                      ? <span role="img" aria-label="book"></span>
+                      : <span role="img" aria-label="class"></span>}
                   </span>
                   {cls.label.replace('Class ', '')}
                 </button>
