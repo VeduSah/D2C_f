@@ -93,17 +93,18 @@ const StudentAttendance = () => {
           const existing = existingAttendance.find(
             (a) => a.student === student._id
           );
-          initialStatus[student._id] = existing ? existing.status : "Absent";
+          // Default to Present instead of Absent
+          initialStatus[student._id] = existing ? existing.status : "Present";
         });
 
         setAttendanceStatus(initialStatus);
         setPendingChanges(false);
       } catch (error) {
         console.error("Error checking existing attendance:", error);
-        // Initialize all as absent if check fails
+        // Initialize all as Present if check fails
         const initialStatus = {};
         students.forEach((student) => {
-          initialStatus[student._id] = "Absent";
+          initialStatus[student._id] = "Present";
         });
         setAttendanceStatus(initialStatus);
         setPendingChanges(false);
@@ -200,7 +201,8 @@ const StudentAttendance = () => {
     const results = await Promise.allSettled(
       students.map(async (student) => {
         try {
-          const status = attendanceStatus[student._id] || "Absent";
+          // Default to Present if status is undefined
+          const status = attendanceStatus[student._id] || "Present";
           const result = await handleAttendanceAction(student._id, status);
           return result;
         } catch (error) {
@@ -240,7 +242,7 @@ const StudentAttendance = () => {
       const existing = existingAttendance.find(
         (a) => a.student === student._id
       );
-      updatedStatus[student._id] = existing ? existing.status : "Absent";
+      updatedStatus[student._id] = existing ? existing.status : "Present";
     });
 
     setAttendanceStatus(updatedStatus);
@@ -402,8 +404,7 @@ const StudentAttendance = () => {
                             name={`attendance-${student._id}`}
                             value="Absent"
                             checked={
-                              attendanceStatus[student._id] === "Absent" ||
-                              !attendanceStatus[student._id]
+                              attendanceStatus[student._id] === "Absent"
                             }
                             onChange={() =>
                               handleStatusChange(student._id, "Absent")
@@ -443,304 +444,3 @@ const StudentAttendance = () => {
 };
 
 export default StudentAttendance;
-
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-// import toast, { Toaster } from 'react-hot-toast';
-// import { useNavigate } from 'react-router-dom';
-
-// const StudentAttendance = () => {
-//   const navigate = useNavigate();
-//   const [students, setStudents] = useState([]);
-//   const [selectedDate, setSelectedDate] = useState(() => {
-//     const today = new Date();
-//     return today.toISOString().split('T')[0];
-//   });
-//   const [attendanceStatus, setAttendanceStatus] = useState({});
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [assignedClasses, setAssignedClasses] = useState([]);
-//   const [activeClass, setActiveClass] = useState('');
-//   const [activeSection, setActiveSection] = useState('');
-
-//   useEffect(() => {
-//     // Load assigned classes from localStorage
-//     const storedClasses = JSON.parse(localStorage.getItem('assignedClasses') || '[]');
-//     setAssignedClasses(storedClasses);
-
-//     if (storedClasses.length > 0) {
-//       setActiveClass(storedClasses[0].value);
-//       // Set first section of first class as default
-//       if (storedClasses[0].sections && storedClasses[0].sections.length > 0) {
-//         setActiveSection(storedClasses[0].sections[0].value);
-//       }
-//     }
-//   }, []);
-
-// useEffect(() => {
-//   const fetchStudents = async () => {
-//     if (!activeClass || !activeSection) return;
-
-//     try {
-//       const url = `https://d2-c-b.vercel.app/api/student/filter-by-class?studentClass=${activeClass}&studentSection=${activeSection}&page=1`;
-//       const res = await axios.get(url);
-
-//       // Filter to only active students directly from the response
-//       const filteredStudents = res.data.data.filter(student => student.isActive === true);
-//       setStudents(filteredStudents);
-
-//       // Initialize all filtered students as absent by default
-//       const initialStatus = {};
-//       filteredStudents.forEach(student => {
-//         initialStatus[student._id] = 'Absent';
-//       });
-//       setAttendanceStatus(initialStatus);
-//     } catch (err) {
-//       console.error('Failed to fetch students:', err);
-//       toast.error('Error fetching students. Please try again later.');
-//       setStudents([]);
-//     }
-//   };
-
-//   fetchStudents();
-// }, [activeClass, activeSection]);
-//   const handleStatusChange = (studentId, status) => {
-//     setAttendanceStatus(prev => ({ ...prev, [studentId]: status }));
-//   };
-
-// const handleSubmit = async () => {
-//   if (!selectedDate) {
-//     toast.error('Please select a date before submitting.');
-//     return;
-//   }
-
-//   if (students.length === 0) {
-//     toast.error('No active students found to submit attendance for.');
-//     return;
-//   }
-
-//   setIsSubmitting(true);
-
-//   const results = await Promise.allSettled(
-//     students.map(async (student) => {
-//       try {
-//         const status = attendanceStatus[student._id] || 'Absent';
-
-//         const response = await axios.post(
-//           'https://d2-c-b.vercel.app/api/student-attendance/create',
-//           {
-//             student: student._id,
-//             status,
-//             date: selectedDate
-//           }
-//         );
-
-//         return {
-//           success: true,
-//           name: student.name,
-//           data: response.data
-//         };
-//       } catch (error) {
-//         return {
-//           success: false,
-//           name: student.name,
-//           error: error.response?.data?.error || error.message
-//         };
-//       }
-//     })
-//   );
-
-//   const successful = results.filter(r => r.value?.success);
-//   const failed = results.filter(r => !r.value?.success);
-
-//   if (successful.length > 0) {
-//     toast.success(`Successfully recorded attendance for ${successful.length} students`);
-//   }
-//   if (failed.length > 0) {
-//     failed.forEach(f => {
-//       toast.error(`Failed for ${f.value.name}: ${f.value.error}`);
-//     });
-//   }
-
-//   setIsSubmitting(false);
-// };
-// const handleUpdateAttendance = async (studentId, newStatus) => {
-//   if (!selectedDate) {
-//     toast.error('Please select a date');
-//     return;
-//   }
-
-//   if (!window.confirm('Are you sure you want to update this attendance record?')) {
-//     return;
-//   }
-
-//   try {
-//     const response = await axios.put(
-//       'https://d2-c-b.vercel.app/api/student-attendance/update',
-//       {
-//         student: studentId,
-//         status: newStatus,
-//         date: selectedDate
-//       }
-//     );
-
-//     if (response.data.success) {
-//       toast.success(`Attendance updated for ${response.data.data.name}`);
-//       // Update local state to reflect the change
-//       setAttendanceStatus(prev => ({
-//         ...prev,
-//         [studentId]: newStatus
-//       }));
-//     } else {
-//       toast.error(response.data.error || 'Failed to update attendance');
-//     }
-//   } catch (error) {
-//     console.error('Update error:', error);
-//     toast.error(error.response?.data?.error || 'Error updating attendance');
-//   }
-// };
-//   return (
-//     <div className="min-h-screen bg-gray-100 p-8">
-//       <Toaster
-//         position="top-right"
-//         reverseOrder={false}
-//         toastOptions={{
-//           duration: 3000,
-//           style: {
-//             fontSize: '14px',
-//           },
-//         }}
-//       />
-
-//       <div className="max-w-4xl mx-auto bg-white shadow p-6 rounded-lg">
-//         <div className="flex justify-end mb-4">
-//           <button
-//             onClick={() => navigate('/display-attendence-stu')}
-//             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-//           >
-//             Back
-//           </button>
-//         </div>
-//         <h2 className="text-2xl font-bold mb-4 text-center">Student Attendance</h2>
-
-//         {/* Class Tabs */}
-//         {assignedClasses.length > 0 && (
-//           <div className="mb-4">
-//             <div role="tablist" className="tabs tabs-boxed flex-wrap">
-//               {assignedClasses.map((cls) => (
-//                 <button
-//                   key={cls._id}
-//                   onClick={() => {
-//                     setActiveClass(cls.value);
-//                     // Set first section of this class when class changes
-//                     if (cls.sections && cls.sections.length > 0) {
-//                       setActiveSection(cls.sections[0].value);
-//                     }
-//                   }}
-//                   className={`tab ${activeClass === cls.value ? 'tab-active' : ''}`}
-//                 >
-//                   {cls.label}
-//                 </button>
-//               ))}
-//             </div>
-//           </div>
-//         )}
-
-//         {/* Section Tabs */}
-//         {assignedClasses.find(c => c.value === activeClass)?.sections?.length > 0 && (
-//           <div className="mb-6">
-//             <div role="tablist" className="tabs tabs-boxed flex-wrap">
-//               {assignedClasses
-//                 .find(c => c.value === activeClass)
-//                 ?.sections
-//                 ?.map((section) => (
-//                   <button
-//                     key={section._id}
-//                     onClick={() => setActiveSection(section.value)}
-//                     className={`tab ${activeSection === section.value ? 'tab-active' : ''}`}
-//                   >
-//                     {section.label}
-//                   </button>
-//                 ))}
-//             </div>
-//           </div>
-//         )}
-
-//         <div className="mb-4">
-//           <label className="block text-gray-700 mb-2">Select Date:</label>
-//           <input
-//             type="date"
-//             className="border border-gray-300 p-2 rounded w-full"
-//             value={selectedDate}
-//             onChange={(e) => setSelectedDate(e.target.value)}
-//           />
-//         </div>
-
-//         {students.length === 0 ? (
-//           <div className="text-center py-8 text-gray-500">
-//             No students found for {activeClass} - {activeSection}
-//           </div>
-//         ) : (
-//           <div className="overflow-x-auto">
-//             <table className="min-w-full">
-//               <thead>
-//                 <tr className="bg-gray-100">
-//                   <th className="px-4 py-2 text-left">Roll No.</th>
-//                   <th className="px-4 py-2 text-left">Name</th>
-//                   <th className="px-4 py-2 text-left">Class</th>
-//                   <th className="px-4 py-2 text-left">Section</th>
-//                   <th className="px-4 py-2 text-center">Attendance</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {students.map((student, index) => (
-//                   <tr key={student._id} className="border-b">
-//                     <td className="px-4 py-2">{index + 1}</td>
-//                     <td className="px-4 py-2">{student.name}</td>
-//                     <td className="px-4 py-2">{student.studentClass}</td>
-//                     <td className="px-4 py-2">{student.studentSection}</td>
-//                     <td className="px-4 py-2">
-//                       <div className="flex justify-center gap-4">
-//                         <label className="flex items-center gap-1">
-//                           <input
-//                             type="radio"
-//                             name={`attendance-${student._id}`}
-//                             value="Present"
-//                             checked={attendanceStatus[student._id] === 'Present'}
-//                             onChange={() => handleStatusChange(student._id, 'Present')}
-//                             className="accent-green-500"
-//                           />
-//                           <span className="text-sm">Present</span>
-//                         </label>
-//                         <label className="flex items-center gap-1">
-//                           <input
-//                             type="radio"
-//                             name={`attendance-${student._id}`}
-//                             value="Absent"
-//                             checked={attendanceStatus[student._id] === 'Absent' || !attendanceStatus[student._id]}
-//                             onChange={() => handleStatusChange(student._id, 'Absent')}
-//                             className="accent-red-500"
-//                           />
-//                           <span className="text-sm">Absent</span>
-//                         </label>
-//                       </div>
-//                     </td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           </div>
-//         )}
-
-//         <button
-//           onClick={handleSubmit}
-//           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition disabled:opacity-50 w-full"
-//           disabled={isSubmitting || !selectedDate || students.length === 0}
-//         >
-//           {isSubmitting ? 'Submitting...' : 'Submit Attendance'}
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default StudentAttendance;

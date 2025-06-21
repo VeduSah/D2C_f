@@ -212,17 +212,25 @@ const numberWords = {
           console.log(resCopy.data.data);
           setCopyCheckData(resCopy.data.data)
           try {
+            const backendClass = activeClass.startsWith("Class ") ? activeClass.replace("Class ", "") : activeClass;
             axios
               .get(
-                `https://d2-c-b.vercel.app/api/student/filter-by-class?studentClass=${role == "Teacher" ? classOfTeacher : activeClass
-                }&studentSection=${role == "Teacher" ? divisionOfTeacher : activeDivision
-                }&page=${currentPage}`
+                `https://d2-c-b.vercel.app/api/student/filter-by-class?studentClass=${backendClass}&studentSection=${activeDivision}&page=${currentPage}`
               )
               .then((res) => {
                 if (res.data.success) {
-                  const studentsWithCopyRes = mergeCopyResWithToday(
-                    res.data.data
-                  );
+                  let students = res.data.data;
+                  // Filter students for coordinator/teacher roles
+                  if (role === "Senior Coordinator" || role === "Junior Coordinator" || role === "Teacher") {
+                    const assignedClassValues = assignedClasses.map(cls => cls.value);
+                    const assignedSectionValues = assignedClasses
+                      .flatMap(cls => cls.sections?.map(sec => sec.value) || []);
+                    students = students.filter(student =>
+                      assignedClassValues.includes(student.studentClass) &&
+                      assignedSectionValues.includes(student.studentSection)
+                    );
+                  }
+                  const studentsWithCopyRes = mergeCopyResWithToday(students);
                   const studentsFilteredBySubjectAndDate =
                     filterCopyResBySubjectAndDate(
                       studentsWithCopyRes,
@@ -910,33 +918,44 @@ const numberWords = {
           </>
         )}
         {(role === "Senior Coordinator" || role === "Junior Coordinator") && (
-          <>
-            {/* --- Optimized Coordinator Class Tabs --- */}
-            <TabList
-              items={['L.K.G', 'U.K.G', 'Nursery', ...Array.from({length: 12}, (_, i) => `Class ${i+1}`)].map(cls => ({ label: cls, value: cls }))}
-              activeValue={activeClass}
-              onClick={(val) => {
-                setClassOfTeacher(val);
-                setActiveClass(val);
-                setActiveDivision('all');
-              }}
-              allLabel="All Students"
-              allValue="all"
-            />
-            {/* --- Optimized Coordinator Section Tabs --- */}
-            {activeClass !== 'all' && (
-              <TabList
-                items={assignedClasses?.find(cls => cls.value.split(',').includes(activeClass))?.sections?.map(section => ({ label: section.label, value: section.value })) || []}
-                activeValue={activeDivision}
-                onClick={(val) => {
-                  setDivisionOfTeacher(val);
-                  setActiveDivision(val);
-                }}
-                allLabel="All Divisions"
-                allValue="all"
-              />
-            )}
-          </>
+          <div className="mb-4 p-4">
+            <div className="font-semibold mb-2">Select Class</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              {assignedClasses?.map(cls => (
+                <button
+                  key={cls.value}
+                  className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeClass === cls.value ? 'btn-primary !text-white font-bold border-2 border-blue-700 scale-105' : 'btn-outline'}`}
+                  onClick={() => {
+                    setActiveClass(cls.value);
+                    setActiveDivision(""); // Reset section on class change
+                  }}
+                  title={cls.label}
+                  tabIndex={0}
+                >
+                  <span className="mr-2">
+                    {["L.K.G", "U.K.G", "Nursery", "Class L.K.G", "Class U.K.G", "Class Nursery"].includes(cls.label)
+                      ? <span role="img" aria-label="book">📚</span>
+                      : <span role="img" aria-label="class">🎓</span>}
+                  </span>
+                  {cls.label.replace('Class ', '')}
+                </button>
+              ))}
+            </div>
+            <div className="font-semibold mb-2 mt-4">Select Section</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              {assignedClasses?.find(cls => cls.value === activeClass)?.sections?.map(section => (
+                <button
+                  key={section.value}
+                  className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeDivision === section.value ? 'btn-primary !text-white font-bold border-2 border-green-700 scale-105' : 'btn-outline'}`}
+                  onClick={() => setActiveDivision(section.value)}
+                  title={section.label}
+                  tabIndex={0}
+                >
+                  {section.label}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
 
