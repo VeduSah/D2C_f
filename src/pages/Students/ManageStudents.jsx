@@ -2339,7 +2339,7 @@ const ManageStudents = () => {
                 title={cls.match(/^\d+$/) ? `Class ${cls}` : cls}
                 tabIndex={0}
               >
-                <span className="mr-2">{cls.match(/^\d+$/) ? <span role="img" aria-label="class">🎓</span> : <span role="img" aria-label="book">📚</span>}</span>
+                <span className="mr-2">{cls.match(/^\d+$/) ? <span role="img" aria-label="class"></span> : <span role="img" aria-label="book"></span>}</span>
                 {cls.match(/^\d+$/) ? `Class ${cls}` : cls}
               </button>
             ))}
