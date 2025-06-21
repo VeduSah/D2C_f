@@ -1596,26 +1596,11 @@ const ManageStudents = () => {
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
-                      {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                    {/* </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-10 mt-8">
-                    <div className="grid grid-cols-2 gap-2">
                       <p className="">Father's Name :</p>
                       <p className="border-solid border-b-2 border-black  w-[330%]">
                         {fathersName}
                       </p>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-2"> */}
-                      {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                    {/* </div>
                   </div>
                   <div className="grid grid-cols-2 gap-10 mt-8">
                     <div className="grid grid-cols-2 gap-2">
@@ -1625,12 +1610,12 @@ const ManageStudents = () => {
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2"> */}
-                      {/* <p className="">Date Of Admission :</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <p className="">Date Of Admission :</p>
                       <p className=" border-solid border-b-2 border-black w-full">
                         28/02/2024
-                      </p> */}
-                    {/* </div>
+                      </p>
+                    </div>
                   </div>
                   <div className="grid grid-cols-3 gap-10 mt-8">
                     <div className="grid grid-cols-2 gap-2">
@@ -1652,8 +1637,8 @@ const ManageStudents = () => {
                       </p>
                     </div>
                   </div>
-                </div> */}
-                {/* <div>
+                </div>
+                <div>
                   <img
                     src={
                       studentAvatar
@@ -1677,14 +1662,14 @@ const ManageStudents = () => {
                   <p className="border-solid border-b-2 border-black  w-[330%]">
                     {address}
                   </p>
-                </div> */}
+                </div>
 
-                {/* <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
 
               <div className="grid grid-cols-70/30 gap-10 mt-8">
@@ -1771,12 +1756,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
               <div className="grid grid-cols-35/65 gap-10 mt-8">
                 <div className="grid grid-cols-2 gap-8">
@@ -1788,12 +1773,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
               <div className="grid grid-cols-35/65 gap-10 mt-8">
                 <div className="grid grid-cols-2 gap-8">
@@ -1805,12 +1790,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
               <div className="grid grid-cols-35/65 gap-10 mt-8">
                 <div className="grid grid-cols-2 gap-8">
@@ -1822,18 +1807,18 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
 
               <div className="flex items-center gap-16 mt-8">
-                <p className="flex items-center gap-4 font-semibold"> */}
-                  {/* <MdArrowRightAlt /> Gender */}
-                {/* </p>
+                <p className="flex items-center gap-4 font-semibold">
+                  <MdArrowRightAlt /> Gender
+                </p>
                 <div className="flex items-center gap-16">
                   <div className="form-control gap-4">
                     <label className="cursor-pointer label">
@@ -1976,12 +1961,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
               <div className="grid grid-cols-35/65 gap-10 mt-8">
                 <div className="grid grid-cols-2 gap-8">
@@ -1993,12 +1978,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
 
               <div className="mt-16">
@@ -2047,12 +2032,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
               <div className="grid grid-cols-70/30 gap-10 mt-8">
                 <div className="grid grid-cols-2 ">
@@ -2064,12 +2049,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
               <div className="grid grid-cols-70/30 gap-10 mt-8">
                 <div className="grid grid-cols-2 ">
@@ -2081,12 +2066,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
             </section>
 
@@ -2106,12 +2091,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
 
               <div className="grid grid-cols-70/30 gap-10 mt-8">
@@ -2146,12 +2131,12 @@ const ManageStudents = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
 
               <div className="grid grid-cols-65/35 gap-10 mt-8 ">
@@ -2162,12 +2147,12 @@ const ManageStudents = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
               <div className="grid grid-cols-65/35 gap-10 mt-4 pl-16">
                 <div className="grid grid-cols-2 gap-8">
@@ -2197,12 +2182,12 @@ const ManageStudents = () => {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-2 gap-2"> */}
-                  {/* <p className="">Date Of Admission :</p>
-                      <p className=" border-solid border-b-2 border-black w-full">
-                        28/02/2024
-                      </p> */}
-                {/* </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="">Date Of Admission :</p>
+                  <p className=" border-solid border-b-2 border-black w-full">
+                    28/02/2024
+                  </p>
+                </div>
               </div>
             </section>
 
@@ -2335,202 +2320,69 @@ const ManageStudents = () => {
           </span>
         </div>
 
+        <div className="mb-4 p-4">
+          <div className="font-semibold mb-2">Select Class</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {/* All Classes Button */}
+            <button
+              key="all-class"
+              className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeClass === 'all' ? 'btn-primary border-2 border-blue-700 scale-105 font-bold' : 'btn-outline'}`}
+              onClick={() => setActiveClass('all')}
+              title="All Classes"
+              tabIndex={0}
+            >
+              <span className="mr-2" role="img" aria-label="all">🌐</span>
+              All
+            </button>
+            {['L.K.G', 'U.K.G', 'Nursery', ...Array.from({length: 12}, (_, i) => `Class ${i+1}`)].map(cls => (
+              <button
+                key={cls}
+                className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeClass === cls ? 'btn-primary border-2 border-blue-700 scale-105 font-bold' : 'btn-outline'}`}
+                onClick={() => setActiveClass(cls)}
+                title={cls}
+                tabIndex={0}
+              >
+                <span className="mr-2">{cls.match(/Class/) ? <span role="img" aria-label="class">🎓</span> : <span role="img" aria-label="book">📚</span>}</span>
+                {cls}
+              </button>
+            ))}
+          </div>
+          <div className="font-semibold mb-2 mt-4">Select Section</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {/* All Sections Button */}
+            <button
+              key="all-section"
+              className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeDivision === 'all' ? 'btn-primary border-2 border-green-700 scale-105 font-bold' : 'btn-outline'}`}
+              onClick={() => setActiveDivision('all')}
+              title="All Sections"
+              tabIndex={0}
+            >
+              <span className="mr-1" role="img" aria-label="all-section">🌐</span>
+              All
+            </button>
+            {['A', 'B'].map(sec => (
+              <button
+                key={sec}
+                className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeDivision === sec ? 'btn-primary border-2 border-green-700 scale-105 font-bold' : 'btn-outline'}`}
+                onClick={() => setActiveDivision(sec)}
+                title={`Section ${sec}`}
+                tabIndex={0}
+              >
+                <span className="mr-1" role="img" aria-label="section">🏷️</span>
+                {sec}
+              </button>
+            ))}
+          </div>
+          {activeClass && activeDivision && (
+            <div className="mb-4 mt-2">
+              <span className="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold shadow">
+              Selected: {activeClass === 'all' ? 'All Classes' : activeClass} - Section {activeDivision === 'all' ? 'All Sections' : activeDivision}
+              </span>
+            </div>
+          )}
+        </div>
+
         <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto">
-          <div role="tablist" className="tabs tabs-boxed flex flex-wrap">
-            <a
-              onClick={() => setActiveClass("all")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "all" ? " tab-active" : ""
-              }`}
-            >
-              All
-            </a>
-            <a
-              onClick={() => setActiveClass("L.K.G")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "L.K.G" ? " tab-active" : ""
-              }`}
-            >
-              L.K.G
-            </a>
-            <a
-              onClick={() => setActiveClass("U.K.G")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "U.K.G" ? " tab-active" : ""
-              }`}
-            >
-              U.K.G
-            </a>
-            <a
-              onClick={() => setActiveClass("Nursery")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "Nursery" ? " tab-active" : ""
-              }`}
-            >
-              Nursery
-            </a>
-            <a
-              onClick={() => setActiveClass(1)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "1" ? " tab-active" : ""
-              }`}
-            >
-              Class 1
-            </a>
-            <a
-              onClick={() => setActiveClass(2)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "2" ? " tab-active" : ""
-              }`}
-            >
-              Class 2
-            </a>
-            <a
-              onClick={() => setActiveClass(3)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "3" ? " tab-active" : ""
-              }`}
-            >
-              Class 3
-            </a>
-            <a
-              onClick={() => setActiveClass(4)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "4" ? " tab-active" : ""
-              }`}
-            >
-              Class 4
-            </a>
-            <a
-              onClick={() => setActiveClass(5)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "5" ? " tab-active" : ""
-              }`}
-            >
-              Class 5
-            </a>
-            <a
-              onClick={() => setActiveClass(6)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "6" ? " tab-active" : ""
-              }`}
-            >
-              Class 6
-            </a>
-            <a
-              onClick={() => setActiveClass(7)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "7" ? " tab-active" : ""
-              }`}
-            >
-              Class 7
-            </a>
-            <a
-              onClick={() => setActiveClass(8)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "8" ? " tab-active" : ""
-              }`}
-            >
-              Class 8
-            </a>
-            <a
-              onClick={() => setActiveClass(9)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "9" ? " tab-active" : ""
-              }`}
-            >
-              Class 9
-            </a>
-            <a
-              onClick={() => setActiveClass(10)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "10" ? " tab-active" : ""
-              }`}
-            >
-              Class 10
-            </a>
-            <a
-              onClick={() => setActiveClass(11)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "11" ? " tab-active" : ""
-              }`}
-            >
-              Class 11
-            </a>
-            <a
-              onClick={() => setActiveClass(12)}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeClass == "12" ? " tab-active" : ""
-              }`}
-            >
-              Class 12
-            </a>
-          </div>
-
-          <div role="tablist" className="tabs tabs-boxed">
-            <a
-              onClick={() => setActiveDivision("all")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeDivision == "all" ? " tab-active" : ""
-              }`}
-            >
-              All
-            </a>
-            <a
-              onClick={() => setActiveDivision("A")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeDivision == "A" ? " tab-active" : ""
-              }`}
-            >
-              A
-            </a>
-            <a
-              onClick={() => setActiveDivision("B")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeDivision == "B" ? " tab-active" : ""
-              }`}
-            >
-              B
-            </a>
-            {/* <a
-              onClick={() => setActiveDivision("C")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeDivision == "C" ? " tab-active" : ""
-              }`}
-            >
-              C
-            </a>
-            <a
-              onClick={() => setActiveDivision("D")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeDivision == "D" ? " tab-active" : ""
-              }`}
-            >
-              D
-            </a> */}
-          </div>
-
           {!loading ? (
             <>
               {userData ? (

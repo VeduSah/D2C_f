@@ -453,63 +453,105 @@ const numberWords = {
       }));
     }
   };
-useEffect(() => {
-  if (!annyang) return;
 
-  const processVoiceCommand = async (numberInput) => {
-    const digit = numberWords[numberInput.toLowerCase()] || numberInput;
-    await handleVoiceCommand(digit);
+  const [recentlyChecked, setRecentlyChecked] = useState({}); // To prevent rapid duplicate submissions
+  const [highlightedRoll, setHighlightedRoll] = useState(null); // For row highlight after speech check
+
+  const parseRollNumberFromPhrase = (phrase) => {
+    // Try to extract a number directly
+    const numberMatch = phrase.match(/\d+/);
+    if (numberMatch) return numberMatch[0];
+    // Try to match number words (including compound)
+    const lower = phrase.toLowerCase().trim();
+    if (numberWords[lower]) return numberWords[lower];
+    // Try to match any two-word combinations (e.g., "thirty three")
+    const words = lower.split(/\s+/);
+    for (let i = 0; i < words.length - 1; i++) {
+      const twoWord = words[i] + ' ' + words[i + 1];
+      if (numberWords[twoWord]) return numberWords[twoWord];
+    }
+    // Try to match single words
+    for (let word of words) {
+      if (numberWords[word]) return numberWords[word];
+    }
+    return null;
   };
 
-  const commands = {
-    'check :number': async (number) => {
-      await processVoiceCommand(number);
-    },
-    '*phrase': async (phrase) => {
-      const words = phrase.trim().split(/\s+/);
-      if (words.length >= 2 && words[0].toLowerCase() === 'check') {
-        await processVoiceCommand(words[1]);
+  const handleVoiceCommand = async (phrase) => {
+    if (!subject || !typeOf) {
+      toast.error("Please select Subject and Type first!");
+      return;
+    }
+    const rollNumber = parseRollNumberFromPhrase(phrase);
+    if (!rollNumber) {
+      toast.error(`Could not recognize a roll number in: "${phrase}"`);
+      return;
+    }
+    if (recentlyChecked[rollNumber]) return; // No toast, just skip
+    setRecentlyChecked(prev => ({ ...prev, [rollNumber]: true }));
+
+    const student = userData.find(s => String(s.rollNumber) === String(rollNumber));
+    if (student) {
+      // Optimistic UI update
+      setLocalChecks(prev => ({
+        ...prev,
+        [student._id]: {
+          ...prev[student._id],
+          [role === "Teacher" ? "teacher" : "coordinator"]: true,
+        },
+      }));
+      setHighlightedRoll(String(rollNumber));
+      setTimeout(() => setHighlightedRoll(null), 50); // Minimal highlight
+      // Fire API call, but don't wait for it to finish to update UI
+      handleCopySubmit(student).finally(() => {
+        setRecentlyChecked(prev => {
+          const copy = { ...prev };
+          delete copy[rollNumber];
+          return copy;
+        });
+      });
+    } else {
+      // Fuzzy search for closest roll number
+      const fuse = new Fuse(userData, { keys: ['rollNumber'], threshold: 0.4 });
+      const result = fuse.search(rollNumber);
+      if (result.length > 0) {
+        const suggestion = result[0].item;
+        toast.error(`Not found. Did you mean roll number ${suggestion.rollNumber}?`);
+      } else {
+        toast.error(`Student with roll number ${rollNumber} not found`);
       }
+      setRecentlyChecked(prev => {
+        const copy = { ...prev };
+        delete copy[rollNumber];
+        return copy;
+      });
     }
   };
 
+  useEffect(() => {
+    if (!annyang) return;
+    const commands = {
+      'check *phrase': async (phrase) => handleVoiceCommand(phrase),
+      'mark *phrase': async (phrase) => handleVoiceCommand(phrase),
+      'roll *phrase': async (phrase) => handleVoiceCommand(phrase),
+      'check roll *phrase': async (phrase) => handleVoiceCommand(phrase),
+      '*phrase': async (phrase) => {
+        // fallback: try to extract a number from any phrase
+        if (/\d+/.test(phrase)) await handleVoiceCommand(phrase);
+      }
+    };
+    annyang.removeCommands(); // Remove previous to avoid stacking
   annyang.addCommands(commands);
-
-  annyang.start({
-    autoRestart: true,
-    continuous: false,
-  });
-
+    annyang.start({ autoRestart: true, continuous: true });
   annyang.addCallback('result', (userSaid) => {
+      // Optionally log for debugging
     console.log("Raw voice input:", userSaid);
-    const words = userSaid[0].trim().split(/\s+/);
-    console.log("Processed words:", words.slice(0, 2), "Ignored:", words.slice(2));
   });
-
   return () => {
     annyang.removeCommands();
     annyang.abort();
   };
 }, [userData, subject, typeOf]);
-
-
-const handleVoiceCommand = async (rollNumber) => {
-  if (!subject || !typeOf) {
-    toast.error("Please select Subject and Type first!");
-    return;
-  }
-
-  const student = userData.find(s => String(s.rollNumber) === String(rollNumber));
-
-  if (student) {
-    await handleCopySubmit(student);  // Ensure this is async if it's doing async work
-    toast.success(`Processing roll number ${rollNumber}`);
-  } else {
-    toast.error(`Student with roll number ${rollNumber} not found`);
-  }
-};
-
-
 
   function generateWhatsAppMessage(userData) {
     const notSubmittedStudents = userData?.filter(
@@ -579,6 +621,35 @@ const handleVoiceCommand = async (rollNumber) => {
     ? userData
     : userData?.filter((student) => student.isActive);
 
+  // --- UI TAB OPTIMIZATION START ---
+  // Reusable TabList component for classes/sections
+  const TabList = ({ items, activeValue, onClick, labelKey = 'label', valueKey = 'value', allLabel, allValue }) => (
+    <div role="tablist" className="tabs tabs-boxed flex-nowrap overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style={{ WebkitOverflowScrolling: 'touch' }}>
+      {allLabel && (
+        <a
+          onClick={() => onClick(allValue)}
+          role="tab"
+          className={`tab min-w-[7rem] ${activeValue === allValue ? 'tab-active !bg-blue-600 !text-white font-bold' : ''}`}
+          style={{ cursor: 'pointer' }}
+        >
+          {allLabel}
+        </a>
+      )}
+      {items?.map((item) => (
+        <a
+          key={item[valueKey] || item}
+          onClick={() => onClick(item[valueKey] || item)}
+          role="tab"
+          className={`tab min-w-[7rem] ${activeValue === (item[valueKey] || item) ? 'tab-active !bg-blue-600 !text-white font-bold' : ''}`}
+          style={{ cursor: 'pointer' }}
+        >
+          {item[labelKey] || item}
+        </a>
+      ))}
+    </div>
+  );
+  // --- UI TAB OPTIMIZATION END ---
+
   return (
     <>
       <Toaster />
@@ -594,54 +665,6 @@ const handleVoiceCommand = async (rollNumber) => {
             <option value="" selected disabled>
               Select Subject
             </option>
-            {/* {activeClass == "L.K.G" ? (
-              <>
-                <option value="Hindi">Hindi</option>
-                <option value="English">English</option>
-                <option value="Maths">Maths</option>
-                <option value="General">General</option>
-              </>
-            ) : activeClass == "Nursery" ? (
-              <>
-                {" "}
-                <option value="Hindi">Hindi</option>
-                <option value="English">English</option>
-                <option value="Maths">Maths</option>
-                <option value="General">General</option>
-              </>
-            ) : role == "Teacher" ? (
-              <>
-                {role == "Teacher" && assignedSubjects
-                  ? assignedSubjects.map((res) => {
-                      return (
-                        <option key={res.value} value={res.value}>
-                          {res.value}
-                        </option>
-                      );
-                    })
-                  : ""}
-              </>
-            ) : (
-              <>
-                {" "}
-                <option value="Hindi">Hindi</option>
-                <option value="English">English</option>
-                <option value="General">General</option>
-                <option value="Hindi-1">Hindi-1</option>
-                <option value="Hindi-2">Hindi-2</option>
-                <option value="English-1">English-1</option>
-                <option value="English-2">English-2</option>
-                <option value="Maths">Maths</option>{" "}
-                <option value="G.K">G.K</option>
-                <option value="Science">Science</option>
-                <option value="E.V.S">E.V.S</option>
-                <option value="S.S.T">S.S.T</option>
-                <option value="Sanskrit">Sanskrit</option>
-                <option value="Art">Art</option>
-                <option value="Computer">Computer</option>
-              </>
-            )} */}
-
             {assignedSubjects?.map((res) => (
               <option key={res.value} value={res.value}>
                 {res.value}
@@ -757,357 +780,161 @@ const handleVoiceCommand = async (rollNumber) => {
         </DownloadTableExcel>
       </div>
 
-      {role != "Teacher" && teacherForClassSubjectDiv && (
-        <>
-          <div className="flex items-center gap-4">
-            {teacherForClassSubjectDiv && (
-              <>
-                <div className="form-control">
-                  <label htmlFor="">Select Teacher</label>
-                  <select
-                    onChange={handleTeacherByClass}
-                    className="select select-bordered border-gray-300"
-                  >
-                    <option value="" selected disabled>
-                      Select Teacher
-                    </option>
-                    {teacherForClassSubjectDiv?.map((res) => (
-                      <option value={res._id} key={res._id}>
-                        {res?.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </>
-            )}
-
-            <div className="form-control">
-              <label htmlFor="">Remark For Teacher</label>
-              <textarea
-                className=" textarea textarea-bordered"
-                cols="30"
-                placeholder="Remark"
-                rows="1"
-                onChange={(e) => setRemarkComment(e.target.value)}
-                value={remarkComment}
-              ></textarea>
-            </div>
-
-            <div className="form-control relative top-3 ">
-              <button
-                className="btn btn-outline "
-                onClick={() => handleRemarkSend()}
-              >
-                Send Remark
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-
       <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto">
         {role == "Admin" && (
           <>
-            {" "}
-            <div role="tablist" className="tabs tabs-boxed flex-wrap flex ">
-              <a
-                onClick={() => setActiveClass("all")}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "all" ? " tab-active" : ""
-                  }`}
-              >
-                All
-              </a>
-              <a
-                onClick={() => setActiveClass("L.K.G")}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "L.K.G" ? " tab-active" : ""
-                  }`}
-              >
-                L.K.G
-              </a>
-              <a
-                onClick={() => setActiveClass("U.K.G")}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "U.K.G" ? " tab-active" : ""
-                  }`}
-              >
-                U.K.G
-              </a>
-              <a
-                onClick={() => setActiveClass("Nursery")}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "Nursery" ? " tab-active" : ""
-                  }`}
-              >
-                Nursery
-              </a>
-              <a
-                onClick={() => setActiveClass(1)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "1" ? " tab-active" : ""
-                  }`}
-              >
-                Class 1
-              </a>
-              <a
-                onClick={() => setActiveClass(2)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "2" ? " tab-active" : ""
-                  }`}
-              >
-                Class 2
-              </a>
-              <a
-                onClick={() => setActiveClass(3)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "3" ? " tab-active" : ""
-                  }`}
-              >
-                Class 3
-              </a>
-              <a
-                onClick={() => setActiveClass(4)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "4" ? " tab-active" : ""
-                  }`}
-              >
-                Class 4
-              </a>
-              <a
-                onClick={() => setActiveClass(5)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "5" ? " tab-active" : ""
-                  }`}
-              >
-                Class 5
-              </a>
-              <a
-                onClick={() => setActiveClass(6)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "6" ? " tab-active" : ""
-                  }`}
-              >
-                Class 6
-              </a>
-              <a
-                onClick={() => setActiveClass(7)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "7" ? " tab-active" : ""
-                  }`}
-              >
-                Class 7
-              </a>
-              <a
-                onClick={() => setActiveClass(8)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "8" ? " tab-active" : ""
-                  }`}
-              >
-                Class 8
-              </a>
-              <a
-                onClick={() => setActiveClass(9)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "9" ? " tab-active" : ""
-                  }`}
-              >
-                Class 9
-              </a>
-              <a
-                onClick={() => setActiveClass(10)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "10" ? " tab-active" : ""
-                  }`}
-              >
-                Class 10
-              </a>
-              <a
-                onClick={() => setActiveClass(11)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "11" ? " tab-active" : ""
-                  }`}
-              >
-                Class 11
-              </a>
-              <a
-                onClick={() => setActiveClass(12)}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass == "12" ? " tab-active" : ""
-                  }`}
-              >
-                Class 12
-              </a>
+            <div className="mb-4 p-4">
+              <div className="font-semibold mb-2">Select Class</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                <button
+                  key="all-class"
+                  className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeClass === 'all' ? 'btn-primary !text-white font-bold border-2 border-blue-700 scale-105' : 'btn-outline'}`}
+                  onClick={() => setActiveClass('all')}
+                  title="All Classes"
+                  tabIndex={0}
+                >
+                  <span className="mr-2" role="img" aria-label="all">🌐</span>
+                  All
+                </button>
+                {['L.K.G', 'U.K.G', 'Nursery', ...Array.from({length: 12}, (_, i) => `Class ${i+1}`)].map(cls => (
+                  <button
+                    key={cls}
+                    className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeClass === cls ? 'btn-primary !text-white font-bold border-2 border-blue-700 scale-105' : 'btn-outline'}`}
+                    onClick={() => setActiveClass(cls)}
+                    title={cls}
+                    tabIndex={0}
+                  >
+                    <span className="mr-2">
+                      {['L.K.G', 'U.K.G', 'Nursery'].includes(cls)
+                        ? <span role="img" aria-label="book">📚</span>
+                        : <span role="img" aria-label="class">🎓</span>}
+                    </span>
+                    {['L.K.G', 'U.K.G', 'Nursery'].includes(cls)
+                      ? cls
+                      : `Class ${cls.replace('Class ', '')}`}
+                  </button>
+                ))}
+              </div>
+              <div className="font-semibold mb-2 mt-4">Select Section</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                <button
+                  key="all-section"
+                  className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeDivision === 'all' ? 'btn-primary border-2 border-green-700 scale-105 font-bold' : 'btn-outline'}`}
+                  onClick={() => setActiveDivision('all')}
+                  title="All Sections"
+                  tabIndex={0}
+                >
+                  <span className="mr-1" role="img" aria-label="all-section">🌐</span>
+                  All
+                </button>
+                {['A', 'B', 'C', 'D'].map(sec => (
+                  <button
+                    key={sec}
+                    className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeDivision === sec ? 'btn-primary !text-white font-bold border-2 border-green-700 scale-105' : 'btn-outline'}`}
+                    onClick={() => setActiveDivision(sec)}
+                    title={`Section ${sec}`}
+                    tabIndex={0}
+                  >
+                    <span className="mr-1" role="img" aria-label="section">🏷️</span>
+                    {sec}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div role="tablist" className="tabs tabs-boxed">
-              <a
-                onClick={() => setActiveDivision("all")}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeDivision == "all" ? " tab-active" : ""
-                  }`}
-              >
-                All
-              </a>
-              <a
-                onClick={() => setActiveDivision("A")}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeDivision == "A" ? " tab-active" : ""
-                  }`}
-              >
-                A
-              </a>
-              <a
-                onClick={() => setActiveDivision("B")}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeDivision == "B" ? " tab-active" : ""
-                  }`}
-              >
-                B
-              </a>
-              {/* <a
-              onClick={() => setActiveDivision("C")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeDivision == "C" ? " tab-active" : ""
-              }`}
-            >
-              C
-            </a>
-            <a
-              onClick={() => setActiveDivision("D")}
-              role="tab"
-              className={`tab min-w-[7rem] ${
-                activeDivision == "D" ? " tab-active" : ""
-              }`}
-            >
-              D
-            </a> */}
-            </div>
+            {/* Show selected info */}
+            {activeClass && activeDivision && (
+              <div className="mb-4">
+                <span className="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold shadow">
+                  Selected: {activeClass === 'all' ? 'All Classes' : activeClass} - Section {activeDivision === 'all' ? 'All Sections' : activeDivision}
+                </span>
+              </div>
+            )}
           </>
         )}
         {role === "Teacher" && (
           <>
-            <div role="tablist" className="tabs tabs-boxed flex-wrap flex">
-              {/* <a
-                onClick={() => {
-                  setActiveClass("all");
-                  setClassOfTeacher("all");
-                  setActiveDivision("all");
-                  setDivisionOfTeacher("all");
-                }}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass === "all" ? "tab-active" : ""}`}
-              >
-                All
-              </a> */}
-              {assignedClasses?.map((cls) => (
-                <a
-                  key={cls._id}
-                  onClick={() => {
-                    setClassOfTeacher(cls.value);
-                    setActiveClass(cls.value);
-                  }}
-                  role="tab"
-                  className={`tab min-w-[7rem] ${activeClass === cls.value ? "tab-active" : ""
-                    }`}
-                >
-                  {cls.label}
-                </a>
-              ))}
-            </div>
-
-            <div role="tablist" className="tabs tabs-boxed">
-              {assignedClasses
-                ?.find((cls) => cls.value === activeClass) // find selected class
-                ?.sections
-                ?.map((section) => (
-                  <a
-                    key={section._id}
+            {/* --- Teacher Class Selection (Button Grid, like Admin) --- */}
+            <div className="mb-4 p-4">
+              <div className="font-semibold mb-2">Select Class</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {assignedClasses?.map(cls => (
+                  <button
+                    key={cls.value}
+                    className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeClass === cls.value ? 'btn-primary !text-white font-bold border-2 border-blue-700 scale-105' : 'btn-outline'}`}
+                    onClick={() => {
+                      setClassOfTeacher(cls.value);
+                      setActiveClass(cls.value);
+                      setActiveDivision(""); // Reset section on class change
+                    }}
+                    title={cls.label}
+                    tabIndex={0}
+                  >
+                    <span className="mr-2">
+                      {['L.K.G', 'U.K.G', 'Nursery', 'Class L.K.G', 'Class U.K.G', 'Class Nursery'].includes(cls.label)
+                        ? <span role="img" aria-label="book">📚</span>
+                        : <span role="img" aria-label="class">🎓</span>}
+                    </span>
+                    {['L.K.G', 'U.K.G', 'Nursery', 'Class L.K.G', 'Class U.K.G', 'Class Nursery'].includes(cls.label)
+                      ? cls.label.replace('Class ', '')
+                      : `Class ${cls.label.replace('Class ', '')}`}
+                  </button>
+                ))}
+              </div>
+              <div className="font-semibold mb-2 mt-4">Select Section</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {assignedClasses?.find(cls => cls.value === activeClass)?.sections?.map(section => (
+                  <button
+                    key={section.value}
+                    className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeDivision === section.value ? 'btn-primary !text-white font-bold border-2 border-green-700 scale-105' : 'btn-outline'}`}
                     onClick={() => {
                       setDivisionOfTeacher(section.value);
                       setActiveDivision(section.value);
                     }}
-                    role="tab"
-                    className={`tab min-w-[7rem] ${activeDivision === section.value ? "tab-active" : ""}`}
+                    title={`Section ${section.label}`}
+                    tabIndex={0}
                   >
+                    <span className="mr-1" role="img" aria-label="section">🏷️</span>
                     {section.label}
-                  </a>
+                  </button>
                 ))}
+              </div>
             </div>
+            {/* Show selected info */}
+            {activeClass && activeDivision && (
+              <div className="mb-4">
+                <span className="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold shadow">
+                  Selected: {activeClass} - Section {activeDivision}
+                </span>
+              </div>
+            )}
           </>
         )}
-
         {(role === "Senior Coordinator" || role === "Junior Coordinator") && (
           <>
-            {/* Top-Level Filter Tabs */}
-            <div role="tablist" className="tabs tabs-boxed flex-wrap flex">
-              {/* Separate "All Students" Tab */}
-              <a
-                onClick={() => {
-                  setClassOfTeacher("all");
-                  setActiveClass("all");
-                  setDivisionOfTeacher("all");
-                  setActiveDivision("all");
+            {/* --- Optimized Coordinator Class Tabs --- */}
+            <TabList
+              items={['L.K.G', 'U.K.G', 'Nursery', ...Array.from({length: 12}, (_, i) => `Class ${i+1}`)].map(cls => ({ label: cls, value: cls }))}
+              activeValue={activeClass}
+              onClick={(val) => {
+                setClassOfTeacher(val);
+                setActiveClass(val);
+                setActiveDivision('all');
+              }}
+              allLabel="All Students"
+              allValue="all"
+            />
+            {/* --- Optimized Coordinator Section Tabs --- */}
+            {activeClass !== 'all' && (
+              <TabList
+                items={assignedClasses?.find(cls => cls.value.split(',').includes(activeClass))?.sections?.map(section => ({ label: section.label, value: section.value })) || []}
+                activeValue={activeDivision}
+                onClick={(val) => {
+                  setDivisionOfTeacher(val);
+                  setActiveDivision(val);
                 }}
-                role="tab"
-                className={`tab min-w-[7rem] ${activeClass === "all" ? "tab-active" : ""}`}
-              >
-                All Students
-              </a>
-
-              {/* Class Tabs */}
-              {assignedClasses?.map((cls) =>
-                cls.value.split(",").map((classValue, index) => (
-                  <a
-                    key={`${cls._id}-${index}`}
-                    onClick={() => {
-                      setClassOfTeacher(classValue);
-                      setActiveClass(classValue);
-                      setActiveDivision("all"); // reset division when class changes
-                    }}
-                    role="tab"
-                    className={`tab min-w-[7rem] ${activeClass === classValue ? "tab-active" : ""
-                      }`}
-                  >
-                    {classValue}
-                  </a>
-                ))
-              )}
-            </div>
-
-            {/* Section Tabs — only if not showing "All Students" */}
-            {activeClass !== "all" && (
-              <div role="tablist" className="tabs tabs-boxed">
-                {/* "All Divisions" tab for selected class */}
-                <a
-                  onClick={() => {
-                    setDivisionOfTeacher("all");
-                    setActiveDivision("all");
-                  }}
-                  role="tab"
-                  className={`tab min-w-[7rem] ${activeDivision === "all" ? "tab-active" : ""}`}
-                >
-                  All Divisions
-                </a>
-
-                {/* Dynamic Section Tabs */}
-                {assignedClasses
-                  ?.find((cls) => cls.value.split(",").includes(activeClass))
-                  ?.sections?.map((section) => (
-                    <a
-                      key={section._id}
-                      onClick={() => {
-                        setDivisionOfTeacher(section.value);
-                        setActiveDivision(section.value);
-                      }}
-                      role="tab"
-                      className={`tab min-w-[7rem] ${activeDivision === section.value ? "tab-active" : ""
-                        }`}
-                    >
-                      {section.label}
-                    </a>
-                  ))}
-              </div>
+                allLabel="All Divisions"
+                allValue="all"
+              />
             )}
           </>
         )}
@@ -1117,6 +944,77 @@ const handleVoiceCommand = async (rollNumber) => {
           <>
             {userData ? (
               <>
+                {/* <div className="mb-2 text-sm text-gray-500 italic">
+                  Voice command: Say "check 12", "mark 15", or "roll 7" to check a student by roll number.
+                </div> */}
+                {/* Mobile Card List */}
+                <div className="block md:hidden">
+                  {visibleUserData?.length === 0 && (
+                    <div className="text-center text-gray-500 py-4">No Student Data!</div>
+                  )}
+                  {visibleUserData?.map((item) => (
+                    <div
+                      key={item._id}
+                      className={`bg-white rounded-lg shadow p-4 mb-3 ${highlightedRoll === String(item.rollNumber) ? 'bg-green-100 animate-pulse' : ''}`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="avatar">
+                          <div className="mask mask-squircle w-12 h-12">
+                            <img src={item?.studentAvatar?.secure_url} alt={item?.name} />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="font-bold text-base">{item?.name}</div>
+                          <div className="text-xs text-gray-500">{item?.fathersName}</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-sm mb-2">
+                        <span className="bg-gray-100 rounded px-2 py-1">Roll: {item?.rollNumber}</span>
+                        <span className="bg-gray-100 rounded px-2 py-1">Class: {item?.studentClass}-{item?.studentSection}</span>
+                        <span className="bg-gray-100 rounded px-2 py-1">Subject: {subject || "Select a Subject"}</span>
+                        <span className="bg-gray-100 rounded px-2 py-1">Type: {typeOf || "Select a Type"}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-xs mb-2">
+                        <span className={`rounded px-2 py-1 ${localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher ? 'bg-green-500 text-white' : 'bg-red-400 text-white'}`}>
+                          Checked By: {localChecks[item._id]?.teacher ? assignUser.name : (item.copyRes[0]?.checkedByTeacher || 'Not-Checked')}
+                        </span>
+                        <span className={`rounded px-2 py-1 ${localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator ? 'bg-green-500 text-white' : 'bg-red-400 text-white'}`}>
+                          Rechecked By: {localChecks[item._id]?.coordinator ? assignUser.name : (item.copyRes[0]?.checkedByCoordinator || 'Not-ReChecked')}
+                        </span>
+                      </div>
+                      {role !== "Admin" && (
+                        <button
+                          onClick={() => handleCopySubmit(item)}
+                          disabled={
+                            (role === "Teacher" &&
+                              (localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher)) ||
+                            (role !== "Teacher" &&
+                              (localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator))
+                          }
+                          className={`btn btn-xs w-full mt-2 ${
+                            (role === "Teacher" &&
+                              (localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher)) ||
+                            (role !== "Teacher" &&
+                              (localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator))
+                              ? "btn-success"
+                              : "btn-error"
+                          }`}
+                        >
+                          {(role === "Teacher" &&
+                            (localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher)) ||
+                          (role !== "Teacher" &&
+                            (localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator))
+                            ? "✓ Checked"
+                            : "Check"}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {/* Desktop Table */}
+                <div className="hidden md:block">
+                  <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto">
+                    <div className="w-full min-w-[700px]">
                 <table
                   ref={tableRef}
                   className="w-full table-auto text-sm text-left"
@@ -1131,12 +1029,17 @@ const handleVoiceCommand = async (rollNumber) => {
                       <th className="py-3 px-6">Type</th>
                       <th className="py-3 px-6">Checked By</th>
                       <th className="py-3 px-6">Rechecked By</th>
-                    {role !== "Admin" && <th className="py-3 px-6">Action</th>}
+                      {role !== "Admin" && <th className="py-3 px-6">Action</th>}
+                      {role === "Teacher" && (
+                        <th className="py-3 px-2 sticky right-0 bg-gray-50 z-10">Quick</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="text-gray-600 divide-y">
                      {visibleUserData?.map((item) => (
-                    <tr key={item._id}>
+                              <tr key={item._id}
+                                className={highlightedRoll === String(item.rollNumber) ? 'bg-green-100 animate-pulse' : ''}
+                              >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <div className="avatar">
@@ -1209,10 +1112,26 @@ const handleVoiceCommand = async (rollNumber) => {
 
                         )}
                       </td>
+                      {role === "Teacher" && (
+                        <td className="px-2 py-4 sticky right-0 bg-white z-10">
+                          {!(localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher) && (
+                            <button
+                              onClick={() => handleCopySubmit(item)}
+                              className="btn btn-xs btn-primary font-bold shadow"
+                              title="Quick Check"
+                            >
+                              ✓
+                            </button>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                   </tbody>
                 </table>
+                    </div>
+                  </div>
+                </div>
               </>
             ) : (
               <div className="flex justify-center py-4 font-semibold">
