@@ -188,7 +188,6 @@ const numberWords = {
 
   // Define a function to filter copyRes based on the selected subject and date
   const filterCopyResBySubjectAndDate = (students, subject, resCopy) => {
-    console.log('Filtering copyRes:', resCopy, subject, date, typeOf);
     return students?.map((student) => ({
       ...student,
       copyRes: resCopy?.filter(
@@ -232,6 +231,7 @@ const numberWords = {
                   setUserData(studentsFilteredBySubjectAndDate);
                   setTotalPages(res.data.count);
                   setLoading(false);
+                  setLocalChecks({})
                 } else {
                   // Handle unsuccessful response from student filter API
                   console.error(
@@ -241,6 +241,7 @@ const numberWords = {
                   toast.error(res.data.message);
                   setUserData([]);
                   setLoading(false);
+            
                 }
               })
               .catch((error) => {
@@ -391,12 +392,13 @@ const numberWords = {
       return;
     }
 
-    // Optimistic UI update: set to true (not toggle)
+    // Optimistic UI update: toggle only the relevant field based on role
     setLocalChecks((prev) => ({
       ...prev,
       [data._id]: {
         ...prev[data._id],
-        [role === "Teacher" ? "teacher" : "coordinator"]: true,
+        [role === "Teacher" ? "teacher" : "coordinator"]:
+          !prev[data._id]?.[role === "Teacher" ? "teacher" : "coordinator"],
       },
     }));
 
@@ -438,13 +440,15 @@ const numberWords = {
         toast.success(message);
       }
     } catch (error) {
+      console.error("Submission error:", error);
       toast.error(error?.message || "Something went wrong");
       // Revert optimistic update for the specific role
       setLocalChecks((prev) => ({
         ...prev,
         [data._id]: {
           ...prev[data._id],
-          [role === "Teacher" ? "teacher" : "coordinator"]: false,
+          [role === "Teacher" ? "teacher" : "coordinator"]:
+            !prev[data._id]?.[role === "Teacher" ? "teacher" : "coordinator"],
         },
       }));
     }
@@ -646,10 +650,6 @@ const numberWords = {
   );
   // --- UI TAB OPTIMIZATION END ---
 
-  useEffect(() => {
-    setLocalChecks({});
-  }, [date, subject, typeOf, activeClass, activeDivision]);
-
   return (
     <>
       <Toaster />
@@ -835,7 +835,7 @@ const numberWords = {
                     title={`Section ${sec}`}
                     tabIndex={0}
                   >
-                    {/* <span className="mr-1" role="img" aria-label="section">🏷️</span> */}
+                    <span className="mr-1" role="img" aria-label="section">🏷️</span>
                     {sec}
                   </button>
                 ))}
@@ -893,7 +893,7 @@ const numberWords = {
                     title={`Section ${section.label}`}
                     tabIndex={0}
                   >
-                    {/* <span className="mr-1" role="img" aria-label="section">🏷️</span> */}
+                    <span className="mr-1" role="img" aria-label="section">🏷️</span>
                     {section.label}
                   </button>
                 ))}
@@ -954,7 +954,7 @@ const numberWords = {
                   )}
                   {visibleUserData?.map((item) => (
                     <div
-                      key={item.rollNumber}
+                      key={item._id}
                       className={`bg-white rounded-lg shadow p-4 mb-3 ${highlightedRoll === String(item.rollNumber) ? 'bg-green-100 animate-pulse' : ''}`}
                     >
                       <div className="flex items-center gap-3 mb-2">
@@ -975,12 +975,8 @@ const numberWords = {
                         <span className="bg-gray-100 rounded px-2 py-1">Type: {typeOf || "Select a Type"}</span>
                       </div>
                       <div className="flex flex-wrap gap-2 text-xs mb-2">
-                        <span className={`rounded px-2 py-1 ${localChecks[item._id]?.teacher ? 'bg-green-500 text-white' : 'bg-red-400 text-white'}`}>
-                          Checked By: {localChecks[item._id]?.teacher
-                            ? `${assignUser.name}${role === 'Teacher' ? ' (Teacher)' : ''}`
-                            : item.copyRes[0]?.checkedByTeacher
-                              ? `${item.copyRes[0]?.checkedByTeacher}${item.copyRes[0]?.checkedByTeacher === assignUser.name && role === 'Teacher' ? ' (Teacher)' : ''}`
-                              : 'Not-Checked'}
+                        <span className={`rounded px-2 py-1 ${localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher ? 'bg-green-500 text-white' : 'bg-red-400 text-white'}`}>
+                          Checked By: {localChecks[item._id]?.teacher ? assignUser.name : (item.copyRes[0]?.checkedByTeacher || 'Not-Checked')}
                         </span>
                         <span className={`rounded px-2 py-1 ${localChecks[item._id]?.coordinator || item?.copyRes[0]?.checkedByCoordinator ? 'bg-green-500 text-white' : 'bg-red-400 text-white'}`}>
                           Rechecked By: {localChecks[item._id]?.coordinator ? assignUser.name : (item.copyRes[0]?.checkedByCoordinator || 'Not-ReChecked')}
@@ -1033,12 +1029,15 @@ const numberWords = {
                       <th className="py-3 px-6">Type</th>
                       <th className="py-3 px-6">Checked By</th>
                       <th className="py-3 px-6">Rechecked By</th>
-                    {role !== "Admin" && <th className="py-3 px-6">Action</th>}
+                      {role !== "Admin" && <th className="py-3 px-6">Action</th>}
+                      {role === "Teacher" && (
+                        <th className="py-3 px-2 sticky right-0 bg-gray-50 z-10">Quick</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="text-gray-600 divide-y">
                      {visibleUserData?.map((item) => (
-                              <tr key={item.rollNumber}
+                              <tr key={item._id}
                                 className={highlightedRoll === String(item.rollNumber) ? 'bg-green-100 animate-pulse' : ''}
                               >
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -1065,13 +1064,9 @@ const numberWords = {
                         {typeOf || "Select a Type"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {localChecks[item._id]?.teacher ? (
+                        {localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher ? (
                           <span className="badge badge-success badge-md text-white">
-                            {assignUser.name}{role === 'Teacher' ? ' (Teacher)' : ''}
-                          </span>
-                        ) : item.copyRes[0]?.checkedByTeacher ? (
-                          <span className="badge badge-success badge-md text-white">
-                            {item.copyRes[0]?.checkedByTeacher}{item.copyRes[0]?.checkedByTeacher === assignUser.name && role === 'Teacher' ? ' (Teacher)' : ''}
+                            {localChecks[item._id]?.teacher ? assignUser.name : item.copyRes[0]?.checkedByTeacher}
                           </span>
                         ) : (
                           <span className="badge badge-error text-white">Not-Checked</span>
@@ -1117,6 +1112,19 @@ const numberWords = {
 
                         )}
                       </td>
+                      {role === "Teacher" && (
+                        <td className="px-2 py-4 sticky right-0 bg-white z-10">
+                          {!(localChecks[item._id]?.teacher || item?.copyRes[0]?.checkedByTeacher) && (
+                            <button
+                              onClick={() => handleCopySubmit(item)}
+                              className="btn btn-xs btn-primary font-bold shadow"
+                              title="Quick Check"
+                            >
+                              ✓
+                            </button>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                   </tbody>
