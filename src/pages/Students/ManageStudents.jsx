@@ -122,7 +122,7 @@ const ManageStudents = () => {
       setBtnDisable(false);
       return;
     }
-    
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("admissionNo", admissionNo);
@@ -191,134 +191,134 @@ const ManageStudents = () => {
       {
         updateUserData
           ? axios
-              .put(
-                `${`https://d2-c-b.vercel.app/api/student/${updateUserData._id}`}`,
-                formData
-              )
-              .then((res) => {
-                console.log(res);
-                if (res.data.success) {
-                  setBtnDisable(false);
-                  toast.success("Student Added Successfully !");
-                  setName("");
-                  setRollNumber("");
-                  setContactNumber("");
-                  setAadhaar("");
-                  setGender("");
-                  setReligion("");
-                  setHouse("");
-                  setAddress("");
-                  setAddress2("");
-                  setFathersName("");
-                  setMothersName("");
-                  setFathersOccupation("");
-                  setMothersOccupation("");
-                  setPreviousSchoolName("");
-                  setRegistrationNumber("");
-                  setAdmissionDate("");
-                  setDob("");
-                  setStudentClass("");
-                  setStudentSection("");
-                  setRoute("");
-                  setCaste("");
-                  setFeeCategory("");
-                  setBloodGroup("");
-                  setSelectedDocumentation([]);
-                  setCityVillage("");
-                  setFathersQualification("");
-                  setFathersDob("");
-                  setMothersQualification("");
-                  setMothersDob("");
-                  setLastExamGiven("");
-                  setLastExamYear("");
-                  setLastExamResult("");
-                  setNameOfLocalGuardian("");
-                  setAddressOfLocalGuardian("");
-                  setNumberOfLocalGuardian("");
-                  setPhoneForSchoolSMS("");
-                  setTransportFacility("");
-                  setPreviousSchoolAffiliatedWith("");
-                  setTimeout(() => {
-                    fetchAllUser();
-                  }, 400);
-                }
-              })
-              .catch((error) => {
-                console.log(error);
-                toast.error(error.response.data.message);
+            .put(
+              `${`https://d2-c-b.vercel.app/api/student/${updateUserData._id}`}`,
+              formData
+            )
+            .then((res) => {
+              console.log(res);
+              if (res.data.success) {
                 setBtnDisable(false);
-              })
-              .finally(() => {
-                setBtnDisable(false);
-              })
+                toast.success("Student Added Successfully !");
+                setName("");
+                setRollNumber("");
+                setContactNumber("");
+                setAadhaar("");
+                setGender("");
+                setReligion("");
+                setHouse("");
+                setAddress("");
+                setAddress2("");
+                setFathersName("");
+                setMothersName("");
+                setFathersOccupation("");
+                setMothersOccupation("");
+                setPreviousSchoolName("");
+                setRegistrationNumber("");
+                setAdmissionDate("");
+                setDob("");
+                setStudentClass("");
+                setStudentSection("");
+                setRoute("");
+                setCaste("");
+                setFeeCategory("");
+                setBloodGroup("");
+                setSelectedDocumentation([]);
+                setCityVillage("");
+                setFathersQualification("");
+                setFathersDob("");
+                setMothersQualification("");
+                setMothersDob("");
+                setLastExamGiven("");
+                setLastExamYear("");
+                setLastExamResult("");
+                setNameOfLocalGuardian("");
+                setAddressOfLocalGuardian("");
+                setNumberOfLocalGuardian("");
+                setPhoneForSchoolSMS("");
+                setTransportFacility("");
+                setPreviousSchoolAffiliatedWith("");
+                setTimeout(() => {
+                  fetchAllUser();
+                }, 400);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              toast.error(error.response.data.message);
+              setBtnDisable(false);
+            })
+            .finally(() => {
+              setBtnDisable(false);
+            })
           : axios
-              .post(
-                `${"https://d2-c-b.vercel.app/api/student/register"}`,
-                formData
-              )
-              .then((res) => {
-                console.log(res);
-                if (res.data.success) {
-                  setBtnDisable(false);
-                  toast.success("Student Added Successfully !");
-                  setName("");
-                  setRollNumber("");
-                  setContactNumber("");
-                  setAadhaar("");
-                  setGender("");
-                  setReligion("");
-                  setAddress2("");
-                  setAddress("");
-                  setHouse("");
-                  setFathersName("");
-                  setMothersName("");
-                  setFathersOccupation("");
-                  setMothersOccupation("");
-                  setPreviousSchoolName("");
-                  setRegistrationNumber("");
-                  setAdmissionDate("");
-                  setDob("");
-                  setStudentClass("");
-                  setStudentSection("");
-                  setRoute("Local");
-                  setCaste("");
-                  setFeeCategory("");
-                  setBloodGroup("");
-                  setSelectedDocumentation([]);
-                  setCityVillage("Gorakhpur");
-                  setFathersQualification("");
-                  setFathersDob("");
-                  setMothersQualification("");
-                  setMothersDob("");
-                  setLastExamGiven("");
-                  setLastExamYear("");
-                  setLastExamResult("");
-                  setNameOfLocalGuardian("");
-                  setAddressOfLocalGuardian("");
-                  setNumberOfLocalGuardian("");
-                  setPhoneForSchoolSMS("");
-                  setTransportFacility("");
-                  setFathersNo("");
-                  setMothersNo("");
-                  setAdmissionDate("");
-                  setFeeCategory("");
-                  setFatherPhoto(null);
-                  setMotherPhoto(null);
+            .post(
+              `${"https://d2-c-b.vercel.app/api/student/register"}`,
+              formData
+            )
+            .then((res) => {
+              console.log(res);
+              if (res.data.success) {
+                setBtnDisable(false);
+                toast.success("Student Added Successfully !");
+                setName("");
+                setRollNumber("");
+                setContactNumber("");
+                setAadhaar("");
+                setGender("");
+                setReligion("");
+                setAddress2("");
+                setAddress("");
+                setHouse("");
+                setFathersName("");
+                setMothersName("");
+                setFathersOccupation("");
+                setMothersOccupation("");
+                setPreviousSchoolName("");
+                setRegistrationNumber("");
+                setAdmissionDate("");
+                setDob("");
+                setStudentClass("");
+                setStudentSection("");
+                setRoute("Local");
+                setCaste("");
+                setFeeCategory("");
+                setBloodGroup("");
+                setSelectedDocumentation([]);
+                setCityVillage("Gorakhpur");
+                setFathersQualification("");
+                setFathersDob("");
+                setMothersQualification("");
+                setMothersDob("");
+                setLastExamGiven("");
+                setLastExamYear("");
+                setLastExamResult("");
+                setNameOfLocalGuardian("");
+                setAddressOfLocalGuardian("");
+                setNumberOfLocalGuardian("");
+                setPhoneForSchoolSMS("");
+                setTransportFacility("");
+                setFathersNo("");
+                setMothersNo("");
+                setAdmissionDate("");
+                setFeeCategory("");
+                setFatherPhoto(null);
+                setMotherPhoto(null);
 
-                  setPreviousSchoolAffiliatedWith("");
-                  setTimeout(() => {
-                    fetchAllUser();
-                  }, 400);
-                }
-              })
-              .catch((error) => {
-                console.log(error);
-                toast.error(error.response.data.message);
-                setBtnDisable(false);
-              })
-              .finally(() => {
-                setBtnDisable(false);
-              });
+                setPreviousSchoolAffiliatedWith("");
+                setTimeout(() => {
+                  fetchAllUser();
+                }, 400);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              toast.error(error.response.data.message);
+              setBtnDisable(false);
+            })
+            .finally(() => {
+              setBtnDisable(false);
+            });
       }
     } catch (error) {
       console.log(error);
@@ -514,9 +514,8 @@ const ManageStudents = () => {
           <li className="page-item">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
-              className={`px-4 py-2 cursor-pointer rounded-md  mx-1 ${
-                isFirstPage ? "disabled" : ""
-              }`}
+              className={`px-4 py-2 cursor-pointer rounded-md  mx-1 ${isFirstPage ? "disabled" : ""
+                }`}
               disabled={isFirstPage}
             >
               Previous
@@ -526,9 +525,8 @@ const ManageStudents = () => {
             <li key={number} className="page-item">
               <button
                 onClick={() => handlePageChange(number)}
-                className={`${
-                  currentPage === number ? "bg-gray-400 text-white" : ""
-                } px-4 py-2 mx-1 rounded-md`}
+                className={`${currentPage === number ? "bg-gray-400 text-white" : ""
+                  } px-4 py-2 mx-1 rounded-md`}
               >
                 {number}
               </button>
@@ -537,9 +535,8 @@ const ManageStudents = () => {
           <li className="page-item">
             <button
               onClick={() => handlePageChange(currentPage + 1)}
-              className={`px-4 py-2 cursor-pointer mx-1 bg-black rounded-md text-white ${
-                isLastPage ? "disabled" : ""
-              }`}
+              className={`px-4 py-2 cursor-pointer mx-1 bg-black rounded-md text-white ${isLastPage ? "disabled" : ""
+                }`}
               disabled={isLastPage}
             >
               Next
@@ -674,41 +671,41 @@ const ManageStudents = () => {
     }
   };
   const handleToggleStatus = (id, currentStatus) => {
-        // Toggle the status from true to false or false to true
-        const updatedStatus = !currentStatus;
-    
-        // Optimistic UI update - update the status immediately in the UI
+    // Toggle the status from true to false or false to true
+    const updatedStatus = !currentStatus;
+
+    // Optimistic UI update - update the status immediately in the UI
+    setUserData((prevData) =>
+      prevData.map((user) =>
+        user._id === id ? { ...user, isActive: updatedStatus } : user
+      )
+    );
+
+    // Send API request to update status in backend
+    axios
+      .put(
+        `https://d2-c-b.vercel.app/api/student/status/${id}`,
+        {
+          isActive: updatedStatus, // Boolean status value
+        }
+      )
+      .then((res) => {
+        if (res.data) {
+          console.log("Status updated successfully:", res.data); // Log the successful response
+          toast.success("Status updated successfully");
+        }
+      })
+      .catch((error) => {
+        console.log("Error updating status:", error); // Log the error response
+        toast.error("Failed to update status");
+        // Revert the status change if the update failed
         setUserData((prevData) =>
           prevData.map((user) =>
-            user._id === id ? { ...user, isActive: updatedStatus } : user
+            user._id === id ? { ...user, isActive: currentStatus } : user
           )
         );
-    
-        // Send API request to update status in backend
-        axios
-          .put(
-            `https://d2-c-b.vercel.app/api/student/status/${id}`,
-            {
-              isActive: updatedStatus, // Boolean status value
-            }
-          )
-          .then((res) => {
-            if (res.data) {
-              console.log("Status updated successfully:", res.data); // Log the successful response
-              toast.success("Status updated successfully");
-            }
-          })
-          .catch((error) => {
-            console.log("Error updating status:", error); // Log the error response
-            toast.error("Failed to update status");
-            // Revert the status change if the update failed
-            setUserData((prevData) =>
-              prevData.map((user) =>
-                user._id === id ? { ...user, isActive: currentStatus } : user
-              )
-            );
-          });
-      };
+      });
+  };
   const handleImageMother = (e) => {
     const file = e.target.files[0];
     console.log(file);
@@ -2295,7 +2292,7 @@ const ManageStudents = () => {
                 </div>
               </div>
             </section>
-          </div> */} 
+          </div> */}
           {/* FORM UI */}
         </>
       )}
@@ -2334,16 +2331,16 @@ const ManageStudents = () => {
               <span className="mr-2" role="img" aria-label="all">🌐</span>
               All
             </button>
-            {['L.K.G', 'U.K.G', 'Nursery', ...Array.from({length: 12}, (_, i) => `Class ${i+1}`)].map(cls => (
+            {['L.K.G', 'U.K.G', 'Nursery', ...Array.from({ length: 12 }, (_, i) => `${i + 1}`)].map(cls => (
               <button
                 key={cls}
                 className={`btn w-full text-base mb-2 transition-all duration-200 shadow-sm hover:shadow-lg hover:scale-105 ${activeClass === cls ? 'btn-primary border-2 border-blue-700 scale-105 font-bold' : 'btn-outline'}`}
                 onClick={() => setActiveClass(cls)}
-                title={cls}
+                title={cls.match(/^\d+$/) ? `Class ${cls}` : cls}
                 tabIndex={0}
               >
-                <span className="mr-2">{cls.match(/Class/) ? <span role="img" aria-label="class">🎓</span> : <span role="img" aria-label="book">📚</span>}</span>
-                {cls}
+                <span className="mr-2">{cls.match(/^\d+$/) ? <span role="img" aria-label="class">🎓</span> : <span role="img" aria-label="book">📚</span>}</span>
+                {cls.match(/^\d+$/) ? `Class ${cls}` : cls}
               </button>
             ))}
           </div>
@@ -2376,7 +2373,7 @@ const ManageStudents = () => {
           {activeClass && activeDivision && (
             <div className="mb-4 mt-2">
               <span className="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold shadow">
-              Selected: {activeClass === 'all' ? 'All Classes' : activeClass} - Section {activeDivision === 'all' ? 'All Sections' : activeDivision}
+                Selected: {activeClass === 'all' ? 'All Classes' : activeClass} - Section {activeDivision === 'all' ? 'All Sections' : activeDivision}
               </span>
             </div>
           )}
@@ -2398,7 +2395,7 @@ const ManageStudents = () => {
 
                         <th className="py-3 px-6">Contact</th>
                         <th className="py-3 px-6">Gender</th>
-                        
+
 
                         <th className="py-3 px-6">Status</th>
                         <th className="py-3 px-6">Action</th>
@@ -2438,13 +2435,13 @@ const ManageStudents = () => {
                           {/* <td className="px-6 py-4 whitespace-nowrap">
                             {item.registrationNumber}
                           </td> */}
-<td className="px-6 py-4 whitespace-nowrap">
-   <ToggleButton
-                          isOn={item.isActive}
-                          onToggle={() =>handleToggleStatus(item._id, item.isActive)
-                          }
-                        />
-</td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <ToggleButton
+                              isOn={item.isActive}
+                              onToggle={() => handleToggleStatus(item._id, item.isActive)
+                              }
+                            />
+                          </td>
 
 
                           <td className="px-6 py-4 whitespace-nowrap">
