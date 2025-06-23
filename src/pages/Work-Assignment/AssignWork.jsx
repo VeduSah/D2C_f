@@ -114,7 +114,7 @@ const AssignWork = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/coordinator-assignment/",
+        "https://d2-c-b.vercel.app/api/coordinator-assignment/",
         workData
       );
       if (response.data.success) {
@@ -297,7 +297,7 @@ const AssignWork = () => {
         </div>
 
         <div className="form-control mt-6">
-          <button type="submit" className="btn btn-primary" disabled={loading}>
+          <button onClick={() => navigate("/work-list")} type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? (
               <span className="loading loading-spinner"></span>
             ) : (
