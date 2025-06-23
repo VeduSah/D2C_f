@@ -15,7 +15,7 @@ const usePendingAssignments = () => {
   const fetchPendingCount = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/coordinator-assignment/teacher?teacherId=${teacherId}`
+        `https://d2-c-b.vercel.app/api/coordinator-assignment/teacher?teacherId=${teacherId}`
       );
       if (response.data.success) {
         const pending = response.data.data.filter(
