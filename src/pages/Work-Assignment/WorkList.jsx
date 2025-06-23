@@ -21,14 +21,14 @@ const WorkList = () => {
       let url = "";
 
       if (role === "Teacher") {
-        url = `https://d2-c-b.vercel.app/api/coordinator-assignment/teacher?teacherId=${userId}`;
+        url = `http://localhost:8000/api/coordinator-assignment/teacher?teacherId=${userId}`;
       } else if (
         role === "Senior Coordinator" ||
         role === "Junior Coordinator"
       ) {
-        url = `https://d2-c-b.vercel.app/api/coordinator-assignment/all?coordinatorId=${userId}`;
+        url = `http://localhost:8000/api/coordinator-assignment/all?coordinatorId=${userId}`;
       } else {
-        url = "https://d2-c-b.vercel.app/api/coordinator-assignment/all";
+        url = "http://localhost:8000/api/coordinator-assignment/all";
       }
 
       const response = await axios.get(url);
@@ -72,7 +72,7 @@ const WorkList = () => {
           <table className="table table-zebra w-full">
             <thead>
               <tr>
-                {/* <th>Teacher Name</th> */}
+                <th>Teacher Name</th>
                 <th>Class</th>
                 <th>Section</th>
                 <th>Subject</th>
@@ -98,7 +98,7 @@ const WorkList = () => {
               ) : (
                 assignments.map((assignment) => (
                   <tr key={assignment._id}>
-                    {/* <td>{assignment.teacherName}</td> */}
+                    <td>{assignment.teacherName}</td>
                     <td>{assignment.class}</td>
                     <td>{assignment.section}</td>
                     <td>{assignment.subject || "N/A"}</td>
