@@ -21,7 +21,7 @@ const UpdateWork = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/coordinator-assignment/teacher?teacherId=${teacherId}`
+        `https://d2-c-b.vercel.app/api/coordinator-assignment/teacher?teacherId=${teacherId}`
       );
       if (response.data.success) {
         setAssignments(response.data.data);
@@ -42,7 +42,7 @@ const UpdateWork = () => {
     setLoading(true);
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/coordinator-assignment/submission/${assignmentId}`,
+        `https://d2-c-b.vercel.app/api/coordinator-assignment/submission/${assignmentId}`,
         {
           actualSubmissionDate: actualDate,
         }
