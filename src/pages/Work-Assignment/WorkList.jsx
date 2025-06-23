@@ -72,7 +72,7 @@ const WorkList = () => {
           <table className="table table-zebra w-full">
             <thead>
               <tr>
-                {/* <th>Teacher Name</th> */}
+                <th>Teacher Name</th>
                 <th>Class</th>
                 <th>Section</th>
                 <th>Subject</th>
@@ -98,7 +98,7 @@ const WorkList = () => {
               ) : (
                 assignments.map((assignment) => (
                   <tr key={assignment._id}>
-                    {/* <td>{assignment.teacherName}</td> */}
+                    <td>{assignment.teacherName}</td>
                     <td>{assignment.class}</td>
                     <td>{assignment.section}</td>
                     <td>{assignment.subject || "N/A"}</td>

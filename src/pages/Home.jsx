@@ -39,6 +39,9 @@ const Home = () => {
   const [counts, setCounts] = useState("");
   const { pendingCount, refreshCount } = usePendingAssignments();
   const [showTooltip, setShowTooltip] = useState(false);
+  const [workAssignments, setWorkAssignments] = useState([]);
+  const [workLoading, setWorkLoading] = useState(false);
+
   const getCount = () => {
     setLoading(true);
     try {
@@ -254,10 +257,12 @@ const Home = () => {
     }
     if (role == "Admin") {
       fetchAdminRemark();
+      fetchWorkAssignments();
     }
     fetchAllRemark();
     getCount();
   }, [remarkDate]);
+
   const fetchListingByRole = () => {
     try {
       axios
@@ -281,6 +286,24 @@ const Home = () => {
       console.log(error);
       setUserRoleData(null);
       setLoading(false);
+    }
+  };
+
+  const fetchWorkAssignments = async () => {
+    if (role === "Admin") {
+      setWorkLoading(true);
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/coordinator-assignment/all"
+        );
+        if (response.data.success) {
+          setWorkAssignments(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching work assignments:", error);
+      } finally {
+        setWorkLoading(false);
+      }
     }
   };
 
@@ -990,6 +1013,90 @@ const Home = () => {
                   </div>
                 </div>
               </>
+              {/* Work Assignments Section for Admin */}
+              <div className="mt-12">
+                <p className="text-2xl font-semibold">All Work Assignments</p>
+              </div>
+              <div className="mt-4 shadow-sm border rounded-lg overflow-x-auto w-full">
+                {workLoading ? (
+                  <div className="flex justify-center p-8">
+                    <span className="loading loading-spinner loading-lg"></span>
+                  </div>
+                ) : (
+                  <table className="w-full table-auto text-sm text-left">
+                    <thead className="bg-gray-50 text-gray-600 font-medium border-b">
+                      <tr>
+                        <th className="py-3 px-6">Teacher</th>
+                        <th className="py-3 px-6">Class</th>
+                        <th className="py-3 px-6">Section</th>
+                        <th className="py-3 px-6">Subject</th>
+                        <th className="py-3 px-6">Work Type</th>
+                        <th className="py-3 px-6">Projected Date</th>
+                        <th className="py-3 px-6">Actual Date</th>
+                        <th className="py-3 px-6">Coordinator</th>
+                        <th className="py-3 px-6">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-gray-600 divide-y">
+                      {workAssignments.length === 0 ? (
+                        <tr>
+                          <td colSpan="9" className="text-center py-8">
+                            No work assignments found.
+                          </td>
+                        </tr>
+                      ) : (
+                        workAssignments.map((assignment) => (
+                          <tr key={assignment._id}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {assignment.teacherName}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {assignment.class}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {assignment.section}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {assignment.subject || "N/A"}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap capitalize">
+                              {assignment.assignedWorkType}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {new Date(
+                                assignment.projectedDate
+                              ).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {assignment.actualSubmissionDate
+                                ? new Date(
+                                    assignment.actualSubmissionDate
+                                  ).toLocaleDateString()
+                                : "Not submitted"}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {assignment.coordinatorName}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span
+                                className={`badge ${
+                                  assignment.actualSubmissionDate
+                                    ? "badge-success"
+                                    : "badge-warning"
+                                } text-white`}
+                              >
+                                {assignment.actualSubmissionDate
+                                  ? "Completed"
+                                  : "Pending"}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                )}
+              </div>
             </>
           )}
 
