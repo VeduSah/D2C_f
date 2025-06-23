@@ -98,7 +98,12 @@ const TeacherAttendance = () => {
       if (errorCount > 0) {
         toast.error(`${errorCount} records failed to process`);
       }
-
+  if (updateCount > 0 || createCount > 0) {
+      // Add a small delay to let the user see the success message
+      setTimeout(() => {
+        navigate('/display-attendence');
+      }, 900);
+    }
     } catch (err) {
       console.error(err);
       toast.error('Error submitting attendance. Please try again.');

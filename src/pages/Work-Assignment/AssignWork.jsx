@@ -118,7 +118,11 @@ const AssignWork = () => {
         workData
       );
       if (response.data.success) {
+       
         toast.success("Work assigned successfully!");
+       setTimeout(() => {
+    navigate("/work-list");
+  }, 700); // 1.5 seconds is usually enough
         // Reset form
         setTeacherId("");
         setTeacherName("");
@@ -297,13 +301,13 @@ const AssignWork = () => {
         </div>
 
         <div className="form-control mt-6">
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? (
-              <span className="loading loading-spinner"></span>
-            ) : (
-              "Submit"
-            )}
-          </button>
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+        {loading ? (
+          <span className="loading loading-spinner"></span>
+        ) : (
+          "Submit"
+        )}
+      </button>
         </div>
       </form>
     </div>
