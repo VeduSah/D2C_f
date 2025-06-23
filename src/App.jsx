@@ -25,6 +25,10 @@ import StudentAttendance from "./pages/Students/StudentAttendece";
 import Homework from "./pages/Homework/Homework";
 import AddHomework from "./pages/Homework/AddHomework";
 import StuAttendenceView from "./pages/Admins/ManageStuAtten";
+import AssignWork from "./pages/Work-Assignment/AssignWork";
+import UpdateWork from "./pages/Work-Assignment/UpdateWork";
+import WorkList from "./pages/Work-Assignment/WorkList";
+
 const App = () => {
   const navigate = useNavigate();
   const [isListening, setIsListening] = useState(false);
@@ -87,25 +91,23 @@ const App = () => {
 
     annyang.addCommands(commands);
 
-const onResult = (phrases) => {
-  const phrase = phrases[0] || "";
-  console.log("Recognized (raw):", phrase);
+    const onResult = (phrases) => {
+      const phrase = phrases[0] || "";
+      console.log("Recognized (raw):", phrase);
 
-  // Display only the first two words
-  const cleanedPhrase = phrase.trim().replace(/\s+/g, " ");
-  const firstTwoWords = cleanedPhrase.split(" ").slice(0, 2).join(" ");
-  setRecognizedSpeech(firstTwoWords || "Listening...");
+      // Display only the first two words
+      const cleanedPhrase = phrase.trim().replace(/\s+/g, " ");
+      const firstTwoWords = cleanedPhrase.split(" ").slice(0, 2).join(" ");
+      setRecognizedSpeech(firstTwoWords || "Listening...");
 
-  // Process the FULL phrase (not just the first two words)
-  if (phrase.includes("clear")) {
-    setRecognizedSpeech("Listening...");
-  } else if (phrase.includes("stop")) {
-    annyang.abort();
-    setIsListening(false);
-  }
-};
-
-
+      // Process the FULL phrase (not just the first two words)
+      if (phrase.includes("clear")) {
+        setRecognizedSpeech("Listening...");
+      } else if (phrase.includes("stop")) {
+        annyang.abort();
+        setIsListening(false);
+      }
+    };
 
     annyang.addCallback("result", onResult);
     annyang.addCallback("start", () => setIsListening(true));
@@ -636,6 +638,43 @@ const onResult = (phrases) => {
                         </span>
                       </a>
                     </li>
+                    <li
+                      onClick={() => {
+                        setActiveLink("update work");
+                        navigate("/update-work");
+                        setMl();
+                      }}
+                    >
+                      <a
+                        href="#"
+                        aria-label="update work"
+                        className={
+                          activeLink == "update work"
+                            ? "relative flex items-center space-x-4 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-400 px-1 py-2 text-white "
+                            : "relative flex items-center space-x-4 rounded-xl px-1 py-2  text-gray-600"
+                        }
+                      >
+                        <svg
+                          className="-ml-1 h-6 w-6"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M6 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8ZM6 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1Z"
+                            className="dark:fill-slate-600 fill-current text-cyan-400"
+                          ></path>
+                          <path
+                            d="M13 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8Z"
+                            className="fill-current text-cyan-200 group-hover:text-cyan-300"
+                          ></path>
+                          <path
+                            d="M13 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1Z"
+                            className="fill-current group-hover:text-sky-300"
+                          ></path>
+                        </svg>
+                        <span className="-mr-1 font-medium">Update Work</span>
+                      </a>
+                    </li>
                     {/* <li
                       onClick={() => {
                         setActiveLink("exam copies");
@@ -790,6 +829,43 @@ const onResult = (phrases) => {
                         <span className="-mr-1 font-medium">Manage Copies</span>
                       </a>
                     </li>
+                    <li
+                      onClick={() => {
+                        setActiveLink("work list");
+                        navigate("/work-list");
+                        setMl();
+                      }}
+                    >
+                      <a
+                        href="#"
+                        aria-label="work list"
+                        className={
+                          activeLink == "work list"
+                            ? "relative flex items-center space-x-4 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-400 px-1 py-2 text-white "
+                            : "relative flex items-center space-x-4 rounded-xl px-1 py-2  text-gray-600"
+                        }
+                      >
+                        <svg
+                          className="-ml-1 h-6 w-6"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M6 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8ZM6 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1Z"
+                            className="dark:fill-slate-600 fill-current text-cyan-400"
+                          ></path>
+                          <path
+                            d="M13 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8Z"
+                            className="fill-current text-cyan-200 group-hover:text-cyan-300"
+                          ></path>
+                          <path
+                            d="M13 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1Z"
+                            className="fill-current group-hover:text-sky-300"
+                          ></path>
+                        </svg>
+                        <span className="-mr-1 font-medium">Work List</span>
+                      </a>
+                    </li>
                     {/* <li
                       onClick={() => {
                         setActiveLink("exam copies");
@@ -904,6 +980,43 @@ const onResult = (phrases) => {
                           ></path>
                         </svg>
                         <span className="-mr-1 font-medium">Manage Copies</span>
+                      </a>
+                    </li>
+                    <li
+                      onClick={() => {
+                        setActiveLink("assign work");
+                        navigate("/assign-work");
+                        setMl();
+                      }}
+                    >
+                      <a
+                        href="#"
+                        aria-label="assign work"
+                        className={
+                          activeLink == "assign work"
+                            ? "relative flex items-center space-x-4 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-400 px-1 py-2 text-white "
+                            : "relative flex items-center space-x-4 rounded-xl px-1 py-2  text-gray-600"
+                        }
+                      >
+                        <svg
+                          className="-ml-1 h-6 w-6"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M6 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8ZM6 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1Z"
+                            className="dark:fill-slate-600 fill-current text-cyan-400"
+                          ></path>
+                          <path
+                            d="M13 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8Z"
+                            className="fill-current text-cyan-200 group-hover:text-cyan-300"
+                          ></path>
+                          <path
+                            d="M13 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1Z"
+                            className="fill-current group-hover:text-sky-300"
+                          ></path>
+                        </svg>
+                        <span className="-mr-1 font-medium">Assign Work</span>
                       </a>
                     </li>
                     {/* <li
@@ -1051,7 +1164,13 @@ const onResult = (phrases) => {
                 <Route path="/assign-classes" element={<AssignClasses />} />
                 <Route path="/homework" element={<Homework />} />
                 <Route path="/add-homework" element={<AddHomework />} />
-                <Route path="/stu-attendence-view" element={<StuAttendenceView />} />
+                <Route
+                  path="/stu-attendence-view"
+                  element={<StuAttendenceView />}
+                />
+                <Route path="/assign-work" element={<AssignWork />} />
+                <Route path="/update-work" element={<UpdateWork />} />
+                <Route path="/work-list" element={<WorkList />} />
               </Routes>
             </div>
           </div>
