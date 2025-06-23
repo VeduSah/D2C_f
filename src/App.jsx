@@ -28,6 +28,7 @@ import StuAttendenceView from "./pages/Admins/ManageStuAtten";
 import AssignWork from "./pages/Work-Assignment/AssignWork";
 import UpdateWork from "./pages/Work-Assignment/UpdateWork";
 import WorkList from "./pages/Work-Assignment/WorkList";
+import usePendingAssignments from "./hooks/usePendingAssignments";
 
 const App = () => {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ const App = () => {
   const role = localStorage.getItem("role");
   const name = localStorage.getItem("name");
   const moduleAssigned = JSON.parse(localStorage.getItem("module"));
+  const { pendingCount, refreshCount } = usePendingAssignments();
   const [ml, setML] = useState(false);
   console.log(name);
   const handleLogout = async () => {
@@ -55,9 +57,29 @@ const App = () => {
       navigate("/login");
     }
   }, [currentUser]);
+
   useEffect(() => {
-    if (location.pathname == "") {
+    const path = location.pathname;
+    if (path === "/" || path === "") {
       setActiveLink("dashboard");
+    } else if (path === "/assign-work") {
+      setActiveLink("assign work");
+    } else if (path === "/work-list") {
+      setActiveLink("work list");
+    } else if (path === "/update-work") {
+      setActiveLink("update work");
+    } else if (path === "/homework") {
+      setActiveLink("homework");
+    } else if (path === "/manage-copies") {
+      setActiveLink("copies");
+    } else if (path === "/manage-students") {
+      setActiveLink("student");
+    } else if (path === "/assign-classes") {
+      setActiveLink("assign classes");
+    } else if (path === "/manage-admin") {
+      setActiveLink("admin");
+    } else if (path === "/display-attendence-stu") {
+      setActiveLink("student attendence");
     }
   }, [location.pathname]);
 
@@ -672,7 +694,15 @@ const App = () => {
                             className="fill-current group-hover:text-sky-300"
                           ></path>
                         </svg>
-                        <span className="-mr-1 font-medium">Update Work</span>
+                        <span className=" font-medium">Update Work</span>
+                        {pendingCount > 0 && (
+                          <span
+                            className="badge badge-error badge-xs text-white mb-2"
+                            style={{ marginLeft: "3px" }}
+                          >
+                            {pendingCount}
+                          </span>
+                        )}
                       </a>
                     </li>
                     {/* <li

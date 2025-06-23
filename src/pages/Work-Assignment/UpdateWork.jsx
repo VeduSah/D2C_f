@@ -91,7 +91,7 @@ const UpdateWork = () => {
               >
                 <div className="card-body">
                   <div className="grid grid-cols-4 md:grid-cols-8 gap-4 items-end">
-                    <div className="form-control">
+                    {/* <div className="form-control">
                       <label className="label">
                         <span className="label-text font-semibold text-xs">
                           Teacher
@@ -103,7 +103,7 @@ const UpdateWork = () => {
                         value={assignment.teacherName}
                         disabled
                       />
-                    </div>
+                    </div> */}
 
                     <div className="form-control">
                       <label className="label">
