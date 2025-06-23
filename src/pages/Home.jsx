@@ -6,6 +6,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import toast, { Toaster } from "react-hot-toast";
+import usePendingAssignments from "../hooks/usePendingAssignments";
+
 // import staffsGif from "../assets/staffs.gif";
 // import dashboardGif from "../assets/dashboard.gif";
 // import attendanceGif from "../assets/attendanceGif.gif";
@@ -35,13 +37,13 @@ const Home = () => {
   const [teacherNameForRemark, setTeacherNameForRemark] = useState("");
   const [teacherIdForRemark, setTeacherIdForRemark] = useState("");
   const [counts, setCounts] = useState("");
+  const { pendingCount, refreshCount } = usePendingAssignments();
+  const [showTooltip, setShowTooltip] = useState(false);
   const getCount = () => {
     setLoading(true);
     try {
       axios
-        .get(
-          `https://d2-c-b.vercel.app/api/home?role=${role}`
-        )
+        .get(`https://d2-c-b.vercel.app/api/home?role=${role}`)
         .then((res) => {
           console.log(res);
           if (res.data.success) {
@@ -57,15 +59,13 @@ const Home = () => {
       setLoading(false);
     }
   };
-const fetchStudents = () => {
+  const fetchStudents = () => {
     try {
       axios
         .get("https://d2-c-b.vercel.app/api/student/all")
         .then((res) => {
-
           if (res.data.success) {
             setCounts(res.data.count); // adjust if response structure differs
-           
           }
         })
         .catch((err) => {
@@ -80,7 +80,7 @@ const fetchStudents = () => {
       setLoading(false);
     }
   };
-   useEffect(() => {
+  useEffect(() => {
     fetchStudents();
   }, []);
   const fetchRemark = () => {
@@ -117,7 +117,7 @@ const fetchStudents = () => {
           console.log(res);
           if (res.data.success) {
             setRemarkData(res.data.data);
-            console.log(res.data.data)
+            console.log(res.data.data);
             setLoading(false);
           }
         })
@@ -204,43 +204,42 @@ const fetchStudents = () => {
       setLoading(false);
     }
   };
-    const updateRemark = (data, status) => {
-      try {
-        axios
-          .put(
-            `https://d2-c-b.vercel.app/api/remark/${data._id}`,
-            {
-              ...data,
-              isChecked: status == "approve" ? true : false,
+  const updateRemark = (data, status) => {
+    try {
+      axios
+        .put(`https://d2-c-b.vercel.app/api/remark/${data._id}`, {
+          ...data,
+          isChecked: status == "approve" ? true : false,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.data.success) {
+            toast.success("Remark Updated Successfully !");
+            if (role == "Admin") {
+              fetchAdminRemark();
             }
-          )
-          .then((res) => {
-            console.log(res);
-            if (res.data.success) {
-              toast.success("Remark Updated Successfully !");
-              if (role == "Admin") {
-                fetchAdminRemark();
-              }
-              if (role == "Teacher") {
-                fetchRemark();
-              }
-           if (role === "Senior Coordinator" || role === "Junior Coordinator") {
-  fetchCoRemark();
-  fetchCoRemarkByAdmin();
-}
-
-
-              setLoading(false);
+            if (role == "Teacher") {
+              fetchRemark();
             }
-          })
-          .finally(() => {
+            if (
+              role === "Senior Coordinator" ||
+              role === "Junior Coordinator"
+            ) {
+              fetchCoRemark();
+              fetchCoRemarkByAdmin();
+            }
+
             setLoading(false);
-          });
-      } catch (error) {
-        console.log(error);
-        setLoading(false);
-      }
-    };
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     if (role == "Teacher") {
       fetchRemark();
@@ -249,7 +248,7 @@ const fetchStudents = () => {
       fetchCoRemark();
       fetchCoRemarkByAdmin();
     }
-      if (role == "Junior Coordinator") {
+    if (role == "Junior Coordinator") {
       fetchCoRemark();
       fetchCoRemarkByAdmin();
     }
@@ -329,15 +328,60 @@ const fetchStudents = () => {
       toast.error(error.response.data.message, { id: "Errorr" });
     }
   };
-// https://d2-c-portal-backend-master.vercel.app
+  // https://d2-c-portal-backend-master.vercel.app
   return (
     <>
       <Toaster />
-      <div className="flex justify-center mt-8 mb-8 mr-8">
-        <p className="text-3xl font-semibold uppercase">
-          Dust To Crown Public School
-        </p>
+      <div className="relative">
+        <div className="flex justify-center mt-8 mb-8 mr-8">
+          <p className="text-3xl font-semibold uppercase">
+            Dust To Crown Public School
+          </p>
+        </div>
+
+        {/* Notification for Teachers */}
+        {role === "Teacher" && pendingCount > 0 && (
+          <div className="fixed top-4 right-4 z-50">
+            <div className="relative">
+              <div
+                className="bg-red-500 text-white p-3 rounded-full shadow-lg hover:bg-red-600 transition-colors cursor-pointer"
+                onClick={() => setShowTooltip(!showTooltip)}
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 17h5l-5 5v-5zM11 19H6a2 2 0 01-2-2V7a2 2 0 012-2h6m2 13V7a2 2 0 012-2h6a2 2 0 012 2v10a2 2 0 01-2 2h-3"
+                  />
+                </svg>
+                <span className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold">
+                  {pendingCount}
+                </span>
+              </div>
+
+              {/* Tooltip */}
+              {showTooltip && (
+                <div className="absolute right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded whitespace-nowrap">
+                  You have {pendingCount} assignments left
+                  <button
+                    className="ml-2 text-blue-300 underline"
+                    onClick={() => navigate("/update-work")}
+                  >
+                    View
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
+
       {!loading ? (
         <>
           <div className="grid md:grid-cols-3 gap-4 content-center">
@@ -365,7 +409,6 @@ const fetchStudents = () => {
                     <button className="btn">Go to Admin&apos;s panel</button>
                   </div>
                 </div>{" "}
-                
                 <div
                   onClick={() => navigate("/manage-teacher")}
                   className=" shadow cursor-pointer w-fit  px-6 py-4"
@@ -408,8 +451,7 @@ const fetchStudents = () => {
                   <div className="flex justify-center mt-4">
                     <button className="btn">Go to Student&apos;s panel</button>
                   </div>
-                </div>
-                {" "}
+                </div>{" "}
                 <div
                   className="hover:border shadow cursor-pointer w-fit  px-6 py-4"
                   onClick={() => navigate("/manage-coordinator")}
@@ -429,10 +471,11 @@ const fetchStudents = () => {
                   </div>
 
                   <div className="flex justify-center mt-4">
-                    <button className="btn">Go to Coordinator&apos;s panel</button>
+                    <button className="btn">
+                      Go to Coordinator&apos;s panel
+                    </button>
                   </div>
-                </div>
-                 {" "}
+                </div>{" "}
                 <div
                   className="hover:border shadow cursor-pointer w-fit  px-6 py-4"
                   onClick={() => navigate("/display-attendence")}
@@ -454,8 +497,7 @@ const fetchStudents = () => {
                   <div className="flex justify-center mt-4">
                     <button className="btn">Go to Teacher&apos;s panel</button>
                   </div>
-                </div>
-                 {" "}
+                </div>{" "}
                 <div
                   className="hover:border shadow cursor-pointer w-fit  px-6 py-4"
                   onClick={() => navigate("/stu-attendence-view")}
@@ -475,7 +517,9 @@ const fetchStudents = () => {
                   </div>
 
                   <div className="flex justify-center mt-4">
-                    <button className="btn">Go to Student's&apos;s Attendence</button>
+                    <button className="btn">
+                      Go to Student's&apos;s Attendence
+                    </button>
                   </div>
                 </div>
               </>
@@ -582,11 +626,13 @@ const fetchStudents = () => {
             </div>
           )}
 
-        {(role === "Senior Coordinator" || role === "Junior Coordinator") && (
+          {(role === "Senior Coordinator" || role === "Junior Coordinator") && (
             <>
               <div>
                 <p className="text-2xl font-semibold">
-                 {role==="Senior Coordinator"?"Remarks Given To Teachers & Junior Coordinators":"Remarks Given To Teachers"}
+                  {role === "Senior Coordinator"
+                    ? "Remarks Given To Teachers & Junior Coordinators"
+                    : "Remarks Given To Teachers"}
                 </p>
               </div>
               <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
@@ -610,60 +656,60 @@ const fetchStudents = () => {
                     </tr>
                   </thead>
                   <tbody className="text-gray-600 divide-y">
-                 {remarkData &&
-  remarkData
-    .filter((item) => item.remarkBy === name) // or currentUser._id
-    .map((item, idx) => (
-                        <tr key={item._id}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item.remarkBy}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item.remarkComment}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item.remarkTo}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {item.isChecked ? (
-                              <span className="badge badge-success badge-md text-white">
-                                Acknowledged
-                              </span>
-                            ) : (
-                              <span className="badge badge-error text-white">
-                                Not-Acknowledged
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <button
-                              onClick={() => updateRemark(item, "approve")}
-                              className="btn btn-outline btn-xs"
-                              disabled={item.isChecked}
-                            >
-                              Acknowledge
-                            </button>
-                            <button
-                              onClick={() => updateRemark(item, "reject")}
-                              className="btn btn-warning ml-2 btn-xs text-white"
-                              disabled={item.isChecked}
-                            >
-                              Reject
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                    {remarkData &&
+                      remarkData
+                        .filter((item) => item.remarkBy === name) // or currentUser._id
+                        .map((item, idx) => (
+                          <tr key={item._id}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {item.remarkBy}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {item.remarkComment}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {item.remarkTo}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {item.isChecked ? (
+                                <span className="badge badge-success badge-md text-white">
+                                  Acknowledged
+                                </span>
+                              ) : (
+                                <span className="badge badge-error text-white">
+                                  Not-Acknowledged
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <button
+                                onClick={() => updateRemark(item, "approve")}
+                                className="btn btn-outline btn-xs"
+                                disabled={item.isChecked}
+                              >
+                                Acknowledge
+                              </button>
+                              <button
+                                onClick={() => updateRemark(item, "reject")}
+                                className="btn btn-warning ml-2 btn-xs text-white"
+                                disabled={item.isChecked}
+                              >
+                                Reject
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
                   </tbody>
                 </table>
               </div>
 
               <div className="mt-12">
-  <p className="text-2xl font-semibold">
-    {role === "Junior Coordinator"
-      ? "Remarks Received By Admin and Senior Coordinator"
-      : "Remarks Received By Admin"}
-  </p>
-</div>
+                <p className="text-2xl font-semibold">
+                  {role === "Junior Coordinator"
+                    ? "Remarks Received By Admin and Senior Coordinator"
+                    : "Remarks Received By Admin"}
+                </p>
+              </div>
 
               <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
                 <div className="p-1 flex items-center gap-3">
@@ -737,19 +783,20 @@ const fetchStudents = () => {
                 <div className="grid md:grid-cols-3 gap-3">
                   <div className="form-control mt-5">
                     <label htmlFor="">Select Role</label>
-                 <select
-  onChange={(e) => setRoleForRemark(e.target.value)}
-  className="select select-bordered border-gray-300"
->
-  <option value="" selected disabled>
-    Select Role
-  </option>
-  <option value="Teacher">Teacher</option>
-  {role === "Senior Coordinator" && (
-    <option value="Junior Coordinator">Junior Coordinator</option>
-  )}
-</select>
-
+                    <select
+                      onChange={(e) => setRoleForRemark(e.target.value)}
+                      className="select select-bordered border-gray-300"
+                    >
+                      <option value="" selected disabled>
+                        Select Role
+                      </option>
+                      <option value="Teacher">Teacher</option>
+                      {role === "Senior Coordinator" && (
+                        <option value="Junior Coordinator">
+                          Junior Coordinator
+                        </option>
+                      )}
+                    </select>
                   </div>
 
                   {roleForRemark && (
@@ -887,8 +934,12 @@ const fetchStudents = () => {
                           Select Role
                         </option>
                         <option value="Teacher">Teacher</option>
-                        <option value="Senior Coordinator">Senior Coordinator</option>
-                            <option value="Junior Coordinator">Junior Coordinator</option>
+                        <option value="Senior Coordinator">
+                          Senior Coordinator
+                        </option>
+                        <option value="Junior Coordinator">
+                          Junior Coordinator
+                        </option>
                       </select>
                     </div>
 
@@ -906,7 +957,6 @@ const fetchStudents = () => {
                           {userRoleData?.map((res) => (
                             <option value={res._id} key={res._id}>
                               {res.name}
-                            
                             </option>
                           ))}
                         </select>
@@ -943,7 +993,9 @@ const fetchStudents = () => {
             </>
           )}
 
-          {(role === "Teacher" || role === "Senior Coordinator" || role === "Junior Coordinator") && (
+          {(role === "Teacher" ||
+            role === "Senior Coordinator" ||
+            role === "Junior Coordinator") && (
             <>
               <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
                 <div className="px-4 py-2 font-semibold text-xl">
