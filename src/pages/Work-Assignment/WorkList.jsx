@@ -21,14 +21,14 @@ const WorkList = () => {
       let url = "";
 
       if (role === "Teacher") {
-        url = `http://localhost:8000/api/coordinator-assignment/teacher?teacherId=${userId}`;
+        url = `https://d2-c-b.vercel.app/api/coordinator-assignment/teacher?teacherId=${userId}`;
       } else if (
         role === "Senior Coordinator" ||
         role === "Junior Coordinator"
       ) {
-        url = `http://localhost:8000/api/coordinator-assignment/all?coordinatorId=${userId}`;
+        url = `https://d2-c-b.vercel.app/api/coordinator-assignment/all?coordinatorId=${userId}`;
       } else {
-        url = "http://localhost:8000/api/coordinator-assignment/all";
+        url = "https://d2-c-b.vercel.app/api/coordinator-assignment/all";
       }
 
       const response = await axios.get(url);

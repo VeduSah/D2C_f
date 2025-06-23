@@ -114,7 +114,7 @@ const AssignWork = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/coordinator-assignment/",
+        "https://d2-c-b.vercel.app/api/coordinator-assignment/",
         workData
       );
       if (response.data.success) {

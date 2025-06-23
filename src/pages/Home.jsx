@@ -294,7 +294,7 @@ const Home = () => {
       setWorkLoading(true);
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/coordinator-assignment/all"
+          "https://d2-c-b.vercel.app/api/coordinator-assignment/all"
         );
         if (response.data.success) {
           setWorkAssignments(response.data.data);
