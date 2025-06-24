@@ -68,9 +68,9 @@ const AssignWork = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("Classes state updated:", classes);
-  }, [classes]);
+  // useEffect(() => {
+  //   console.log("Classes state updated:", classes);
+  // }, [classes]);
 
   const handleClassChange = (e) => {
     const selectedClass = classes.find((cls) => cls.value === e.target.value);
@@ -132,6 +132,7 @@ const AssignWork = () => {
         setProjectedDate("");
         setSubject("");
         setSubjects([]);
+        navigate("/work-list");
       } else {
         toast.error(response.data.message || "Failed to assign work");
       }
@@ -301,13 +302,15 @@ const AssignWork = () => {
         </div>
 
         <div className="form-control mt-6">
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-        {loading ? (
-          <span className="loading loading-spinner"></span>
-        ) : (
-          "Submit"
-        )}
-      </button>
+
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading ? (
+              <span className="loading loading-spinner"></span>
+            ) : (
+              "Submit"
+            )}
+          </button>
+
         </div>
       </form>
     </div>

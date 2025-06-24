@@ -32,9 +32,9 @@ const usePendingAssignments = () => {
     fetchPendingCount();
 
     // Set up interval to refresh every 30 seconds
-    const interval = setInterval(fetchPendingCount, 10000);
+    // const interval = setInterval(fetchPendingCount, 10000);
 
-    return () => clearInterval(interval);
+    // return () => clearInterval(interval);
   }, [teacherId, role]);
 
   return { pendingCount, refreshCount: fetchPendingCount };

@@ -29,6 +29,7 @@ import AssignWork from "./pages/Work-Assignment/AssignWork";
 import UpdateWork from "./pages/Work-Assignment/UpdateWork";
 import WorkList from "./pages/Work-Assignment/WorkList";
 import usePendingAssignments from "./hooks/usePendingAssignments";
+import ShareHomework from "./pages/Homework/ShareHomework";
 
 const App = () => {
   const navigate = useNavigate();
@@ -1201,6 +1202,10 @@ const App = () => {
                 <Route path="/assign-work" element={<AssignWork />} />
                 <Route path="/update-work" element={<UpdateWork />} />
                 <Route path="/work-list" element={<WorkList />} />
+                <Route
+                  path="/share-homework/:classSection"
+                  element={<ShareHomework />}
+                />
               </Routes>
             </div>
           </div>

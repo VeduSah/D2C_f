@@ -303,33 +303,29 @@ const StudentAttendance = () => {
         </h2>
 
         {/* Class Tabs */}
-     {assignedClasses.length > 0 && (
-  <div className="mb-4">
-    <div 
-      role="tablist" 
-      className="flex flex-wrap gap-2" // Changed from tabs-boxed to flex with gap
-    >
-      {assignedClasses.map((cls) => (
-        <button
-          key={cls._id}
-          onClick={() => {
-            setActiveClass(cls.value);
-            if (cls.sections && cls.sections.length > 0) {
-              setActiveSection(cls.sections[0].value);
-            }
-          }}
-          className={`px-4 py-2 rounded-lg transition ${
-            activeClass === cls.value 
-              ? "bg-blue-600 text-white" 
-              : "bg-gray-200 hover:bg-gray-300"
-          }`}
-        >
-          {cls.label}
-        </button>
-      ))}
-    </div>
-  </div>
-)}
+        {assignedClasses.length > 0 && (
+          <div className="mb-4">
+            <div role="tablist" className="tabs tabs-boxed flex-wrap">
+              {assignedClasses.map((cls) => (
+                <button
+                  key={cls._id}
+                  onClick={() => {
+                    setActiveClass(cls.value);
+                    if (cls.sections && cls.sections.length > 0) {
+                      setActiveSection(cls.sections[0].value);
+                    }
+                  }}
+                  className={`tab ${
+                    activeClass === cls.value ? "tab-active" : ""
+                  }`}
+                >
+                  {cls.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <div>Hello</div>
 
         {/* Section Tabs */}
         {assignedClasses.find((c) => c.value === activeClass)?.sections
@@ -408,9 +404,7 @@ const StudentAttendance = () => {
                             type="radio"
                             name={`attendance-${student._id}`}
                             value="Absent"
-                            checked={
-                              attendanceStatus[student._id] === "Absent"
-                            }
+                            checked={attendanceStatus[student._id] === "Absent"}
                             onChange={() =>
                               handleStatusChange(student._id, "Absent")
                             }
