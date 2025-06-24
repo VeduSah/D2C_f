@@ -448,6 +448,16 @@ const StudentList = () => {
     message += `*Present:* ${presentStudents.length}\n`;
     message += `*Absent:* ${absentStudents.length}\n\n`;
 
+    if (presentStudents.length > 0) {
+      message += `*Present Students:*\n`;
+      presentStudents.forEach((student, index) => {
+        message += `${index + 1}. ${
+          student.name || student.student?.name
+        } (Roll: ${student.rollNumber || student.student?.rollNumber})\n`;
+      });
+      message += `\n`;
+    }
+
     if (absentStudents.length > 0) {
       message += `*Absent Students:*\n`;
       absentStudents.forEach((student, index) => {
