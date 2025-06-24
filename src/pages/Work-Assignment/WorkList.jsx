@@ -57,9 +57,9 @@ const WorkList = () => {
               Assign New Work
             </button>
           )}
-          <button className="btn btn-outline" onClick={() => navigate("/")}>
+          {/* <button className="btn btn-outline" onClick={() => navigate("/")}>
             Back to Dashboard
-          </button>
+          </button> */}
         </div>
       </div>
 

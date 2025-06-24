@@ -109,7 +109,7 @@ const AddHomework = () => {
           className="btn btn-outline"
           onClick={() => navigate("/homework")}
         >
-          Back to List
+          Back
         </button>
       </div>
 
