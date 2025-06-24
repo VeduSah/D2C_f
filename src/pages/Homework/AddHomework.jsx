@@ -81,7 +81,7 @@ const AddHomework = () => {
           // Navigate back to homework list after a short delay
           setTimeout(() => {
             navigate("/homework");
-          }, 1500);
+          }, 1000);
         } else {
           toast.error(res.data.message || "Failed to assign homework");
         }
@@ -104,7 +104,7 @@ const AddHomework = () => {
           className="btn btn-outline"
           onClick={() => navigate("/homework")}
         >
-          Back to List
+          Back
         </button>
       </div>
 

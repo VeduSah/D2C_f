@@ -326,6 +326,7 @@ const StudentAttendance = () => {
           </div>
         )}
         <div>Hello</div>
+
         {/* Section Tabs */}
         {assignedClasses.find((c) => c.value === activeClass)?.sections
           ?.length > 0 && (
@@ -377,7 +378,7 @@ const StudentAttendance = () => {
               <tbody>
                 {students.map((student, index) => (
                   <tr key={student._id} className="border-b">
-                    <td className="px-4 py-2">{index + 1}</td>
+                    <td className="px-4 py-2">{student.rollNumber}</td>
                     <td className="px-4 py-2">{student.name}</td>
                     <td className="px-4 py-2">{student.studentClass}</td>
                     <td className="px-4 py-2">{student.studentSection}</td>

@@ -46,7 +46,7 @@ const AttendanceList = () => {
     } catch (error) {
       console.error("Error fetching attendance:", error);
       setError("No records found");
-      toast.error("Failed to load attendance records");
+      // toast.error("Failed to load attendance records");
     } finally {
       setLoading(false);
     }

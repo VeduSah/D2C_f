@@ -68,9 +68,9 @@ const UpdateWork = () => {
       <Toaster position="top-center" />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">My Work Assignments</h1>
-        <button className="btn btn-outline" onClick={() => navigate("/")}>
-          Back to Dashboard
-        </button>
+        {/* <button className="btn btn-outline" onClick={() => navigate("/")}>
+          Back 
+        </button> */}
       </div>
 
       {loading ? (

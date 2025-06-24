@@ -118,7 +118,11 @@ const AssignWork = () => {
         workData
       );
       if (response.data.success) {
+       
         toast.success("Work assigned successfully!");
+       setTimeout(() => {
+    navigate("/work-list");
+  }, 700); // 1.5 seconds is usually enough
         // Reset form
         setTeacherId("");
         setTeacherName("");
@@ -146,14 +150,14 @@ const AssignWork = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Assign Work to Teacher</h1>
         <div>
-          <button
+          {/* <button
             className="btn btn-outline mr-2"
             onClick={() => navigate("/work-list")}
           >
             All Lists
-          </button>
-          <button className="btn btn-outline" onClick={() => navigate("/")}>
-            Back to Dashboard
+          </button> */}
+          <button className="btn btn-outline" onClick={() => navigate("/work-list")}>
+            Back
           </button>
         </div>
       </div>
@@ -298,6 +302,7 @@ const AssignWork = () => {
         </div>
 
         <div className="form-control mt-6">
+
           <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? (
               <span className="loading loading-spinner"></span>
@@ -305,6 +310,7 @@ const AssignWork = () => {
               "Submit"
             )}
           </button>
+
         </div>
       </form>
     </div>
