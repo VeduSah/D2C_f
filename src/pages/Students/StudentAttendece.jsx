@@ -325,7 +325,7 @@ const StudentAttendance = () => {
             </div>
           </div>
         )}
-
+        <div>Hello</div>
         {/* Section Tabs */}
         {assignedClasses.find((c) => c.value === activeClass)?.sections
           ?.length > 0 && (
@@ -403,9 +403,7 @@ const StudentAttendance = () => {
                             type="radio"
                             name={`attendance-${student._id}`}
                             value="Absent"
-                            checked={
-                              attendanceStatus[student._id] === "Absent"
-                            }
+                            checked={attendanceStatus[student._id] === "Absent"}
                             onChange={() =>
                               handleStatusChange(student._id, "Absent")
                             }

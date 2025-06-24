@@ -34,15 +34,10 @@ const AddHomework = () => {
     const tDay = String(tomorrow.getDate()).padStart(2, "0");
     setDueDate(`${tYear}-${tMonth}-${tDay}`);
 
-    // Set default class and division if available
+    // Set default class if available
     if (assignedClasses && assignedClasses.length > 0) {
       setActiveClass(assignedClasses[0].value);
-      if (
-        assignedClasses[0].sections &&
-        assignedClasses[0].sections.length > 0
-      ) {
-        setActiveDivision(assignedClasses[0].sections[0].value);
-      }
+      // Remove the automatic section setting
     }
 
     // Set default subject if available
@@ -122,7 +117,10 @@ const AddHomework = () => {
             <select
               className="select select-bordered w-full"
               value={activeClass}
-              onChange={(e) => setActiveClass(e.target.value)}
+              onChange={(e) => {
+                setActiveClass(e.target.value);
+                setActiveDivision("");
+              }}
               required
             >
               <option value="" disabled>
@@ -182,7 +180,7 @@ const AddHomework = () => {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Due Date</span>
+              <span className="label-text">Submission Date</span>
             </label>
             <input
               type="date"

@@ -297,85 +297,88 @@ const StudentList = () => {
     selectedSection,
   ]);
 
-const generateWeeklyReport = async (studentId) => {
-  try {
-    const today = new Date();
+  const generateWeeklyReport = async (studentId) => {
+    try {
+      const today = new Date();
 
-    // Generate list of past 7 calendar days including today
-    const pastWeekDates = [];
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      pastWeekDates.push(date);
-    }
-
-    // Reverse to make it oldest → newest
-    pastWeekDates.reverse();
-
-    // Filter out Sundays
-    const validDates = pastWeekDates.filter(date => date.getDay() !== 0);
-
-    // Start date is the first valid date (earliest day, not Sunday)
-    const formattedStartDate = validDates[0].toISOString().split("T")[0];
-
-    toast.loading("Generating report...");
-
-    const response = await axios.get(
-      `https://d2-c-b.vercel.app/api/student-attendance/student/weekly-report`,
-      {
-        params: {
-          studentId,
-          startDate: formattedStartDate,
-        },
-        responseType: "json",
+      // Generate list of past 7 calendar days including today
+      const pastWeekDates = [];
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        pastWeekDates.push(date);
       }
-    );
 
-    toast.dismiss();
+      // Reverse to make it oldest → newest
+      pastWeekDates.reverse();
 
-    if (response.data && response.data.success) {
-      const { student, reportPeriod, dailyReport, summary } = response.data.data;
+      // Filter out Sundays
+      const validDates = pastWeekDates.filter((date) => date.getDay() !== 0);
 
-      let message = `*Weekly Attendance Report*\n\n`;
-      message += `*Student:* ${student.name} (${student.rollNumber})\n`;
-      message += `*Class:* ${student.class}-${student.section}\n`;
-      message += `*Period:* ${reportPeriod.from} to ${reportPeriod.to}\n\n`;
+      // Start date is the first valid date (earliest day, not Sunday)
+      const formattedStartDate = validDates[0].toISOString().split("T")[0];
 
-      message += `*Daily Attendance:*\n`;
+      toast.loading("Generating report...");
 
-      // Exclude Sundays from report display
-      const filteredReport = dailyReport.filter(day => {
-        const dayDate = new Date(day.date);
-        return dayDate.getDay() !== 0;
-      });
+      const response = await axios.get(
+        `https://d2-c-b.vercel.app/api/student-attendance/student/weekly-report`,
+        {
+          params: {
+            studentId,
+            startDate: formattedStartDate,
+          },
+          responseType: "json",
+        }
+      );
 
-      filteredReport.forEach(day => {
-        message += `${day.day} (${day.date}): ${day.status}\n`;
-      });
+      toast.dismiss();
 
-      // Count Present/Absent only for non-Sunday days
-      const presentCount = filteredReport.filter(d => d.status === "Present").length;
-      const absentCount = filteredReport.filter(d => d.status === "Absent").length;
+      if (response.data && response.data.success) {
+        const { student, reportPeriod, dailyReport, summary } =
+          response.data.data;
 
-      message += `\n*Summary:*\n`;
-      message += `Present: ${presentCount} days\n`;
-      message += `Absent: ${absentCount} days\n`;
+        let message = `*Weekly Attendance Report*\n\n`;
+        message += `*Student:* ${student.name} (${student.rollNumber})\n`;
+        message += `*Class:* ${student.class}-${student.section}\n`;
+        message += `*Period:* ${reportPeriod.from} to ${reportPeriod.to}\n\n`;
 
-      const encodedMessage = encodeURIComponent(message);
-      window.open(`https://wa.me/?text=${encodedMessage}`, "_blank");
+        message += `*Daily Attendance:*\n`;
 
-      toast.success("Report shared to WhatsApp");
-    } else {
-      toast.error("Failed to generate report");
+        // Exclude Sundays from report display
+        const filteredReport = dailyReport.filter((day) => {
+          const dayDate = new Date(day.date);
+          return dayDate.getDay() !== 0;
+        });
+
+        filteredReport.forEach((day) => {
+          message += `${day.day} (${day.date}): ${day.status}\n`;
+        });
+
+        // Count Present/Absent only for non-Sunday days
+        const presentCount = filteredReport.filter(
+          (d) => d.status === "Present"
+        ).length;
+        const absentCount = filteredReport.filter(
+          (d) => d.status === "Absent"
+        ).length;
+
+        message += `\n*Summary:*\n`;
+        message += `Present: ${presentCount} days\n`;
+        message += `Absent: ${absentCount} days\n`;
+
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/?text=${encodedMessage}`, "_blank");
+
+        toast.success("Report shared to WhatsApp");
+      } else {
+        toast.error("Failed to generate report");
+      }
+    } catch (error) {
+      toast.dismiss();
+      console.error("Error generating weekly report:", error);
+      toast.error("Failed to generate weekly report");
     }
-  } catch (error) {
-    toast.dismiss();
-    console.error("Error generating weekly report:", error);
-    toast.error("Failed to generate weekly report");
-  }
-};
-
-
+  };
 
   const handleClassChange = (e) => {
     const newClass = e.target.value;
@@ -416,6 +419,48 @@ const generateWeeklyReport = async (studentId) => {
   const toggleViewMode = () => {
     setViewMode(viewMode === "daily" ? "monthly" : "daily");
     setPage(1);
+  };
+
+  const shareDailyAttendanceReport = () => {
+    if (attendances.length === 0) {
+      toast.error("No attendance data to share");
+      return;
+    }
+
+    if (viewMode !== "daily") {
+      toast.error("Daily report sharing is only available in daily view");
+      return;
+    }
+
+    const presentStudents = attendances.filter(
+      (record) => record.status === "Present"
+    );
+    const absentStudents = attendances.filter(
+      (record) => record.status === "Absent"
+    );
+
+    let message = `*Daily Attendance Report*\n`;
+    message += `*Class:* ${selectedClass}${
+      selectedSection ? `-${selectedSection}` : ""
+    }\n`;
+    message += `*Date:* ${new Date(dateFilter).toLocaleDateString()}\n\n`;
+    message += `*Total Students:* ${attendances.length}\n`;
+    message += `*Present:* ${presentStudents.length}\n`;
+    message += `*Absent:* ${absentStudents.length}\n\n`;
+
+    if (absentStudents.length > 0) {
+      message += `*Absent Students:*\n`;
+      absentStudents.forEach((student, index) => {
+        message += `${index + 1}. ${
+          student.name || student.student?.name
+        } (Roll: ${student.rollNumber || student.student?.rollNumber})\n`;
+      });
+    } else {
+      message += `*All students are present today!*\n`;
+    }
+
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/?text=${encodedMessage}`, "_blank");
   };
 
   return (
@@ -617,6 +662,24 @@ const generateWeeklyReport = async (studentId) => {
             </button>
           </div>
         </div>
+
+        {viewMode === "daily" && (
+          <button
+            onClick={shareDailyAttendanceReport}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
+            </svg>
+            Share Daily Report
+          </button>
+        )}
 
         {loading ? (
           <p className="text-center text-gray-500">Loading attendance...</p>
