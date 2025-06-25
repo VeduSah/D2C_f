@@ -41,6 +41,8 @@ const Home = () => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [workAssignments, setWorkAssignments] = useState([]);
   const [workLoading, setWorkLoading] = useState(false);
+  const [remarksSent, setRemarksSent] = useState(null);
+  const [sentRemarksDate, setSentRemarksDate] = useState(getDate);
 
   const getCount = () => {
     setLoading(true);
@@ -62,6 +64,33 @@ const Home = () => {
       setLoading(false);
     }
   };
+
+  const fetchRemarksSent = () => {
+    try {
+      axios
+        .get(
+          `https://d2-c-b.vercel.app/api/remark/by?remarkById=${uid}&remarkDate=${sentRemarksDate}`
+        )
+        .then((res) => {
+          console.log(res);
+          if (res.data.success) {
+            setRemarksSent(res.data.data);
+            setLoading(false);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        })
+        .catch((err) => {
+          setRemarksSent(null);
+        });
+    } catch (error) {
+      console.log(error);
+      setRemarksSent(null);
+      setLoading(false);
+    }
+  };
+
   const fetchStudents = () => {
     try {
       axios
@@ -162,7 +191,7 @@ const Home = () => {
     try {
       axios
         .get(
-          `https://d2-c-b.vercel.app/api/remark/date?remarkDate=${remarkDate}`
+          `https://d2-c-b.vercel.app/api/remark?remarkToId=${uid}&remarkDate=${remarkDate}`
         )
         .then((res) => {
           console.log(res);
@@ -260,8 +289,9 @@ const Home = () => {
       fetchWorkAssignments();
     }
     fetchAllRemark();
+    fetchRemarksSent();
     getCount();
-  }, [remarkDate]);
+  }, [remarkDate, sentRemarksDate]);
 
   const fetchListingByRole = () => {
     try {
@@ -317,6 +347,10 @@ const Home = () => {
     setTeacherIdForRemark(e.target.value);
   };
   const handleRemarkSend = () => {
+    if (!teacherNameForRemark || !teacherIdForRemark) {
+      toast.error("Please select a user");
+      return;
+    }
     let data = {
       remarkBy: name,
       remarkById: uid,
@@ -338,6 +372,10 @@ const Home = () => {
           if (res.data.success) {
             toast.success("Remark sent successfully !", { id: "Errorr" });
             setRemarkComment("");
+            setTeacherNameForRemark("");
+            setTeacherIdForRemark("");
+            setRoleForRemark("");
+            fetchRemarksSent();
             fetchAdminRemark();
           }
         })
@@ -576,8 +614,7 @@ const Home = () => {
               ""
             )}
           </div>
-
-          {role == "Teacher" && (
+          {/* {role == "Teacher" && (
             <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
               <div className="p-1 flex items-center gap-3">
                 <label htmlFor="">Select Date</label>
@@ -647,11 +684,10 @@ const Home = () => {
                 </tbody>
               </table>
             </div>
-          )}
-
+          )} */}
           {(role === "Senior Coordinator" || role === "Junior Coordinator") && (
             <>
-              <div>
+              {/* <div>
                 <p className="text-2xl font-semibold">
                   {role === "Senior Coordinator"
                     ? "Remarks Given To Teachers & Junior Coordinators"
@@ -724,13 +760,13 @@ const Home = () => {
                         ))}
                   </tbody>
                 </table>
-              </div>
+              </div> */}
 
-              <div className="mt-12">
+              {/* <div className="mt-12">
                 <p className="text-2xl font-semibold">
                   {role === "Junior Coordinator"
-                    ? "Remarks Received By Admin and Senior Coordinator"
-                    : "Remarks Received By Admin"}
+                    ? "Remarks Received"
+                    : "Remarks Received"}
                 </p>
               </div>
 
@@ -798,10 +834,10 @@ const Home = () => {
                       ))}
                   </tbody>
                 </table>
-              </div>
+              </div> */}
 
               {/* New Section: Send Remark for Coordinators */}
-              <div className="mt-12">
+              {/* <div className="mt-12">
                 <p className="text-2xl font-semibold">Send Remark</p>
                 <div className="grid md:grid-cols-3 gap-3">
                   <div className="form-control mt-5">
@@ -866,13 +902,286 @@ const Home = () => {
                     </>
                   )}
                 </div>
-              </div>
+              </div> */}
             </>
           )}
+          <div className="mt-12">
+            <p className="text-2xl font-semibold">Send Remark</p>
+            <div className="grid md:grid-cols-3 gap-3">
+              <div className="form-control mt-5">
+                <label htmlFor="">Select Role</label>
+                <select
+                  onChange={(e) => setRoleForRemark(e.target.value)}
+                  className="select select-bordered border-gray-300"
+                  value={roleForRemark}
+                >
+                  <option value="" disabled>
+                    Select Role
+                  </option>
+                  {[
+                    "Admin",
+                    "Teacher",
+                    "Senior Coordinator",
+                    "Junior Coordinator",
+                  ]
+                    .filter((r) => r !== role)
+                    .map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              {roleForRemark && (
+                <div className="form-control mt-5">
+                  <label htmlFor="">Select User</label>
+                  <select
+                    onChange={handleTeacherByClass}
+                    className="select select-bordered border-gray-300"
+                    value={teacherIdForRemark}
+                  >
+                    <option value="" disabled>
+                      Select User
+                    </option>
+                    {userRoleData?.map((res) => (
+                      <option value={res._id} key={res._id}>
+                        {res.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {roleForRemark && (
+                <>
+                  <div className="form-control mt-5">
+                    <label htmlFor="">Remark For {roleForRemark}</label>
+                    <textarea
+                      className="textarea textarea-bordered"
+                      cols="30"
+                      placeholder="Remark"
+                      rows="1"
+                      onChange={(e) => setRemarkComment(e.target.value)}
+                      value={remarkComment}
+                    ></textarea>
+                  </div>
+                  <div className="form-control relative top-5 mt-6 ">
+                    <button
+                      className="btn btn-outline"
+                      onClick={() => handleRemarkSend()}
+                      disabled={!remarkComment}
+                    >
+                      Send Remark
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
 
+          <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
+            <div className="px-4 py-2 font-semibold text-xl">Remarks Sent</div>
+            <div className="px-4 py-2 flex items-center gap-3">
+              <label htmlFor="">Select Date</label>
+              <input
+                type="date"
+                onChange={(e) => setSentRemarksDate(e.target.value)}
+                className="input input-bordered"
+                value={sentRemarksDate}
+              />
+            </div>
+            <table className="w-full table-auto text-sm text-left">
+              <thead className="bg-gray-50 text-gray-600 font-medium border-b">
+                <tr>
+                  <th className="py-3 px-6">Remark To</th>
+                  <th className="py-3 px-6">Remark</th>
+                  <th className="py-3 px-6">Role</th>
+                  <th className="py-3 px-6">Date</th>
+                  <th className="py-3 px-6">Status</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-600 divide-y">
+                {remarksSent &&
+                  remarksSent?.map((item) => (
+                    <tr key={item._id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.remarkTo}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.remarkComment}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.remarkToRole}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.remarkDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.isChecked ? (
+                          <span className="badge badge-success badge-md text-white">
+                            Acknowledged
+                          </span>
+                        ) : (
+                          <span className="badge badge-error text-white">
+                            Not-Acknowledged
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
+            <div className="px-4 py-2 font-semibold text-xl">
+              Remarks Received
+            </div>
+            <table className="w-full table-auto text-sm text-left">
+              <thead className="bg-gray-50 text-gray-600 font-medium border-b">
+                <tr>
+                  <th className="py-3 px-6">Name</th>
+                  <th className="py-3 px-6">Remark</th>
+                  <th className="py-3 px-6">Remark By</th>
+                  <th className="py-3 px-6">Administration</th>
+                  <th className="py-3 px-6">Date</th>
+                  <th className="py-3 px-6">Status</th>
+                  <th className="py-3 px-6">Action</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-600 divide-y">
+                {(role === "Senior Coordinator" || role === "Junior Coordinator"
+                  ? remarkDataByAdmin
+                  : remarkData) &&
+                  (role === "Senior Coordinator" ||
+                  role === "Junior Coordinator"
+                    ? remarkDataByAdmin
+                    : remarkData
+                  )?.map((item) => (
+                    <tr key={item._id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.remarkTo}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.remarkComment}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.remarkBy}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.remarkByRole}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.remarkDate}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.isChecked ? (
+                          <span className="badge badge-success badge-md text-white">
+                            Acknowledged
+                          </span>
+                        ) : (
+                          <span className="badge badge-error text-white">
+                            Not-Acknowledged
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          onClick={() => updateRemark(item, "approve")}
+                          className="btn btn-outline btn-xs"
+                          disabled={item.isChecked}
+                        >
+                          Acknowledge
+                        </button>
+                        {/* <button
+                          onClick={() => updateRemark(item, "reject")}
+                          className="btn btn-warning ml-2 btn-xs text-white"
+                          disabled={item.isChecked}
+                        >
+                          Reject
+                        </button> */}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* <div className="mt-12">
+            <p className="text-2xl font-semibold">Send Remark</p>
+            <div className="grid md:grid-cols-3 gap-3">
+              <div className="form-control mt-5">
+                <label htmlFor="">Select Role</label>
+                <select
+                  onChange={(e) => setRoleForRemark(e.target.value)}
+                  className="select select-bordered border-gray-300"
+                >
+                  <option value="" disabled>
+                    Select Role
+                  </option>
+                  {/* Show all other roles except the current user's own role *
+                  {[
+                    "Admin",
+                    "Teacher",
+                    "Senior Coordinator",
+                    "Junior Coordinator",
+                  ]
+                    .filter((r) => r !== role)
+                    .map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              {roleForRemark && (
+                <div className="form-control mt-5">
+                  <label htmlFor="">Select User</label>
+                  <select
+                    onChange={handleTeacherByClass}
+                    className="select select-bordered border-gray-300"
+                  >
+                    <option value="" selected disabled>
+                      Select User
+                    </option>
+                    {userRoleData?.map((res) => (
+                      <option value={res._id} key={res._id}>
+                        {res.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {roleForRemark && (
+                <>
+                  {" "}
+                  <div className="form-control mt-5">
+                    <label htmlFor="">Remark For {roleForRemark}</label>
+                    <textarea
+                      className=" textarea textarea-bordered"
+                      cols="30"
+                      placeholder="Remark"
+                      rows="1"
+                      onChange={(e) => setRemarkComment(e.target.value)}
+                      value={remarkComment}
+                    ></textarea>
+                  </div>
+                  <div className="form-control relative top-5 mt-6 ">
+                    <button
+                      className="btn btn-outline"
+                      onClick={() => handleRemarkSend()}
+                      disabled={!teacherIdForRemark || !remarkComment}
+                    >
+                      Send Remark
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div> */}
           {role == "Admin" && (
             <>
-              <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
+              {/* <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
                 <div className="p-1 flex items-center gap-3">
                   <label htmlFor="">Select Date</label>
                   <input
@@ -941,78 +1250,9 @@ const Home = () => {
                       ))}
                   </tbody>
                 </table>
-              </div>
+              </div> */}
 
-              <>
-                <div className="mt-12">
-                  <p className="text-2xl font-semibold">Send Remark</p>
-                  <div className="grid md:grid-cols-3 gap-3">
-                    <div className="form-control mt-5">
-                      <label htmlFor="">Select Role</label>
-                      <select
-                        onChange={(e) => setRoleForRemark(e.target.value)}
-                        className="select select-bordered border-gray-300"
-                      >
-                        <option value="" selected disabled>
-                          Select Role
-                        </option>
-                        <option value="Teacher">Teacher</option>
-                        <option value="Senior Coordinator">
-                          Senior Coordinator
-                        </option>
-                        <option value="Junior Coordinator">
-                          Junior Coordinator
-                        </option>
-                      </select>
-                    </div>
-
-                    {roleForRemark && (
-                      <div className="form-control mt-5">
-                        <label htmlFor="">Select User</label>
-                        <select
-                          onChange={handleTeacherByClass}
-                          className="select select-bordered border-gray-300"
-                        >
-                          <option value="" selected disabled>
-                            Select User
-                          </option>
-
-                          {userRoleData?.map((res) => (
-                            <option value={res._id} key={res._id}>
-                              {res.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-
-                    {roleForRemark && (
-                      <>
-                        {" "}
-                        <div className="form-control mt-5">
-                          <label htmlFor="">Remark For {roleForRemark}</label>
-                          <textarea
-                            className=" textarea textarea-bordered"
-                            cols="30"
-                            placeholder="Remark"
-                            rows="1"
-                            onChange={(e) => setRemarkComment(e.target.value)}
-                            value={remarkComment}
-                          ></textarea>
-                        </div>
-                        <div className="form-control relative top-5 mt-6 ">
-                          <button
-                            className="btn btn-outline "
-                            onClick={() => handleRemarkSend()}
-                          >
-                            Send Remark
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </>
+              <></>
               {/* Work Assignments Section for Admin */}
               <div className="mt-12">
                 <p className="text-2xl font-semibold">All Work Assignments</p>
@@ -1099,12 +1339,11 @@ const Home = () => {
               </div>
             </>
           )}
-
           {(role === "Teacher" ||
             role === "Senior Coordinator" ||
             role === "Junior Coordinator") && (
             <>
-              <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
+              {/* <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto w-full">
                 <div className="px-4 py-2 font-semibold text-xl">
                   All Remarks
                 </div>{" "}
@@ -1172,7 +1411,7 @@ const Home = () => {
                       ))}
                   </tbody>
                 </table>
-              </div>
+              </div> */}
             </>
           )}
         </>
