@@ -122,7 +122,6 @@ const Homework = () => {
   const sortedClassSections = sortClassSections(Object.keys(filteredHomeworks));
 
   const handleShareClass = (classSection) => {
-    // Get today's homework for sharing, but keep the list showing all homework
     const allHomeworksForClass = groupedHomeworks[classSection] || [];
     const todaysHomeworks = allHomeworksForClass.filter((homework) => {
       const homeworkDate = new Date(homework.createdAt)
@@ -131,24 +130,21 @@ const Homework = () => {
       return homeworkDate === today;
     });
 
-    const homeworksToShare =
-      todaysHomeworks.length > 0 ? todaysHomeworks : allHomeworksForClass;
-
-    if (homeworksToShare.length === 0) {
-      toast.error("No homework to share");
+    if (todaysHomeworks.length === 0) {
+      toast.error("No homework assigned for today");
       return;
     }
-
     const [className, section] = classSection.split("-");
     let message = `*Homework for Class ${className.toUpperCase()}-${section.toUpperCase()}*\n`;
+    message += `*Date: ${new Date().toLocaleDateString()}*\n\n`;
 
-    if (todaysHomeworks.length > 0) {
-      message += `*Date: ${new Date().toLocaleDateString()}*\n\n`;
-    } else {
-      message += `\n`;
-    }
+    // if (todaysHomeworks.length > 0) {
+    //   message += `*Date: ${new Date().toLocaleDateString()}*\n\n`;
+    // } else {
+    //   message += `\n`;
+    // }
 
-    homeworksToShare.forEach((homework, index) => {
+    todaysHomeworks.forEach((homework, index) => {
       message += `*${index + 1}. ${homework.subject}*\n`;
       message += `${homework.description}\n\n`;
     });
